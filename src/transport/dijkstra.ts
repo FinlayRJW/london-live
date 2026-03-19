@@ -145,11 +145,11 @@ export function dijkstraOneToAll(
 
       if (newCost > maxTime) continue;
 
-      // Walking edges reset currentLine to null. This ensures that
-      // when you walk between interchange stations, the next rail
-      // edge triggers a boarding/interchange penalty correctly
-      // (instead of double-counting).
-      const newLine = edge.line ?? (edge.mode === "walking" ? null : state.currentLine);
+      // Rail edges set currentLine to their line.
+      // Walking edges preserve currentLine so that boarding a different
+      // line after an interchange walk correctly triggers the interchange
+      // penalty (not a second boarding wait).
+      const newLine = edge.line ?? state.currentLine;
 
       const newState: DijkstraState = {
         nodeId: edge.target,
