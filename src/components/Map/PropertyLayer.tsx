@@ -171,10 +171,38 @@ export function PropertyLayer() {
     return reachable;
   }, [scores]);
 
+  const setPostcodesWithProperties = usePropertyStore(
+    (s) => s.setPostcodesWithProperties,
+  );
+
   const filteredSales = useMemo(() => {
     if (!data || !enabled) return [];
     return getFilteredSales(data, filters, reachablePostcodes, activeLevel);
   }, [data, enabled, filters, reachablePostcodes, activeLevel]);
+
+  // Compute which postcode prefixes have matching properties and store it
+  // so DistrictLayer can grey out areas with no properties
+  useEffect(() => {
+    if (!enabled) {
+      setPostcodesWithProperties(new Set());
+      return;
+    }
+    const toPrefix =
+      activeLevel === "sector"
+        ? (pc: string) => {
+            const parts = pc.split(" ");
+            return parts.length >= 2 && parts[1].length > 0
+              ? `${parts[0]} ${parts[1][0]}`
+              : parts[0];
+          }
+        : (pc: string) => pc.split(" ")[0];
+
+    const prefixes = new Set<string>();
+    for (const { postcode } of filteredSales) {
+      prefixes.add(toPrefix(postcode));
+    }
+    setPostcodesWithProperties(prefixes);
+  }, [filteredSales, enabled, activeLevel, setPostcodesWithProperties]);
 
   useEffect(() => {
     if (!enabled) {

@@ -21,10 +21,13 @@ interface PropertyState {
   loadingDone: number;
   /** Filter settings (persisted) */
   filters: PropertyFilters;
+  /** Postcode prefixes (district/sector) that have matching properties */
+  postcodesWithProperties: Set<string>;
 
   mergeDistrictData: (district: string, data: PropertyData) => void;
   setLoadingDistricts: (districts: Set<string>) => void;
   setLoadingProgress: (done: number, total: number) => void;
+  setPostcodesWithProperties: (postcodes: Set<string>) => void;
   setEnabled: (enabled: boolean) => void;
   setMinPrice: (price: number) => void;
   setMaxPrice: (price: number) => void;
@@ -44,6 +47,7 @@ export const usePropertyStore = create<PropertyState>()(
       loadingDistricts: new Set(),
       loadingTotal: 0,
       loadingDone: 0,
+      postcodesWithProperties: new Set(),
       filters: {
         enabled: false,
         minPrice: 0,
@@ -73,6 +77,8 @@ export const usePropertyStore = create<PropertyState>()(
         set({ loadingDistricts: districts }),
       setLoadingProgress: (loadingDone, loadingTotal) =>
         set({ loadingDone, loadingTotal }),
+      setPostcodesWithProperties: (postcodesWithProperties) =>
+        set({ postcodesWithProperties }),
       setEnabled: (enabled) =>
         set((s) => ({ filters: { ...s.filters, enabled } })),
       setMinPrice: (minPrice) =>

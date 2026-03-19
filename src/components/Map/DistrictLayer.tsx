@@ -4,6 +4,7 @@ import L from "leaflet";
 import type { PostcodeCollection } from "../../types/geo.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
 import { useRouteStore } from "../../stores/routeStore.ts";
+import { usePropertyStore } from "../../stores/propertyStore.ts";
 import { GREYED_COLOR } from "./colorScale.ts";
 import { PostcodeTooltip } from "./PostcodeTooltip.tsx";
 import { createRoot } from "react-dom/client";
@@ -24,7 +25,15 @@ function getStyleForPostcode(postcodeId: string): L.PathOptions {
   }
 
   const score = scores.get(postcodeId);
-  const pass = score?.pass ?? false;
+  let pass = score?.pass ?? false;
+
+  // If properties layer is active, also require matching properties
+  const propState = usePropertyStore.getState();
+  if (pass && propState.filters.enabled && propState.postcodesWithProperties.size > 0) {
+    if (!propState.postcodesWithProperties.has(postcodeId)) {
+      pass = false;
+    }
+  }
 
   return {
     fillColor: pass ? REACHABLE_COLOR : GREYED_COLOR,
@@ -42,6 +51,10 @@ interface Props {
 export function DistrictLayer({ data }: Props) {
   const map = useMap();
   const scores = useScoreStore((s) => s.scores);
+  const postcodesWithProperties = usePropertyStore(
+    (s) => s.postcodesWithProperties,
+  );
+  const propertyEnabled = usePropertyStore((s) => s.filters.enabled);
   const geoJsonRef = useRef<L.GeoJSON | null>(null);
   const tooltipRef = useRef<L.Tooltip | null>(null);
 
@@ -87,7 +100,7 @@ export function DistrictLayer({ data }: Props) {
     [map],
   );
 
-  // Update styles when scores change
+  // Update styles when scores or property filter changes
   useEffect(() => {
     if (geoJsonRef.current) {
       geoJsonRef.current.eachLayer((layer) => {
@@ -98,7 +111,7 @@ export function DistrictLayer({ data }: Props) {
         }
       });
     }
-  }, [scores]);
+  }, [scores, postcodesWithProperties, propertyEnabled]);
 
   return (
     <GeoJSON
