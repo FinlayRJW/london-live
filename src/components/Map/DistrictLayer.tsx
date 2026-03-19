@@ -17,9 +17,23 @@ export function DistrictLayer({ data }: Props) {
   const geoJsonRef = useRef<L.GeoJSON | null>(null);
   const tooltipRef = useRef<L.Tooltip | null>(null);
 
+  const hasScores = scores.size > 0;
+
   const getStyle = useCallback(
     (postcodeId: string): L.PathOptions => {
       const score = scores.get(postcodeId);
+
+      if (!hasScores) {
+        // No filters active - border only, transparent fill
+        return {
+          fillColor: "transparent",
+          fillOpacity: 0,
+          color: "#555",
+          weight: 1.5,
+          opacity: 0.7,
+        };
+      }
+
       const fillColor = score
         ? scoreToColor(score.combined, score.pass)
         : DEFAULT_COLOR;
@@ -32,7 +46,7 @@ export function DistrictLayer({ data }: Props) {
         opacity: 0.8,
       };
     },
-    [scores],
+    [scores, hasScores],
   );
 
   const onEachFeature = useCallback(

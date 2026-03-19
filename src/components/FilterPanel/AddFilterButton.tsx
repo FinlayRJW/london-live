@@ -17,7 +17,7 @@ export function AddFilterButton() {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-card-bg border border-border rounded-lg shadow-lg z-50 overflow-hidden">
+        <div className="absolute bottom-full left-0 right-0 mb-1 bg-card-bg border border-border rounded-lg shadow-lg z-50 overflow-hidden">
           {plugins.map((plugin) => (
             <button
               key={plugin.typeId}

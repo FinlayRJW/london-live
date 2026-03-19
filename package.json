@@ -13,7 +13,8 @@
     "data:centroids": "tsx scripts/compute-centroids.ts",
     "data:stations": "tsx scripts/fetch-stations.ts",
     "data:graph": "tsx scripts/build-transport-graph.ts",
-    "data:all": "npm run data:boundaries && npm run data:centroids && npm run data:stations && npm run data:graph"
+    "data:boundary": "tsx scripts/compute-london-boundary.ts",
+    "data:all": "npm run data:boundaries && npm run data:centroids && npm run data:stations && npm run data:graph && npm run data:boundary"
   },
   "dependencies": {
     "d3-interpolate": "^3.0.1",
