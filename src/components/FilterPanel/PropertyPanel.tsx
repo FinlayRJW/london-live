@@ -29,6 +29,8 @@ export function PropertyPanel() {
   const setEnabled = usePropertyStore((s) => s.setEnabled);
   const setMinPrice = usePropertyStore((s) => s.setMinPrice);
   const setMaxPrice = usePropertyStore((s) => s.setMaxPrice);
+  const setMinFloorArea = usePropertyStore((s) => s.setMinFloorArea);
+  const setMaxFloorArea = usePropertyStore((s) => s.setMaxFloorArea);
   const setTypes = usePropertyStore((s) => s.setTypes);
   const setTenure = usePropertyStore((s) => s.setTenure);
   const setDateRange = usePropertyStore((s) => s.setDateRange);
@@ -109,6 +111,32 @@ export function PropertyPanel() {
                     step={25_000}
                     value={filters.maxPrice}
                     onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-text mb-1">
+                  Floor area: {filters.minFloorArea} &ndash; {filters.maxFloorArea} m&sup2;
+                </label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="range"
+                    min={0}
+                    max={300}
+                    step={5}
+                    value={filters.minFloorArea}
+                    onChange={(e) => setMinFloorArea(Number(e.target.value))}
+                    className="flex-1"
+                  />
+                  <input
+                    type="range"
+                    min={0}
+                    max={300}
+                    step={5}
+                    value={filters.maxFloorArea}
+                    onChange={(e) => setMaxFloorArea(Number(e.target.value))}
                     className="flex-1"
                   />
                 </div>

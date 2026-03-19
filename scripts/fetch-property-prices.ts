@@ -155,15 +155,11 @@ function normaliseAddress(addr: string): string {
     .trim();
 }
 
-interface EpcApiRow {
-  postcode: string;
-  address: string;
-  "total-floor-area": string;
-  "number-habitable-rooms": string;
-  "current-energy-rating": string;
-}
-
-async function fetchEpcData(): Promise<Map<string, EpcRecord[]>> {
+/**
+ * Download EPC bulk yearly files, extract CSVs, filter to London postcodes.
+ * Much faster than the search API (~2 downloads vs hundreds of paginated queries).
+ */
+async function fetchEpcData(londonPostcodes: Set<string>): Promise<Map<string, EpcRecord[]>> {
   const epcMap = new Map<string, EpcRecord[]>();
 
   const email = process.env.EPC_EMAIL;
@@ -177,12 +173,8 @@ async function fetchEpcData(): Promise<Map<string, EpcRecord[]>> {
   }
 
   const auth = Buffer.from(`${email}:${apiKey}`).toString("base64");
-  const headers = {
-    Authorization: `Basic ${auth}`,
-    Accept: "application/json",
-  };
 
-  // Check for cached EPC data
+  // Check cache
   const cacheDir = join("data", "cache");
   mkdirSync(cacheDir, { recursive: true });
   const cachePath = join(cacheDir, "epc-london.json");
@@ -190,91 +182,171 @@ async function fetchEpcData(): Promise<Map<string, EpcRecord[]>> {
   if (existsSync(cachePath)) {
     console.log("Loading cached EPC data...");
     const cached = JSON.parse(readFileSync(cachePath, "utf-8")) as
-      Array<{ postcode: string; address: string; floorArea: number | null; rooms: number | null; energyRating: string | null }>;
-    for (const row of cached) {
-      const key = `${row.postcode}|${normaliseAddress(row.address)}`;
-      const record: EpcRecord = { floorArea: row.floorArea, rooms: row.rooms, energyRating: row.energyRating };
-      const existing = epcMap.get(key);
-      if (existing) existing.push(record);
-      else epcMap.set(key, [record]);
+      Record<string, { fa: number | null; r: number | null; er: string | null }>;
+    for (const [key, rec] of Object.entries(cached)) {
+      epcMap.set(key, [{ floorArea: rec.fa, rooms: rec.r, energyRating: rec.er }]);
     }
-    console.log(`  Loaded ${epcMap.size} cached EPC records`);
+    console.log(`  ${epcMap.size} cached EPC records`);
     return epcMap;
   }
 
-  console.log("Downloading EPC data for 33 London boroughs...");
-  const allRows: Array<{ postcode: string; address: string; floorArea: number | null; rooms: number | null; energyRating: string | null }> = [];
-  let boroughsDone = 0;
+  // Download yearly bulk files via the API files endpoint
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let y = currentYear; y >= currentYear - 5; y--) {
+    years.push(y);
+  }
 
-  for (const [code, name] of Object.entries(LONDON_BOROUGHS)) {
-    let searchAfter: string | null = null;
-    let boroughTotal = 0;
+  for (const year of years) {
+    const zipPath = join(cacheDir, `epc-domestic-${year}.zip`);
 
-    while (true) {
-      const params = new URLSearchParams({
-        "local-authority": code,
-        size: "5000",
-      });
-      if (searchAfter) params.set("search-after", searchAfter);
+    if (!existsSync(zipPath)) {
+      const fileName = `domestic-${year}.zip`;
+      console.log(`Downloading EPC bulk file: ${fileName}...`);
+      const res = await fetch(
+        `https://epc.opendatacommunities.org/api/v1/files/${fileName}`,
+        {
+          headers: { Authorization: `Basic ${auth}` },
+          redirect: "follow",
+        },
+      );
+      if (!res.ok) {
+        console.log(`  Skipping ${fileName}: HTTP ${res.status}`);
+        continue;
+      }
+      const buf = Buffer.from(await res.arrayBuffer());
+      writeFileSync(zipPath, buf);
+      console.log(`  Downloaded ${(buf.length / 1024 / 1024).toFixed(1)} MB`);
+    } else {
+      console.log(`Using cached EPC file: ${zipPath}`);
+    }
 
-      const url = `https://epc.opendatacommunities.org/api/v1/domestic/search?${params}`;
+    // Extract certificates.csv from zip using built-in unzip
+    const { execSync } = await import("child_process");
+    const tmpDir = join(cacheDir, `epc-${year}`);
+    mkdirSync(tmpDir, { recursive: true });
+
+    try {
+      execSync(`unzip -o -j "${zipPath}" "certificates.csv" -d "${tmpDir}" 2>/dev/null || true`);
+    } catch {
+      // Some zips may have different structure
+    }
+
+    const csvPath = join(tmpDir, "certificates.csv");
+    if (!existsSync(csvPath)) {
+      // Try alternate extraction - some zips nest the CSV
       try {
-        const res = await fetch(url, { headers });
-        if (!res.ok) {
-          console.error(`  EPC API error for ${name}: ${res.status}`);
-          break;
+        execSync(`unzip -o "${zipPath}" -d "${tmpDir}" 2>/dev/null || true`);
+        // Find the CSV anywhere in the extracted dir
+        const { execSync: exec2 } = await import("child_process");
+        const found = exec2(`find "${tmpDir}" -name "certificates.csv" -type f 2>/dev/null`).toString().trim().split("\n")[0];
+        if (found && existsSync(found)) {
+          // Read from wherever it was found
+          await parseEpcCsv(found, londonPostcodes, epcMap);
+          continue;
         }
+      } catch {
+        // skip
+      }
+      console.log(`  No certificates.csv found in ${zipPath}`);
+      continue;
+    }
 
-        const data = (await res.json()) as { rows: EpcApiRow[] };
-        if (!data.rows || data.rows.length === 0) break;
+    await parseEpcCsv(csvPath, londonPostcodes, epcMap);
+  }
 
-        for (const row of data.rows) {
-          const postcode = (row.postcode ?? "").trim();
-          const address = (row.address ?? "").trim();
-          if (!postcode) continue;
+  console.log(`Total EPC records for London: ${epcMap.size}`);
 
-          const fa = parseFloat(row["total-floor-area"]);
-          const r = parseInt(row["number-habitable-rooms"], 10);
-          const er = (row["current-energy-rating"] ?? "").trim();
+  // Cache
+  const cacheObj: Record<string, { fa: number | null; r: number | null; er: string | null }> = {};
+  for (const [key, records] of epcMap) {
+    const rec = records[records.length - 1];
+    cacheObj[key] = { fa: rec.floorArea, r: rec.rooms, er: rec.energyRating };
+  }
+  writeFileSync(cachePath, JSON.stringify(cacheObj));
+  console.log(`Cached to ${cachePath}`);
 
-          const record = {
-            postcode,
-            address,
-            floorArea: isNaN(fa) ? null : fa,
-            rooms: isNaN(r) ? null : r,
-            energyRating: /^[A-G]$/.test(er) ? er : null,
-          };
-          allRows.push(record);
+  return epcMap;
+}
 
-          const key = `${postcode}|${normaliseAddress(address)}`;
-          const epcRecord: EpcRecord = { floorArea: record.floorArea, rooms: record.rooms, energyRating: record.energyRating };
-          const existing = epcMap.get(key);
-          if (existing) existing.push(epcRecord);
-          else epcMap.set(key, [epcRecord]);
+async function parseEpcCsv(
+  csvPath: string,
+  londonPostcodes: Set<string>,
+  epcMap: Map<string, EpcRecord[]>,
+): Promise<void> {
+  const { createReadStream } = await import("fs");
+  const { createInterface } = await import("readline");
 
-          boroughTotal++;
-        }
+  console.log(`  Parsing ${csvPath} (streaming)...`);
 
-        // Check for next page
-        const nextPage = res.headers.get("X-Next-Search-After");
-        if (!nextPage) break;
-        searchAfter = nextPage;
-      } catch (err) {
-        console.error(`  Error fetching EPC for ${name}:`, err);
-        break;
+  const rl = createInterface({
+    input: createReadStream(csvPath, { encoding: "utf-8" }),
+    crlfDelay: Infinity,
+  });
+
+  let header: string[] | null = null;
+  let postcodeIdx = -1;
+  let addressIdx = -1;
+  let faIdx = -1;
+  let roomsIdx = -1;
+  let ratingIdx = -1;
+  let matched = 0;
+  let total = 0;
+
+  for await (const line of rl) {
+    if (!header) {
+      header = line.split(",").map((h) => h.trim().replace(/"/g, "").toUpperCase());
+      postcodeIdx = header.indexOf("POSTCODE");
+      addressIdx = header.indexOf("ADDRESS");
+      faIdx = header.indexOf("TOTAL_FLOOR_AREA");
+      roomsIdx = header.indexOf("NUMBER_HABITABLE_ROOMS");
+      ratingIdx = header.indexOf("CURRENT_ENERGY_RATING");
+      if (postcodeIdx === -1) { console.log(`    No POSTCODE column`); return; }
+      continue;
+    }
+
+    total++;
+    if (!line.trim()) continue;
+
+    // Simple CSV split
+    const fields: string[] = [];
+    let fi = 0;
+    while (fi < line.length) {
+      if (line[fi] === '"') {
+        const end = line.indexOf('"', fi + 1);
+        if (end === -1) { fields.push(line.slice(fi + 1)); break; }
+        fields.push(line.slice(fi + 1, end));
+        fi = end + 2;
+      } else {
+        const end = line.indexOf(',', fi);
+        if (end === -1) { fields.push(line.slice(fi)); break; }
+        fields.push(line.slice(fi, end));
+        fi = end + 1;
       }
     }
 
-    boroughsDone++;
-    console.log(`  ${boroughsDone}/33 ${name}: ${boroughTotal} records`);
+    const pc = (fields[postcodeIdx] ?? "").trim();
+    if (!pc || !londonPostcodes.has(pc)) continue;
+
+    const addr = addressIdx >= 0 ? (fields[addressIdx] ?? "").trim() : "";
+    const fa = faIdx >= 0 ? parseFloat(fields[faIdx]) : NaN;
+    const r = roomsIdx >= 0 ? parseInt(fields[roomsIdx], 10) : NaN;
+    const er = ratingIdx >= 0 ? (fields[ratingIdx] ?? "").trim() : "";
+
+    const key = `${pc}|${normaliseAddress(addr)}`;
+    const record: EpcRecord = {
+      floorArea: isNaN(fa) ? null : fa,
+      rooms: isNaN(r) ? null : r,
+      energyRating: /^[A-G]$/.test(er) ? er : null,
+    };
+    epcMap.set(key, [record]);
+    matched++;
+
+    if (total % 500000 === 0) {
+      console.log(`    ${total} rows scanned, ${matched} London matches...`);
+    }
   }
-
-  // Cache results
-  writeFileSync(cachePath, JSON.stringify(allRows));
-  console.log(`  Cached ${allRows.length} EPC records to ${cachePath}`);
-  console.log(`  Unique address keys: ${epcMap.size}`);
-
-  return epcMap;
+  console.log(`    ${total} rows total, ${matched} London EPC records`);
 }
 
 function matchEpc(
@@ -412,8 +484,8 @@ async function main() {
   const uniquePostcodes = [...new Set(allProperties.map((p) => p.postcode))];
   const coords = await geocodePostcodes(uniquePostcodes);
 
-  // Load EPC data (downloads from API if credentials provided, uses cache if available)
-  const epcMap = await fetchEpcData();
+  // Load EPC data (downloads bulk yearly files if credentials provided)
+  const epcMap = await fetchEpcData(new Set(uniquePostcodes));
   let epcMatches = 0;
 
   // Group by postcode and build output
