@@ -6,6 +6,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { usePropertyStore } from "../../stores/propertyStore.ts";
 import { usePropertyData } from "../../hooks/usePropertyData.ts";
+import { useScoreStore } from "../../stores/scoreStore.ts";
 import type { PropertyRecord, PropertyType } from "../../types/property.ts";
 import { PROPERTY_TYPE_LABELS } from "../../types/property.ts";
 
@@ -100,6 +101,7 @@ function getFilteredSales(
     tenure: "F" | "L" | "both";
     dateRange: 6 | 12 | 24;
   },
+  reachableDistricts: Set<string>,
 ): Array<{ postcode: string; lat: number; lng: number; sale: PropertyRecord }> {
   const cutoffDate = new Date();
   cutoffDate.setMonth(cutoffDate.getMonth() - filters.dateRange);
@@ -113,6 +115,10 @@ function getFilteredSales(
   }> = [];
 
   for (const [postcode, group] of Object.entries(data)) {
+    // Only show properties in reachable districts
+    const district = postcode.split(" ")[0];
+    if (reachableDistricts.size > 0 && !reachableDistricts.has(district)) continue;
+
     for (const sale of group.sales) {
       if (sale.p < filters.minPrice || sale.p > filters.maxPrice) continue;
       if (!filters.types.includes(sale.t)) continue;
@@ -130,11 +136,23 @@ export function PropertyLayer() {
   const clusterRef = useRef<L.MarkerClusterGroup | null>(null);
   const { data, enabled } = usePropertyData();
   const filters = usePropertyStore((s) => s.filters);
+  const scores = useScoreStore((s) => s.scores);
+
+  // Compute which districts are currently reachable
+  const reachableDistricts = useMemo(() => {
+    const districts = new Set<string>();
+    for (const [postcode, score] of scores) {
+      if (score.pass) {
+        districts.add(postcode.split(" ")[0]);
+      }
+    }
+    return districts;
+  }, [scores]);
 
   const filteredSales = useMemo(() => {
     if (!data || !enabled) return [];
-    return getFilteredSales(data, filters);
-  }, [data, enabled, filters]);
+    return getFilteredSales(data, filters, reachableDistricts);
+  }, [data, enabled, filters, reachableDistricts]);
 
   useEffect(() => {
     if (!enabled) {
