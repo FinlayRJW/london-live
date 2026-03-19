@@ -3,9 +3,12 @@ import { useCallback, useRef, useEffect } from "react";
 import L from "leaflet";
 import type { PostcodeCollection } from "../../types/geo.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
-import { scoreToColor, DEFAULT_COLOR } from "./colorScale.ts";
+import { GREYED_COLOR } from "./colorScale.ts";
 import { PostcodeTooltip } from "./PostcodeTooltip.tsx";
 import { createRoot } from "react-dom/client";
+
+const REACHABLE_COLOR = "#4ade80"; // green-400
+const BORDER_COLOR = "#555";
 
 interface Props {
   data: PostcodeCollection;
@@ -21,29 +24,25 @@ export function DistrictLayer({ data }: Props) {
 
   const getStyle = useCallback(
     (postcodeId: string): L.PathOptions => {
-      const score = scores.get(postcodeId);
-
       if (!hasScores) {
-        // No filters active - border only, transparent fill
         return {
           fillColor: "transparent",
           fillOpacity: 0,
-          color: "#555",
+          color: BORDER_COLOR,
           weight: 1.5,
           opacity: 0.7,
         };
       }
 
-      const fillColor = score
-        ? scoreToColor(score.combined, score.pass)
-        : DEFAULT_COLOR;
+      const score = scores.get(postcodeId);
+      const pass = score?.pass ?? false;
 
       return {
-        fillColor,
-        fillOpacity: 0.6,
-        color: "#666",
+        fillColor: pass ? REACHABLE_COLOR : GREYED_COLOR,
+        fillOpacity: pass ? 0.45 : 0.5,
+        color: BORDER_COLOR,
         weight: 1,
-        opacity: 0.8,
+        opacity: 0.7,
       };
     },
     [scores, hasScores],
@@ -57,10 +56,11 @@ export function DistrictLayer({ data }: Props) {
       pathLayer.on({
         mouseover: (e: L.LeafletMouseEvent) => {
           const target = e.target as L.Path;
-          target.setStyle({ weight: 3, color: "#333" });
+          // Only change border on hover, keep the fill intact
+          const current = getStyle(id);
+          target.setStyle({ ...current, weight: 3, color: "#333" });
           target.bringToFront();
 
-          // Show tooltip
           const container = document.createElement("div");
           const root = createRoot(container);
           root.render(<PostcodeTooltip postcodeId={id} />);

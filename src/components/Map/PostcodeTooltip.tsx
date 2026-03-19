@@ -20,12 +20,7 @@ export function PostcodeTooltip({ postcodeId }: Props) {
       {score && (
         <div className="space-y-0.5">
           {!score.pass && (
-            <div className="text-red-600 text-xs">Filtered out</div>
-          )}
-          {score.pass && score.combined > 0 && (
-            <div className="text-xs text-text-muted">
-              Score: {(score.combined * 100).toFixed(0)}%
-            </div>
+            <div className="text-red-600 text-xs">Not reachable</div>
           )}
           {filters
             .filter((f) => f.enabled)

@@ -4,8 +4,9 @@ import L from "leaflet";
 import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
 
 /**
- * Loads the precomputed London boundary and draws a mask that
- * greys out everything outside London.
+ * Loads the precomputed London boundary and draws a solid white mask
+ * over everything outside London. Uses a custom pane so it stays
+ * rendered across zoom levels.
  */
 export function LondonMask() {
   const map = useMap();
@@ -21,6 +22,14 @@ export function LondonMask() {
   useEffect(() => {
     if (!boundary || boundary.features.length === 0) return;
 
+    // Create a custom pane that sits between the tile layer and overlays
+    // so the mask doesn't interfere with polygon hover events
+    if (!map.getPane("maskPane")) {
+      const pane = map.createPane("maskPane");
+      pane.style.zIndex = "350"; // between tiles (200) and overlays (400)
+      pane.style.pointerEvents = "none";
+    }
+
     const geom = boundary.features[0].geometry as Polygon | MultiPolygon;
 
     // World bounds as outer ring (lat, lng for Leaflet)
@@ -31,7 +40,7 @@ export function LondonMask() {
       [90, -180],
     ];
 
-    // Extract London outer rings as holes (GeoJSON is [lng, lat], Leaflet is [lat, lng])
+    // Extract London outer rings as holes (GeoJSON [lng,lat] -> Leaflet [lat,lng])
     const londonRings: [number, number][][] = [];
     if (geom.type === "Polygon") {
       londonRings.push(
@@ -47,9 +56,10 @@ export function LondonMask() {
 
     const mask = L.polygon([worldBounds, ...londonRings], {
       color: "none",
-      fillColor: "#f0f0f0",
-      fillOpacity: 0.85,
+      fillColor: "#ffffff",
+      fillOpacity: 1,
       interactive: false,
+      pane: "maskPane",
     });
 
     mask.addTo(map);

@@ -8,10 +8,10 @@ import { Legend } from "./Legend.tsx";
 import { usePostcodeBoundaries } from "../../hooks/usePostcodeBoundaries.ts";
 import "leaflet/dist/leaflet.css";
 
-// Lock the map to Greater London area
+// Generous bounds around London - allows panning but keeps London in view
 const LONDON_BOUNDS = L.latLngBounds(
-  L.latLng(51.2, -0.6),  // SW corner
-  L.latLng(51.75, 0.4),  // NE corner
+  L.latLng(51.0, -1.0),  // SW corner
+  L.latLng(52.0, 0.8),   // NE corner
 );
 
 export function MapView() {
@@ -28,7 +28,7 @@ export function MapView() {
         preferCanvas={true}
         zoomControl={true}
         maxZoom={16}
-        minZoom={10}
+        minZoom={9}
         maxBounds={LONDON_BOUNDS}
         maxBoundsViscosity={1.0}
       >
