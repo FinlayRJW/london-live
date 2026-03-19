@@ -8,10 +8,7 @@ import { PropertyLayer } from "./PropertyLayer.tsx";
 import { AmenityLayer } from "./AmenityLayer.tsx";
 import { ZoomController } from "./ZoomController.tsx";
 import { LondonMask } from "./LondonMask.tsx";
-import { Legend } from "./Legend.tsx";
-import { RouteLegend } from "./RouteLegend.tsx";
-import { PropertyLegend } from "./PropertyLegend.tsx";
-import { AmenityLegend } from "./AmenityLegend.tsx";
+import { LegendStack } from "./LegendStack.tsx";
 import { CommuteMarkers } from "./CommuteMarkers.tsx";
 import { usePostcodeBoundaries } from "../../hooks/usePostcodeBoundaries.ts";
 import "leaflet/dist/leaflet.css";
@@ -75,12 +72,7 @@ export function MapView() {
         <PropertyLayer />
         <AmenityLayer />
       </LeafletMap>
-      <div className="absolute bottom-6 right-3 z-[1000] flex flex-col items-end gap-2">
-        <RouteLegend />
-        <AmenityLegend />
-        <PropertyLegend />
-        <Legend />
-      </div>
+      <LegendStack />
       {isLoading && (
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] bg-overlay-bg/95 rounded-lg shadow px-3 py-1 text-sm text-text-muted">
           Loading boundaries...

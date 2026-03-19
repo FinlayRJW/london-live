@@ -23,11 +23,13 @@ interface MapState {
   activeLevel: PostcodeLevel;
   theme: Theme;
   sidebarCollapsed: boolean;
+  bottomSheetOpen: boolean;
   setCenter: (center: [number, number]) => void;
   setZoom: (zoom: number) => void;
   setActiveLevel: (level: PostcodeLevel) => void;
   setTheme: (theme: Theme) => void;
   toggleSidebar: () => void;
+  setBottomSheetOpen: (open: boolean) => void;
 }
 
 const DISTRICT_TO_SECTOR_ZOOM = 13;
@@ -58,6 +60,7 @@ export const useMapStore = create<MapState>((set) => ({
   activeLevel: "district",
   theme: initialTheme,
   sidebarCollapsed: loadSidebarCollapsed(),
+  bottomSheetOpen: false,
   setCenter: (center) => set({ center }),
   setZoom: (zoom) =>
     set((state) => {
@@ -81,4 +84,5 @@ export const useMapStore = create<MapState>((set) => ({
       localStorage.setItem("sidebarCollapsed", String(next));
       return { sidebarCollapsed: next };
     }),
+  setBottomSheetOpen: (open) => set({ bottomSheetOpen: open }),
 }));

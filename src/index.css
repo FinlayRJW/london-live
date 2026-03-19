@@ -56,3 +56,35 @@ html, body, #root {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
+
+/* Background scroll lock when bottom sheet is open */
+body.sheet-open {
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Mobile: larger slider thumbs for touch targets */
+@media (max-width: 767px) {
+  .dual-range-thumb::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+  }
+  .dual-range-thumb::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Adjust Leaflet zoom controls on mobile/tablet */
+@media (max-width: 1024px) {
+  .leaflet-top.leaflet-left {
+    top: 8px;
+    left: 8px;
+  }
+  .leaflet-control-zoom a {
+    width: 36px !important;
+    height: 36px !important;
+    line-height: 36px !important;
+    font-size: 18px !important;
+  }
+}

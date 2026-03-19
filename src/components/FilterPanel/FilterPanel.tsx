@@ -1,60 +1,28 @@
-import { useFilterStore } from "../../stores/filterStore.ts";
-import { useScoreStore } from "../../stores/scoreStore.ts";
 import { useMapStore } from "../../stores/mapStore.ts";
-import { FilterCard } from "./FilterCard.tsx";
-import { AddFilterButton } from "./AddFilterButton.tsx";
 import { ThemeToggle } from "./ThemeToggle.tsx";
+import { FilterPanelContent } from "./FilterPanelContent.tsx";
 
 export function FilterPanel() {
-  const filters = useFilterStore((s) => s.filters);
-  const isComputing = useScoreStore((s) => s.isComputing);
   const toggleSidebar = useMapStore((s) => s.toggleSidebar);
 
   return (
     <div className="w-80 h-full bg-sidebar-bg border-r border-border flex flex-col overflow-hidden shrink-0">
-      <div className="p-4 border-b border-border flex items-center gap-2">
-        <div className="flex-1 min-w-0">
-          <h1 className="text-lg font-bold text-text">London Living Finder</h1>
-          <p className="text-xs text-text-muted mt-1">
-            Add filters to find your ideal area
-          </p>
-        </div>
-        <ThemeToggle />
-        <button
-          onClick={toggleSidebar}
-          className="w-8 h-8 flex items-center justify-center rounded hover:bg-hover-bg text-text-muted shrink-0"
-          title="Collapse sidebar"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {filters.length === 0 && (
-          <div className="text-sm text-text-muted text-center py-8">
-            No filters active.
-            <br />
-            Add a filter to get started.
-          </div>
-        )}
-
-        {filters.map((filter) => (
-          <FilterCard key={filter.id} filter={filter} />
-        ))}
-      </div>
-
-      <div className="p-4 border-t border-border">
-        <div className="h-4 mb-1">
-          {isComputing && (
-            <div className="text-xs text-text-muted text-center animate-pulse">
-              Computing scores...
-            </div>
-          )}
-        </div>
-        <AddFilterButton />
-      </div>
+      <FilterPanelContent
+        headerAction={
+          <>
+            <ThemeToggle />
+            <button
+              onClick={toggleSidebar}
+              className="w-8 h-8 flex items-center justify-center rounded hover:bg-hover-bg text-text-muted shrink-0"
+              title="Collapse sidebar"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          </>
+        }
+      />
     </div>
   );
 }
