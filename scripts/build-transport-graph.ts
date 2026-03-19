@@ -82,6 +82,7 @@ const LINE_SPEED_KMH: Record<string, number> = {
   overground: 40,
   dlr: 30,
   elizabeth_line: 45,
+  national_rail: 50,
 };
 
 /**
@@ -431,12 +432,29 @@ async function main() {
     "windrush": "overground",
     "weaver": "overground",
     "liberty": "overground",
-    // National Rail that TfL has route data for
-    "southern": "overground",
-    "thameslink": "overground",
-    "southeastern": "overground",
-    "great-northern": "overground",
+    // National Rail operators (auto-discovered lines added below)
+    "southern": "national_rail",
+    "thameslink": "national_rail",
+    "southeastern": "national_rail",
+    "great-northern": "national_rail",
   };
+
+  // Auto-discover all National Rail lines from TfL API and add any not already listed
+  console.log("Discovering National Rail lines from TfL API...");
+  try {
+    const nrRes = await fetch("https://api.tfl.gov.uk/Line/Mode/national-rail");
+    if (nrRes.ok) {
+      const nrLines: { id: string }[] = await nrRes.json();
+      for (const line of nrLines) {
+        if (!(line.id in KNOWN_RAIL_LINES)) {
+          KNOWN_RAIL_LINES[line.id] = "national_rail";
+        }
+      }
+      console.log(`  Found ${nrLines.length} National Rail lines (${Object.values(KNOWN_RAIL_LINES).filter(m => m === "national_rail").length} total NR entries)`);
+    }
+  } catch (e) {
+    console.warn("  Warning: could not fetch National Rail lines:", e);
+  }
 
   // Only fetch route sequences for known rail lines
   const allLines = new Set(stations.flatMap((s) => s.lines));

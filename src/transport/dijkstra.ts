@@ -280,5 +280,5 @@ export function getPostcodeTimes(
 }
 
 export function isRailMode(mode: TransportMode): boolean {
-  return mode === "tube" || mode === "overground" || mode === "dlr" || mode === "elizabeth_line";
+  return mode === "tube" || mode === "overground" || mode === "dlr" || mode === "elizabeth_line" || mode === "national_rail";
 }

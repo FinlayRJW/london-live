@@ -35,6 +35,7 @@ const FALLBACK_OVERGROUND = "#EE7C0E";
 const DLR_COLOR = "#00A4A7";
 const ELIZABETH_COLOR = "#6950A1";
 const BUS_COLOR = "#CE312D";
+const NATIONAL_RAIL_COLOR = "#1D3A6B";
 const WALKING_COLOR = "#666";
 
 function getSegmentColor(mode: TransportMode, line?: string): string {
@@ -46,6 +47,7 @@ function getSegmentColor(mode: TransportMode, line?: string): string {
   }
   if (mode === "dlr") return DLR_COLOR;
   if (mode === "elizabeth_line") return ELIZABETH_COLOR;
+  if (mode === "national_rail") return NATIONAL_RAIL_COLOR;
   if (mode === "bus") return BUS_COLOR;
   if (mode === "walking") return WALKING_COLOR;
   return "#999";

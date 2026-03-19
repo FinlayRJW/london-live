@@ -20,6 +20,7 @@ const OTHER_MODES = [
   { name: "DLR", color: "#00A4A7", dashed: false },
   { name: "Elizabeth", color: "#6950A1", dashed: false },
   { name: "Overground", color: "#EE7C0E", dashed: false },
+  { name: "National Rail", color: "#1D3A6B", dashed: false },
   { name: "Bus", color: "#CE312D", dashed: true },
   { name: "Walking", color: "#666", dashed: true },
 ];

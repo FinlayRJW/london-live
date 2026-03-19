@@ -218,7 +218,7 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
       maxTimeMinutes: 45,
       maxChanges: 99,
       travelMethod: "public_transport",
-      allowedModes: ["tube", "overground", "dlr", "elizabeth_line"],
+      allowedModes: ["tube", "overground", "dlr", "elizabeth_line", "national_rail"],
       maxBusRides: 0,
       maxBusTimeMinutes: 10,
       showRoute: false,

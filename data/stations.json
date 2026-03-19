@@ -4666,11 +4666,12 @@
     "lat": 51.412153,
     "lng": -0.065886,
     "lines": [
-      "windrush",
-      "southern"
+      "southern",
+      "windrush"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4679,11 +4680,12 @@
     "lat": 51.539495,
     "lng": 0.080903,
     "lines": [
-      "suffragette",
-      "c2c"
+      "c2c",
+      "suffragette"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4753,11 +4755,12 @@
     "lat": 51.464649,
     "lng": -0.037537,
     "lines": [
-      "windrush",
-      "southern"
+      "southern",
+      "windrush"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4770,7 +4773,8 @@
       "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4783,7 +4787,8 @@
       "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4795,7 +4800,8 @@
       "west-midlands-trains"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4816,11 +4822,12 @@
     "lat": 51.531973,
     "lng": -0.057279,
     "lines": [
-      "weaver",
-      "greater-anglia"
+      "greater-anglia",
+      "weaver"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4841,11 +4848,12 @@
     "lat": 51.561644,
     "lng": -0.057025,
     "lines": [
-      "weaver",
-      "greater-anglia"
+      "greater-anglia",
+      "weaver"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4896,7 +4904,8 @@
       "south-western-railway"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4929,8 +4938,8 @@
     "lat": 51.548732,
     "lng": -0.092191,
     "lines": [
-      "mildmay",
       "windrush",
+      "mildmay",
       "236"
     ],
     "modes": [
@@ -4971,7 +4980,8 @@
       "windrush"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4980,11 +4990,12 @@
     "lat": 51.474949,
     "lng": -0.182823,
     "lines": [
-      "mildmay",
-      "southern"
+      "southern",
+      "mildmay"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -4993,15 +5004,15 @@
     "lat": 51.546116,
     "lng": -0.075137,
     "lines": [
-      "76",
-      "243",
-      "149",
-      "n242",
-      "242",
+      "windrush",
       "67",
-      "277",
       "488",
-      "windrush"
+      "277",
+      "149",
+      "242",
+      "243",
+      "76",
+      "n242"
     ],
     "modes": [
       "overground"
@@ -5030,7 +5041,8 @@
       "windrush"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5043,7 +5055,8 @@
       "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5076,12 +5089,13 @@
     "lat": 51.528136,
     "lng": -0.133924,
     "lines": [
-      "avanti-west-coast",
+      "west-midlands-trains",
       "lioness",
-      "west-midlands-trains"
+      "avanti-west-coast"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5106,7 +5120,8 @@
       "southern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5176,11 +5191,12 @@
     "lat": 51.548757,
     "lng": -0.060819,
     "lines": [
-      "greater-anglia",
-      "weaver"
+      "weaver",
+      "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5214,11 +5230,12 @@
     "lng": -0.103764,
     "lines": [
       "great-northern",
-      "mildmay",
-      "windrush"
+      "windrush",
+      "mildmay"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5267,7 +5284,8 @@
       "windrush"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5300,12 +5318,13 @@
     "lat": 51.592169,
     "lng": -0.334571,
     "lines": [
-      "west-midlands-trains",
       "lioness",
-      "southern"
+      "southern",
+      "west-midlands-trains"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5330,7 +5349,8 @@
       "southern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5423,14 +5443,15 @@
     "lat": 51.517991,
     "lng": -0.081426,
     "lines": [
-      "greater-anglia",
       "c2c",
       "weaver",
+      "greater-anglia",
       "elizabeth"
     ],
     "modes": [
       "overground",
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -5439,11 +5460,12 @@
     "lat": 51.541153,
     "lng": -0.057753,
     "lines": [
-      "greater-anglia",
-      "weaver"
+      "weaver",
+      "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5468,7 +5490,8 @@
       "windrush"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5478,12 +5501,13 @@
     "lng": -0.075221,
     "lines": [
       "windrush",
-      "southern",
       "southeastern",
-      "thameslink"
+      "thameslink",
+      "southern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5492,11 +5516,12 @@
     "lat": 51.476344,
     "lng": -0.032441,
     "lines": [
-      "southeastern",
-      "windrush"
+      "windrush",
+      "southeastern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5521,7 +5546,8 @@
       "southern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5531,12 +5557,13 @@
     "lng": -0.069414,
     "lines": [
       "windrush",
-      "southern",
+      "thameslink",
       "southeastern",
-      "thameslink"
+      "southern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5545,11 +5572,12 @@
     "lat": 51.417555,
     "lng": -0.06084,
     "lines": [
-      "southern",
-      "windrush"
+      "windrush",
+      "southern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5574,7 +5602,8 @@
       "weaver"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5583,11 +5612,12 @@
     "lat": 51.463061,
     "lng": -0.301558,
     "lines": [
-      "mildmay",
-      "south-western-railway"
+      "south-western-railway",
+      "mildmay"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5596,13 +5626,14 @@
     "lat": 51.574829,
     "lng": 0.183237,
     "lines": [
-      "greater-anglia",
       "liberty",
+      "greater-anglia",
       "elizabeth"
     ],
     "modes": [
       "overground",
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -5639,7 +5670,8 @@
       "weaver"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5652,7 +5684,8 @@
       "weaver"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5689,7 +5722,8 @@
       "southern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5710,11 +5744,12 @@
     "lat": 51.614688,
     "lng": -0.06724,
     "lines": [
-      "greater-anglia",
-      "weaver"
+      "weaver",
+      "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5735,14 +5770,15 @@
     "lat": 51.541895,
     "lng": -0.003397,
     "lines": [
-      "elizabeth",
       "greater-anglia",
+      "elizabeth",
       "mildmay",
       "c2c"
     ],
     "modes": [
       "overground",
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -5763,11 +5799,12 @@
     "lat": 51.565233,
     "lng": -0.072887,
     "lines": [
-      "greater-anglia",
-      "weaver"
+      "weaver",
+      "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5780,7 +5817,8 @@
       "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5829,7 +5867,8 @@
       "southern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5838,11 +5877,12 @@
     "lat": 51.692457,
     "lng": -0.034831,
     "lines": [
-      "greater-anglia",
-      "weaver"
+      "weaver",
+      "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5851,11 +5891,12 @@
     "lat": 51.672628,
     "lng": -0.047217,
     "lines": [
-      "greater-anglia",
-      "weaver"
+      "weaver",
+      "greater-anglia"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5868,7 +5909,8 @@
       "c2c"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5918,7 +5960,8 @@
       "avanti-west-coast"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5939,11 +5982,12 @@
     "lat": 51.487061,
     "lng": -0.195593,
     "lines": [
-      "southern",
-      "mildmay"
+      "mildmay",
+      "southern"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -5964,11 +6008,12 @@
     "lat": 51.378428,
     "lng": -0.102585,
     "lines": [
-      "windrush",
-      "southern"
+      "southern",
+      "windrush"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -6005,7 +6050,8 @@
       "weaver"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -6067,7 +6113,8 @@
       "lioness"
     ],
     "modes": [
-      "overground"
+      "overground",
+      "national_rail"
     ]
   },
   {
@@ -6100,9 +6147,9 @@
     "lat": 51.645582,
     "lng": -0.384752,
     "lines": [
-      "lioness",
       "142",
       "258",
+      "lioness",
       "west-midlands-trains"
     ],
     "modes": [
@@ -6115,28 +6162,28 @@
     "lat": 51.463724,
     "lng": -0.168997,
     "lines": [
-      "345",
-      "g1",
-      "639",
-      "mildmay",
-      "south-western-railway",
-      "n31",
-      "295",
-      "219",
-      "319",
-      "37",
-      "170",
-      "35",
-      "77",
-      "49",
       "windrush",
-      "670",
+      "170",
+      "n19",
       "c3",
       "344",
+      "345",
+      "35",
+      "295",
+      "319",
+      "49",
       "39",
+      "670",
+      "639",
+      "n31",
+      "219",
+      "77",
+      "g1",
+      "337",
+      "37",
+      "south-western-railway",
       "southern",
-      "n19",
-      "337"
+      "mildmay"
     ],
     "modes": [
       "overground"
@@ -6174,10 +6221,10 @@
     "lat": 51.39702,
     "lng": -0.075216,
     "lines": [
-      "windrush",
+      "southern",
       "thameslink",
-      "southeastern",
-      "southern"
+      "windrush",
+      "southeastern"
     ],
     "modes": [
       "overground"
@@ -6189,8 +6236,8 @@
     "lat": 51.476347,
     "lng": -0.032427,
     "lines": [
-      "southeastern",
-      "windrush"
+      "windrush",
+      "southeastern"
     ],
     "modes": [
       "overground"
@@ -6202,8 +6249,8 @@
     "lat": 51.475132,
     "lng": -0.040399,
     "lines": [
-      "southern",
-      "windrush"
+      "windrush",
+      "southern"
     ],
     "modes": [
       "overground"
@@ -6215,8 +6262,8 @@
     "lat": 51.511492,
     "lng": -0.056782,
     "lines": [
-      "windrush",
-      "dlr"
+      "dlr",
+      "windrush"
     ],
     "modes": [
       "overground",
@@ -6229,11 +6276,11 @@
     "lat": 51.427375,
     "lng": -0.055268,
     "lines": [
+      "windrush",
+      "southern",
+      "202",
       "176",
       "197",
-      "windrush",
-      "202",
-      "southern",
       "122"
     ],
     "modes": [
@@ -6246,32 +6293,32 @@
     "lat": 51.378786,
     "lng": -0.101939,
     "lines": [
-      "southern",
-      "367",
-      "645",
-      "407",
-      "75",
-      "450",
+      "tram",
       "windrush",
-      "264",
-      "64",
-      "194",
-      "410",
-      "n109",
+      "southern",
+      "sl7",
       "403",
-      "250",
+      "689",
       "166",
       "154",
-      "tram",
-      "109",
+      "194",
       "157",
-      "n250",
-      "sl7",
-      "289",
-      "60",
+      "75",
+      "410",
+      "450",
+      "367",
       "sl6",
-      "689",
-      "198"
+      "407",
+      "645",
+      "264",
+      "n250",
+      "n109",
+      "60",
+      "64",
+      "109",
+      "198",
+      "289",
+      "250"
     ],
     "modes": [
       "overground"
@@ -6283,10 +6330,10 @@
     "lat": 51.663908,
     "lng": -0.395928,
     "lines": [
-      "avanti-west-coast",
-      "southern",
       "lioness",
-      "west-midlands-trains"
+      "avanti-west-coast",
+      "west-midlands-trains",
+      "southern"
     ],
     "modes": [
       "overground"
@@ -6478,10 +6525,10 @@
     "lat": 51.509359,
     "lng": -0.002326,
     "lines": [
-      "d3",
       "dlr",
-      "n550",
-      "sl4"
+      "sl4",
+      "d3",
+      "n550"
     ],
     "modes": [
       "dlr"
@@ -6625,10 +6672,10 @@
     "lat": 51.502212,
     "lng": 0.032115,
     "lines": [
+      "dlr",
       "129",
       "241",
-      "330",
-      "dlr"
+      "330"
     ],
     "modes": [
       "dlr"
@@ -6760,9 +6807,9 @@
     "lat": 51.520786,
     "lng": 0.004156,
     "lines": [
+      "dlr",
       "276",
-      "323",
-      "dlr"
+      "323"
     ],
     "modes": [
       "dlr"
@@ -6846,8 +6893,8 @@
     "lat": 51.518757,
     "lng": 0.027418,
     "lines": [
-      "dlr",
-      "elizabeth"
+      "elizabeth",
+      "dlr"
     ],
     "modes": [
       "dlr",
@@ -6873,8 +6920,8 @@
     "lng": -0.014096,
     "lines": [
       "dlr",
-      "southeastern",
-      "thameslink"
+      "thameslink",
+      "southeastern"
     ],
     "modes": [
       "dlr"
@@ -6950,9 +6997,9 @@
     "lat": 51.489962,
     "lng": 0.06917,
     "lines": [
-      "dlr",
       "southeastern",
-      "thameslink"
+      "thameslink",
+      "dlr"
     ],
     "modes": [
       "dlr"
@@ -6980,7 +7027,8 @@
       "great-western-railway"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7049,11 +7097,12 @@
     "lat": 51.514841,
     "lng": -0.301752,
     "lines": [
-      "elizabeth",
-      "great-western-railway"
+      "great-western-railway",
+      "elizabeth"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7086,11 +7135,12 @@
     "lat": 51.581904,
     "lng": 0.205964,
     "lines": [
-      "elizabeth",
-      "greater-anglia"
+      "greater-anglia",
+      "elizabeth"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7127,7 +7177,8 @@
       "great-western-railway"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7152,7 +7203,8 @@
       "heathrow-express"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7177,7 +7229,8 @@
       "heathrow-express"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7186,11 +7239,12 @@
     "lat": 51.559118,
     "lng": 0.06968,
     "lines": [
-      "elizabeth",
-      "greater-anglia"
+      "greater-anglia",
+      "elizabeth"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7199,11 +7253,12 @@
     "lat": 51.508503,
     "lng": -0.506726,
     "lines": [
-      "elizabeth",
-      "great-western-railway"
+      "great-western-railway",
+      "elizabeth"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7261,11 +7316,12 @@
     "lng": -0.176174,
     "lines": [
       "elizabeth",
-      "great-western-railway",
-      "heathrow-express"
+      "heathrow-express",
+      "great-western-railway"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7274,11 +7330,12 @@
     "lat": 51.630877,
     "lng": 0.329851,
     "lines": [
-      "elizabeth",
-      "greater-anglia"
+      "greater-anglia",
+      "elizabeth"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7287,11 +7344,12 @@
     "lat": 51.505957,
     "lng": -0.37861,
     "lines": [
-      "elizabeth",
-      "great-western-railway"
+      "great-western-railway",
+      "elizabeth"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7304,7 +7362,8 @@
       "greater-anglia"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7341,7 +7400,8 @@
       "great-western-railway"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7354,7 +7414,8 @@
       "great-western-railway"
     ],
     "modes": [
-      "elizabeth_line"
+      "elizabeth_line",
+      "national_rail"
     ]
   },
   {
@@ -7363,26 +7424,26 @@
     "lat": 51.492168,
     "lng": 0.070593,
     "lines": [
-      "122",
-      "161",
-      "177",
-      "180",
-      "244",
-      "291",
-      "301",
-      "380",
-      "422",
-      "469",
-      "53",
-      "54",
-      "672",
-      "96",
-      "99",
-      "elizabeth",
       "n1",
       "n472",
+      "sl11",
+      "99",
+      "301",
+      "672",
+      "96",
+      "469",
+      "422",
+      "380",
+      "244",
+      "177",
+      "180",
+      "122",
+      "291",
+      "53",
+      "54",
       "n53",
-      "sl11"
+      "161",
+      "elizabeth"
     ],
     "modes": [
       "elizabeth_line"
@@ -7394,12 +7455,3526 @@
     "lat": 51.491247,
     "lng": 0.121057,
     "lines": [
-      "elizabeth",
+      "southeastern",
+      "thameslink",
+      "elizabeth"
+    ],
+    "modes": [
+      "elizabeth_line"
+    ]
+  },
+  {
+    "id": "910GCHADHDD",
+    "name": "Chafford Hundred",
+    "lat": 51.485557,
+    "lng": 0.287447,
+    "lines": [
+      "370",
+      "372",
+      "c2c"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GDGNHMDC",
+    "name": "Dagenham Dock",
+    "lat": 51.52624,
+    "lng": 0.14666,
+    "lines": [
+      "c2c"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GFENCHRS",
+    "name": "London Fenchurch Street",
+    "lat": 51.511646,
+    "lng": -0.078897,
+    "lines": [
+      "c2c"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GGRAYS",
+    "name": "Grays",
+    "lat": 51.476248,
+    "lng": 0.321832,
+    "lines": [
+      "c2c"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLIMHSE",
+    "name": "Limehouse",
+    "lat": 51.512537,
+    "lng": -0.039803,
+    "lines": [
+      "c2c"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GOCKENDN",
+    "name": "Ockendon",
+    "lat": 51.521992,
+    "lng": 0.290469,
+    "lines": [
+      "c2c"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPURFLET",
+    "name": "Purfleet",
+    "lat": 51.481013,
+    "lng": 0.236767,
+    "lines": [
+      "c2c"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GRNHAME",
+    "name": "Rainham (London)",
+    "lat": 51.516723,
+    "lng": 0.190634,
+    "lines": [
+      "c2c"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWHAMHL",
+    "name": "West Ham",
+    "lat": 51.528489,
+    "lng": 0.005431,
+    "lines": [
+      "c2c"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHRW",
+    "name": "Chorleywood",
+    "lat": 51.654249,
+    "lng": -0.51832,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GDENHAM",
+    "name": "Denham",
+    "lat": 51.578837,
+    "lng": -0.497437,
+    "lines": [
+      "331",
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GDENHMGC",
+    "name": "Denham Golf Club",
+    "lat": 51.580598,
+    "lng": -0.517787,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHAROOTH",
+    "name": "Harrow-on-the-Hill",
+    "lat": 51.579186,
+    "lng": -0.337225,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMARYLBN",
+    "name": "London Marylebone",
+    "lat": 51.522524,
+    "lng": -0.162911,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNTHOLTP",
+    "name": "Northolt Park",
+    "lat": 51.55754,
+    "lng": -0.359466,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GRCKMNSW",
+    "name": "Rickmansworth",
+    "lat": 51.640247,
+    "lng": -0.473282,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSDBRYHH",
+    "name": "Sudbury Hill Harrow",
+    "lat": 51.558465,
+    "lng": -0.335803,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSDBRYHR",
+    "name": "Sudbury & Harrow Road",
+    "lat": 51.554398,
+    "lng": -0.315468,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSRUISLP",
+    "name": "South Ruislip",
+    "lat": 51.55692,
+    "lng": -0.399259,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWEMBLSM",
+    "name": "Wembley Stadium",
+    "lat": 51.554416,
+    "lng": -0.285608,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWRUISLP",
+    "name": "West Ruislip",
+    "lat": 51.569758,
+    "lng": -0.437768,
+    "lines": [
+      "chiltern-railways"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKNTSHTN",
+    "name": "Kentish Town",
+    "lat": 51.550495,
+    "lng": -0.140365,
+    "lines": [
+      "east-midlands-railway",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTPX",
+    "name": "London St Pancras International",
+    "lat": 51.53239,
+    "lng": -0.127189,
+    "lines": [
+      "east-midlands-railway",
+      "hull-trains",
       "southeastern",
       "thameslink"
     ],
     "modes": [
-      "elizabeth_line"
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GECROYDN",
+    "name": "East Croydon",
+    "lat": 51.375454,
+    "lng": -0.09278,
+    "lines": [
+      "gatwick-express",
+      "southeastern",
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSCROYDN",
+    "name": "South Croydon",
+    "lat": 51.362965,
+    "lng": -0.093457,
+    "lines": [
+      "gatwick-express",
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GVICTRIC",
+    "name": "London Victoria",
+    "lat": 51.495257,
+    "lng": -0.144559,
+    "lines": [
+      "gatwick-express",
+      "southeastern",
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKNGX",
+    "name": "London King's Cross",
+    "lat": 51.530883,
+    "lng": -0.122926,
+    "lines": [
+      "grand-central",
+      "great-northern",
+      "hull-trains",
+      "london-north-eastern-railway",
+      "lumo",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBRIMSDN",
+    "name": "Brimsdown",
+    "lat": 51.655583,
+    "lng": -0.030817,
+    "lines": [
+      "greater-anglia"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GENFLDLK",
+    "name": "Enfield Lock",
+    "lat": 51.670922,
+    "lng": -0.028532,
+    "lines": [
+      "greater-anglia"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLEABDGE",
+    "name": "Lea Bridge",
+    "lat": 51.566548,
+    "lng": -0.036673,
+    "lines": [
+      "55",
+      "56",
+      "greater-anglia",
+      "n38",
+      "n55"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMWRWSTN",
+    "name": "Meridian Water",
+    "lat": 51.610102,
+    "lng": -0.050898,
+    "lines": [
+      "192",
+      "341",
+      "greater-anglia"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNMBRLPK",
+    "name": "Northumberland Park",
+    "lat": 51.601969,
+    "lng": -0.053932,
+    "lines": [
+      "greater-anglia"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPNDRSEN",
+    "name": "Ponders End",
+    "lat": 51.642256,
+    "lng": -0.03508,
+    "lines": [
+      "greater-anglia"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTTNHMHL",
+    "name": "Tottenham Hale",
+    "lat": 51.58831,
+    "lng": -0.059929,
+    "lines": [
+      "greater-anglia"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWALHAMX",
+    "name": "Waltham Cross",
+    "lat": 51.685061,
+    "lng": -0.026558,
+    "lines": [
+      "greater-anglia"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GALEXNDP",
+    "name": "Alexandra Palace",
+    "lat": 51.597924,
+    "lng": -0.120235,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBOWESPK",
+    "name": "Bowes Park",
+    "lat": 51.607012,
+    "lng": -0.120582,
+    "lines": [
+      "great-northern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCRHL",
+    "name": "Crews Hill",
+    "lat": 51.684486,
+    "lng": -0.106887,
+    "lines": [
+      "great-northern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GDRYP",
+    "name": "Drayton Park",
+    "lat": 51.55277,
+    "lng": -0.105509,
+    "lines": [
+      "great-northern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GENFC",
+    "name": "Enfield Chase",
+    "lat": 51.653254,
+    "lng": -0.090696,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GESSEXRD",
+    "name": "Essex Road",
+    "lat": 51.540705,
+    "lng": -0.096276,
+    "lines": [
+      "great-northern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GFNPK",
+    "name": "Finsbury Park",
+    "lat": 51.564302,
+    "lng": -0.106285,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GGORDONH",
+    "name": "Gordon Hill",
+    "lat": 51.663335,
+    "lng": -0.09461,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GGRPK",
+    "name": "Grange Park",
+    "lat": 51.642607,
+    "lng": -0.097358,
+    "lines": [
+      "great-northern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHADLYWD",
+    "name": "Hadley Wood",
+    "lat": 51.668497,
+    "lng": -0.176172,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHRGY",
+    "name": "Harringay",
+    "lat": 51.577358,
+    "lng": -0.105136,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHRNSY",
+    "name": "Hornsey",
+    "lat": 51.586461,
+    "lng": -0.111975,
+    "lines": [
+      "great-northern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMRGT",
+    "name": "Moorgate",
+    "lat": 51.518491,
+    "lng": -0.088943,
+    "lines": [
+      "great-northern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNBARNET",
+    "name": "New Barnet",
+    "lat": 51.648575,
+    "lng": -0.172997,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNEWSGAT",
+    "name": "New Southgate",
+    "lat": 51.614114,
+    "lng": -0.143038,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GOKLGHPK",
+    "name": "Oakleigh Park",
+    "lat": 51.637678,
+    "lng": -0.166209,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GOLDST",
+    "name": "Old Street",
+    "lat": 51.525832,
+    "lng": -0.088535,
+    "lines": [
+      "great-northern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPALMRSG",
+    "name": "Palmers Green",
+    "lat": 51.618314,
+    "lng": -0.110437,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPOTRSBR",
+    "name": "Potters Bar",
+    "lat": 51.697067,
+    "lng": -0.192605,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWNMHILL",
+    "name": "Winchmore Hill",
+    "lat": 51.633942,
+    "lng": -0.1009,
+    "lines": [
+      "great-northern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCBARPAR",
+    "name": "Castle Bar Park",
+    "lat": 51.522931,
+    "lng": -0.331549,
+    "lines": [
+      "great-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GDRAYGRN",
+    "name": "Drayton Green",
+    "lat": 51.516617,
+    "lng": -0.330194,
+    "lines": [
+      "e1",
+      "e11",
+      "great-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GGFORD",
+    "name": "Greenford",
+    "lat": 51.542331,
+    "lng": -0.345837,
+    "lines": [
+      "great-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSGFORD",
+    "name": "South Greenford",
+    "lat": 51.533749,
+    "lng": -0.336704,
+    "lines": [
+      "great-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTPXBOX",
+    "name": "London St Pancras International LL",
+    "lat": 51.532168,
+    "lng": -0.127343,
+    "lines": [
+      "hull-trains",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GABWD",
+    "name": "Abbey Wood (London)",
+    "lat": 51.491062,
+    "lng": 0.121394,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GALBNYPK",
+    "name": "Albany Park",
+    "lat": 51.435453,
+    "lng": 0.125737,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBCKNHMH",
+    "name": "Beckenham Hill",
+    "lat": 51.424583,
+    "lng": -0.015951,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBCKNHMJ",
+    "name": "Beckenham Junction",
+    "lat": 51.411035,
+    "lng": -0.025813,
+    "lines": [
+      "162",
+      "354",
+      "54",
+      "southeastern",
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBELNGHM",
+    "name": "Bellingham",
+    "lat": 51.432913,
+    "lng": -0.019331,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBELVEDR",
+    "name": "Belvedere",
+    "lat": 51.492118,
+    "lng": 0.152286,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBEXLEY",
+    "name": "Bexley",
+    "lat": 51.440219,
+    "lng": 0.147903,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBICKLEY",
+    "name": "Bickley",
+    "lat": 51.400104,
+    "lng": 0.045241,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBLFR",
+    "name": "London Blackfriars",
+    "lat": 51.51181,
+    "lng": -0.103332,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBLKHTH",
+    "name": "Blackheath",
+    "lat": 51.465796,
+    "lng": 0.008872,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBORWGAW",
+    "name": "Borough Green & Wrotham",
+    "lat": 51.293219,
+    "lng": 0.306245,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBRIXTON",
+    "name": "Brixton",
+    "lat": 51.463299,
+    "lng": -0.114183,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBRNHRST",
+    "name": "Barnehurst",
+    "lat": 51.464959,
+    "lng": 0.159646,
+    "lines": [
+      "229",
+      "602",
+      "669",
+      "89",
+      "n89",
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBROMLYN",
+    "name": "Bromley North",
+    "lat": 51.408328,
+    "lng": 0.016993,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBROMLYS",
+    "name": "Bromley South",
+    "lat": 51.399976,
+    "lng": 0.017344,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBXLYHTH",
+    "name": "Bexleyheath",
+    "lat": 51.4635,
+    "lng": 0.133735,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCANONST",
+    "name": "London Cannon Street",
+    "lat": 51.511382,
+    "lng": -0.090293,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCATFBDG",
+    "name": "Catford Bridge",
+    "lat": 51.444741,
+    "lng": -0.024791,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCATFORD",
+    "name": "Catford",
+    "lat": 51.444407,
+    "lng": -0.026317,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCFPK",
+    "name": "Crofton Park",
+    "lat": 51.455189,
+    "lng": -0.036503,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHLSFLD",
+    "name": "Chelsfield",
+    "lat": 51.356256,
+    "lng": 0.10907,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHRX",
+    "name": "London Charing Cross",
+    "lat": 51.508027,
+    "lng": -0.124802,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHSLHRS",
+    "name": "Chislehurst",
+    "lat": 51.405557,
+    "lng": 0.057418,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCLOCKHS",
+    "name": "Clock House",
+    "lat": 51.408586,
+    "lng": -0.040657,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCRFD",
+    "name": "Crayford",
+    "lat": 51.44828,
+    "lng": 0.178936,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCRLN",
+    "name": "Charlton",
+    "lat": 51.486813,
+    "lng": 0.031258,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GDARTFD",
+    "name": "Dartford",
+    "lat": 51.447371,
+    "lng": 0.219248,
+    "lines": [
+      "428",
+      "492",
+      "96",
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GDEPTFD",
+    "name": "Deptford",
+    "lat": 51.478848,
+    "lng": -0.02627,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GDTNG",
+    "name": "Dunton Green",
+    "lat": 51.29649,
+    "lng": 0.170937,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GEBSFDOM",
+    "name": "Ebbsfleet International",
+    "lat": 51.442973,
+    "lng": 0.320921,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GEDPK",
+    "name": "Eden Park",
+    "lat": 51.390091,
+    "lng": -0.026355,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GELMERSE",
+    "name": "Elmers End",
+    "lat": 51.398492,
+    "lng": -0.04957,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GELMW",
+    "name": "Elmstead Woods",
+    "lat": 51.417118,
+    "lng": 0.044274,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GELPHNAC",
+    "name": "Elephant & Castle",
+    "lat": 51.494029,
+    "lng": -0.098725,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GELTHAM",
+    "name": "Eltham",
+    "lat": 51.455644,
+    "lng": 0.052472,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GERITH",
+    "name": "Erith",
+    "lat": 51.481671,
+    "lng": 0.175055,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GEYNSFD",
+    "name": "Eynsford",
+    "lat": 51.36272,
+    "lng": 0.204393,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GFALCNWD",
+    "name": "Falconwood",
+    "lat": 51.459154,
+    "lng": 0.079305,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GFRNNGRD",
+    "name": "Farningham Road",
+    "lat": 51.401666,
+    "lng": 0.235452,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GGNHT",
+    "name": "Greenhithe for Bluewater",
+    "lat": 51.450372,
+    "lng": 0.28029,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GGNWH",
+    "name": "Greenwich",
+    "lat": 51.478135,
+    "lng": -0.01334,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GGRVPK",
+    "name": "Grove Park",
+    "lat": 51.430863,
+    "lng": 0.021726,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHAYS",
+    "name": "Hayes (Kent)",
+    "lat": 51.376334,
+    "lng": 0.010557,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHERNEH",
+    "name": "Herne Hill",
+    "lat": 51.453305,
+    "lng": -0.102289,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHTHRGRN",
+    "name": "Hither Green",
+    "lat": 51.452025,
+    "lng": -0.000944,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKEMSING",
+    "name": "Kemsing",
+    "lat": 51.297187,
+    "lng": 0.247428,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKENTHOS",
+    "name": "Kent House",
+    "lat": 51.412215,
+    "lng": -0.045247,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKIDBROK",
+    "name": "Kidbrooke",
+    "lat": 51.462121,
+    "lng": 0.027498,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKNCKHLT",
+    "name": "Knockholt",
+    "lat": 51.34579,
+    "lng": 0.130847,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLBGHJN",
+    "name": "Loughborough Junction",
+    "lat": 51.466298,
+    "lng": -0.102182,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLDYW",
+    "name": "Ladywell",
+    "lat": 51.456244,
+    "lng": -0.019041,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLEEE",
+    "name": "Lee",
+    "lat": 51.449755,
+    "lng": 0.013493,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLEWISHM",
+    "name": "Lewisham",
+    "lat": 51.465692,
+    "lng": -0.014024,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLGFD",
+    "name": "Longfield",
+    "lat": 51.396155,
+    "lng": 0.300364,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLNDNBDC",
+    "name": "London Bridge",
+    "lat": 51.505019,
+    "lng": -0.086092,
+    "lines": [
+      "southeastern",
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLSYDNHM",
+    "name": "Lower Sydenham",
+    "lat": 51.424831,
+    "lng": -0.033345,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMAZEH",
+    "name": "Maze Hill",
+    "lat": 51.482625,
+    "lng": 0.002914,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMOTNGHM",
+    "name": "Mottingham",
+    "lat": 51.440218,
+    "lng": 0.050054,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNBCKNHM",
+    "name": "New Beckenham",
+    "lat": 51.41677,
+    "lng": -0.035273,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNRTHFLT",
+    "name": "Northfleet",
+    "lat": 51.445846,
+    "lng": 0.324334,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNUNHEAD",
+    "name": "Nunhead",
+    "lat": 51.466828,
+    "lng": -0.052273,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNWELTHM",
+    "name": "New Eltham",
+    "lat": 51.43806,
+    "lng": 0.070533,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GORPNGTN",
+    "name": "Orpington",
+    "lat": 51.373296,
+    "lng": 0.089091,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GOTFORD",
+    "name": "Otford",
+    "lat": 51.313158,
+    "lng": 0.196779,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPETSWD",
+    "name": "Petts Wood",
+    "lat": 51.388619,
+    "lng": 0.074481,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPLMS",
+    "name": "Plumstead",
+    "lat": 51.489795,
+    "lng": 0.084257,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPNGEE",
+    "name": "Penge East",
+    "lat": 51.419334,
+    "lng": -0.05422,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GRBRN",
+    "name": "Ravensbourne",
+    "lat": 51.414188,
+    "lng": -0.007557,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSHRMKT",
+    "name": "Shoreham (Kent)",
+    "lat": 51.332219,
+    "lng": 0.18889,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSHRTLND",
+    "name": "Shortlands",
+    "lat": 51.405801,
+    "lng": 0.001784,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSIDCUP",
+    "name": "Sidcup",
+    "lat": 51.43387,
+    "lng": 0.103795,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSLADEGN",
+    "name": "Slade Green",
+    "lat": 51.467786,
+    "lng": 0.190491,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSNDP",
+    "name": "Sundridge Park",
+    "lat": 51.413782,
+    "lng": 0.021446,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTCR",
+    "name": "Stone Crossing",
+    "lat": 51.45133,
+    "lng": 0.263771,
+    "lines": [
+      "492",
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTFODOM",
+    "name": "Stratford International",
+    "lat": 51.544828,
+    "lng": -0.008778,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTJOHNS",
+    "name": "St Johns (London)",
+    "lat": 51.469391,
+    "lng": -0.022719,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTMRYC",
+    "name": "St Mary Cray",
+    "lat": 51.394749,
+    "lng": 0.106384,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTPADOM",
+    "name": "London St Pancras International",
+    "lat": 51.532514,
+    "lng": -0.126463,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSWLY",
+    "name": "Swanley",
+    "lat": 51.393387,
+    "lng": 0.169225,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSWNSCMB",
+    "name": "Swanscombe",
+    "lat": 51.449071,
+    "lng": 0.309543,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSYDNHMH",
+    "name": "Sydenham Hill",
+    "lat": 51.432714,
+    "lng": -0.080339,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWCOMBEP",
+    "name": "Westcombe Park",
+    "lat": 51.484203,
+    "lng": 0.018395,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWDULWCH",
+    "name": "West Dulwich",
+    "lat": 51.440718,
+    "lng": -0.091371,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWELLING",
+    "name": "Welling",
+    "lat": 51.464798,
+    "lng": 0.10169,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWLOE",
+    "name": "London Waterloo East",
+    "lat": 51.504076,
+    "lng": -0.108898,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWOLWCDY",
+    "name": "Woolwich Dockyard",
+    "lat": 51.491127,
+    "lng": 0.054642,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWOLWCHA",
+    "name": "Woolwich Arsenal",
+    "lat": 51.489909,
+    "lng": 0.069194,
+    "lines": [
+      "southeastern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWWICKHM",
+    "name": "West Wickham",
+    "lat": 51.381301,
+    "lng": -0.014432,
+    "lines": [
+      "southeastern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GASHD",
+    "name": "Ashtead",
+    "lat": 51.317874,
+    "lng": -0.307572,
+    "lines": [
+      "southern",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBALHAM",
+    "name": "Balham",
+    "lat": 51.443225,
+    "lng": -0.152424,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBANSTED",
+    "name": "Banstead",
+    "lat": 51.329349,
+    "lng": -0.213159,
+    "lines": [
+      "166",
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBATRSPK",
+    "name": "Battersea Park",
+    "lat": 51.47696,
+    "lng": -0.147533,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBELM",
+    "name": "Belmont",
+    "lat": 51.343815,
+    "lng": -0.198855,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBIRKBCK",
+    "name": "Birkbeck",
+    "lat": 51.403892,
+    "lng": -0.055739,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCATERHM",
+    "name": "Caterham",
+    "lat": 51.282141,
+    "lng": -0.078307,
+    "lines": [
+      "407",
+      "434",
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHEAM",
+    "name": "Cheam",
+    "lat": 51.355479,
+    "lng": -0.214167,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHSD",
+    "name": "Chipstead",
+    "lat": 51.309277,
+    "lng": -0.169503,
+    "lines": [
+      "166",
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCOLSDNS",
+    "name": "Coulsdon South",
+    "lat": 51.315838,
+    "lng": -0.137887,
+    "lines": [
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCOLSTWN",
+    "name": "Coulsdon Town",
+    "lat": 51.322043,
+    "lng": -0.134464,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCRSHLTB",
+    "name": "Carshalton Beeches",
+    "lat": 51.357411,
+    "lng": -0.169797,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCRSHLTN",
+    "name": "Carshalton",
+    "lat": 51.368454,
+    "lng": -0.166368,
+    "lines": [
+      "s3",
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GEDULWCH",
+    "name": "East Dulwich",
+    "lat": 51.461494,
+    "lng": -0.080572,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GEPSDNS",
+    "name": "Epsom Downs",
+    "lat": 51.323688,
+    "lng": -0.238955,
+    "lines": [
+      "166",
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GEPSM",
+    "name": "Epsom",
+    "lat": 51.334393,
+    "lng": -0.268778,
+    "lines": [
+      "166",
+      "293",
+      "406",
+      "418",
+      "467",
+      "s2",
+      "southern",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GESTFLDS",
+    "name": "Mitcham Eastfields",
+    "lat": 51.407739,
+    "lng": -0.154646,
+    "lines": [
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GEWELLE",
+    "name": "Ewell East",
+    "lat": 51.3453,
+    "lng": -0.24153,
+    "lines": [
+      "s2",
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GGIPSYH",
+    "name": "Gipsy Hill",
+    "lat": 51.424453,
+    "lng": -0.083836,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHKBG",
+    "name": "Hackbridge",
+    "lat": 51.37672,
+    "lng": -0.15329,
+    "lines": [
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKGWD",
+    "name": "Kingswood",
+    "lat": 51.294725,
+    "lng": -0.211247,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKNLY",
+    "name": "Kenley",
+    "lat": 51.324777,
+    "lng": -0.100925,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GLETHRHD",
+    "name": "Leatherhead",
+    "lat": 51.298818,
+    "lng": -0.333232,
+    "lines": [
+      "465",
+      "southern",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMITCHMJ",
+    "name": "Mitcham Junction",
+    "lat": 51.39295,
+    "lng": -0.157757,
+    "lines": [
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNDULWCH",
+    "name": "North Dulwich",
+    "lat": 51.45451,
+    "lng": -0.087917,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNORBURY",
+    "name": "Norbury",
+    "lat": 51.411446,
+    "lng": -0.121926,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPURLEY",
+    "name": "Purley",
+    "lat": 51.337579,
+    "lng": -0.114035,
+    "lines": [
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPURLEYO",
+    "name": "Purley Oaks",
+    "lat": 51.347046,
+    "lng": -0.098856,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GREEDHMS",
+    "name": "Reedham (Surrey)",
+    "lat": 51.33112,
+    "lng": -0.123416,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSBRMNDS",
+    "name": "South Bermondsey",
+    "lat": 51.488136,
+    "lng": -0.054678,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSELHRST",
+    "name": "Selhurst",
+    "lat": 51.391927,
+    "lng": -0.0883,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTRETHM",
+    "name": "Streatham",
+    "lat": 51.425808,
+    "lng": -0.13155,
+    "lines": [
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTRHCOM",
+    "name": "Streatham Common",
+    "lat": 51.41873,
+    "lng": -0.13601,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTRHILL",
+    "name": "Streatham Hill",
+    "lat": 51.438193,
+    "lng": -0.12716,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSUTTON",
+    "name": "Sutton (London)",
+    "lat": 51.359533,
+    "lng": -0.191215,
+    "lines": [
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTADWTH",
+    "name": "Tadworth",
+    "lat": 51.291638,
+    "lng": -0.235965,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTATNHMC",
+    "name": "Tattenham Corner",
+    "lat": 51.309183,
+    "lng": -0.242609,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTHTH",
+    "name": "Thornton Heath",
+    "lat": 51.398777,
+    "lng": -0.100306,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTULSEH",
+    "name": "Tulse Hill",
+    "lat": 51.439861,
+    "lng": -0.105077,
+    "lines": [
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWADDON",
+    "name": "Waddon",
+    "lat": 51.367398,
+    "lng": -0.117336,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWALNGTN",
+    "name": "Wallington",
+    "lat": 51.360386,
+    "lng": -0.150833,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWANDCMN",
+    "name": "Wandsworth Common",
+    "lat": 51.446185,
+    "lng": -0.163386,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWDMNSTR",
+    "name": "Woodmansterne",
+    "lat": 51.31902,
+    "lng": -0.154262,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWHYTELF",
+    "name": "Whyteleafe",
+    "lat": 51.309958,
+    "lng": -0.081148,
+    "lines": [
+      "439",
+      "southern",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWHYTLFS",
+    "name": "Whyteleafe South",
+    "lat": 51.303387,
+    "lng": -0.076918,
+    "lines": [
+      "407",
+      "434",
+      "439",
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWNORWOD",
+    "name": "West Norwood",
+    "lat": 51.431748,
+    "lng": -0.10383,
+    "lines": [
+      "southern"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GADLESTN",
+    "name": "Addlestone",
+    "lat": 51.373046,
+    "lng": -0.484457,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GASFDMSX",
+    "name": "Ashford (Surrey)",
+    "lat": 51.436507,
+    "lng": -0.468071,
+    "lines": [
+      "117",
+      "216",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBARNES",
+    "name": "Barnes",
+    "lat": 51.467086,
+    "lng": -0.242164,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBNSBDGE",
+    "name": "Barnes Bridge",
+    "lat": 51.472009,
+    "lng": -0.25263,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBNTFORD",
+    "name": "Brentford",
+    "lat": 51.487547,
+    "lng": -0.309651,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBOOKHAM",
+    "name": "Bookham",
+    "lat": 51.288739,
+    "lng": -0.384021,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBRLANDS",
+    "name": "Berrylands",
+    "lat": 51.399045,
+    "lng": -0.280714,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBYFLANH",
+    "name": "Byfleet & New Haw",
+    "lat": 51.349797,
+    "lng": -0.48139,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCBHMSDA",
+    "name": "Cobham & Stoke d'Abernon",
+    "lat": 51.318101,
+    "lng": -0.389346,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHISWCK",
+    "name": "Chiswick",
+    "lat": 51.481137,
+    "lng": -0.267835,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHSSN",
+    "name": "Chessington North",
+    "lat": 51.364041,
+    "lng": -0.300699,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHSSS",
+    "name": "Chessington South",
+    "lat": 51.35655,
+    "lng": -0.308157,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCHTSEY",
+    "name": "Chertsey",
+    "lat": 51.387069,
+    "lng": -0.509317,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCLYGATE",
+    "name": "Claygate",
+    "lat": 51.361214,
+    "lng": -0.348248,
+    "lines": [
+      "k3",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GEFNGHMJ",
+    "name": "Effingham Junction",
+    "lat": 51.291495,
+    "lng": -0.419965,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GERLFLD",
+    "name": "Earlsfield",
+    "lat": 51.442337,
+    "lng": -0.187715,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GESHER",
+    "name": "Esher",
+    "lat": 51.379891,
+    "lng": -0.353338,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GEWELW",
+    "name": "Ewell West",
+    "lat": 51.350045,
+    "lng": -0.256987,
+    "lines": [
+      "418",
+      "467",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GFELTHAM",
+    "name": "Feltham",
+    "lat": 51.447898,
+    "lng": -0.409838,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GFULWELL",
+    "name": "Fulwell",
+    "lat": 51.433935,
+    "lng": -0.349468,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHAMPTON",
+    "name": "Hampton (London)",
+    "lat": 51.415934,
+    "lng": -0.372119,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHAMWICK",
+    "name": "Hampton Wick",
+    "lat": 51.414524,
+    "lng": -0.312489,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHCRT",
+    "name": "Hampton Court",
+    "lat": 51.402556,
+    "lng": -0.342748,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHERSHAM",
+    "name": "Hersham",
+    "lat": 51.376812,
+    "lng": -0.389959,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHNCHLYW",
+    "name": "Hinchley Wood",
+    "lat": 51.374998,
+    "lng": -0.340524,
+    "lines": [
+      "k3",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHOUNSLW",
+    "name": "Hounslow",
+    "lat": 51.461946,
+    "lng": -0.362277,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GISLEWTH",
+    "name": "Isleworth",
+    "lat": 51.474763,
+    "lng": -0.336907,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKEWBDGE",
+    "name": "Kew Bridge",
+    "lat": 51.489513,
+    "lng": -0.287108,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKGSTON",
+    "name": "Kingston",
+    "lat": 51.412751,
+    "lng": -0.301166,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GKMPTNPK",
+    "name": "Kempton Park",
+    "lat": 51.420983,
+    "lng": -0.409751,
+    "lines": [
+      "290",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMALDENM",
+    "name": "Malden Manor",
+    "lat": 51.38473,
+    "lng": -0.261274,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMOTSPRP",
+    "name": "Motspur Park",
+    "lat": 51.395196,
+    "lng": -0.239531,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMRTLKE",
+    "name": "Mortlake",
+    "lat": 51.468087,
+    "lng": -0.267106,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNEWMLDN",
+    "name": "New Malden",
+    "lat": 51.404075,
+    "lng": -0.25594,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNRBITON",
+    "name": "Norbiton",
+    "lat": 51.412358,
+    "lng": -0.284025,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GNSHEEN",
+    "name": "North Sheen",
+    "lat": 51.465155,
+    "lng": -0.287876,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GOXSHOTT",
+    "name": "Oxshott",
+    "lat": 51.336396,
+    "lng": -0.362419,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GPUTNEY",
+    "name": "Putney",
+    "lat": 51.461303,
+    "lng": -0.216475,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GQTRDBAT",
+    "name": "Queenstown Road (Battersea)",
+    "lat": 51.474968,
+    "lng": -0.146678,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GRAYNSPK",
+    "name": "Raynes Park",
+    "lat": 51.409173,
+    "lng": -0.230151,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSHEPRTN",
+    "name": "Shepperton",
+    "lat": 51.396805,
+    "lng": -0.446786,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTAINES",
+    "name": "Staines",
+    "lat": 51.432455,
+    "lng": -0.503164,
+    "lines": [
+      "117",
+      "290",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTLEIGH",
+    "name": "Stoneleigh",
+    "lat": 51.363401,
+    "lng": -0.248665,
+    "lines": [
+      "406",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTMGTS",
+    "name": "St Margarets (London)",
+    "lat": 51.455236,
+    "lng": -0.3202,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSTRWBYH",
+    "name": "Strawberry Hill",
+    "lat": 51.438963,
+    "lng": -0.339358,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSUNBURY",
+    "name": "Sunbury",
+    "lat": 51.418313,
+    "lng": -0.417783,
+    "lines": [
+      "216",
+      "235",
+      "290",
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSURBITN",
+    "name": "Surbiton",
+    "lat": 51.39246,
+    "lng": -0.303958,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSYONLA",
+    "name": "Syon Lane",
+    "lat": 51.481785,
+    "lng": -0.324842,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTDITTON",
+    "name": "Thames Ditton",
+    "lat": 51.389097,
+    "lng": -0.339152,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTEDNGTN",
+    "name": "Teddington",
+    "lat": 51.424481,
+    "lng": -0.332706,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTOLWTH",
+    "name": "Tolworth",
+    "lat": 51.37686,
+    "lng": -0.279461,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTWCKNHM",
+    "name": "Twickenham",
+    "lat": 51.450031,
+    "lng": -0.330394,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GUHALIFD",
+    "name": "Upper Halliford",
+    "lat": 51.413067,
+    "lng": -0.430906,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GVAUXHLM",
+    "name": "Vauxhall",
+    "lat": 51.48619,
+    "lng": -0.122889,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWATRLMN",
+    "name": "London Waterloo",
+    "lat": 51.503299,
+    "lng": -0.113109,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWBYFLET",
+    "name": "West Byfleet",
+    "lat": 51.339226,
+    "lng": -0.505485,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWDON",
+    "name": "Wimbledon",
+    "lat": 51.421222,
+    "lng": -0.206385,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWDWTOWN",
+    "name": "Wandsworth Town",
+    "lat": 51.461048,
+    "lng": -0.188125,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWEYBDGB",
+    "name": "Weybridge",
+    "lat": 51.361771,
+    "lng": -0.457739,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWHTTON",
+    "name": "Whitton",
+    "lat": 51.449607,
+    "lng": -0.357681,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWONT",
+    "name": "Walton-on-Thames",
+    "lat": 51.372931,
+    "lng": -0.414635,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWRCSTRP",
+    "name": "Worcester Park",
+    "lat": 51.381253,
+    "lng": -0.245167,
+    "lines": [
+      "south-western-railway"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBATABAL",
+    "name": "Bat & Ball",
+    "lat": 51.289761,
+    "lng": 0.194228,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GBRENTX",
+    "name": "Brent Cross West",
+    "lat": 51.568429,
+    "lng": -0.225488,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCRKLWD",
+    "name": "Cricklewood",
+    "lat": 51.558453,
+    "lng": -0.212677,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GCTMSLNK",
+    "name": "City Thameslink",
+    "lat": 51.513936,
+    "lng": -0.10359,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GELTR",
+    "name": "Elstree & Borehamwood",
+    "lat": 51.653069,
+    "lng": -0.280081,
+    "lines": [
+      "107",
+      "292",
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GFRNDNLT",
+    "name": "Farringdon",
+    "lat": 51.520167,
+    "lng": -0.105205,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHDON",
+    "name": "Hendon",
+    "lat": 51.580068,
+    "lng": -0.238674,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GHYDNSRD",
+    "name": "Haydons Road",
+    "lat": 51.425448,
+    "lng": -0.188815,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMLHB",
+    "name": "Mill Hill Broadway",
+    "lat": 51.613093,
+    "lng": -0.24924,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GMORDENS",
+    "name": "Morden South",
+    "lat": 51.396116,
+    "lng": -0.199461,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GRADLETT",
+    "name": "Radlett",
+    "lat": 51.685188,
+    "lng": -0.317244,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GRDLSDWN",
+    "name": "Riddlesdown",
+    "lat": 51.332486,
+    "lng": -0.099387,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSDSD",
+    "name": "Sanderstead",
+    "lat": 51.348283,
+    "lng": -0.093678,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSHLIER",
+    "name": "St Helier (London)",
+    "lat": 51.389901,
+    "lng": -0.198771,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSMERTON",
+    "name": "South Merton",
+    "lat": 51.402993,
+    "lng": -0.205157,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GSUTTONC",
+    "name": "Sutton Common",
+    "lat": 51.374891,
+    "lng": -0.196343,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GTOOTING",
+    "name": "Tooting",
+    "lat": 51.419848,
+    "lng": -0.161278,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GUWRLNGH",
+    "name": "Upper Warlingham",
+    "lat": 51.308512,
+    "lng": -0.077952,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWHMPSTM",
+    "name": "West Hampstead Thameslink",
+    "lat": 51.548476,
+    "lng": -0.191837,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWIMBLDN",
+    "name": "Wimbledon",
+    "lat": 51.421222,
+    "lng": -0.206371,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWIMLCHS",
+    "name": "Wimbledon Chase",
+    "lat": 51.409558,
+    "lng": -0.214031,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWLDNGHM",
+    "name": "Woldingham",
+    "lat": 51.290158,
+    "lng": -0.05187,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWSUTTON",
+    "name": "West Sutton",
+    "lat": 51.365854,
+    "lng": -0.205173,
+    "lines": [
+      "thameslink"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GGRSTH",
+    "name": "Garston (Herts)",
+    "lat": 51.686616,
+    "lng": -0.381741,
+    "lines": [
+      "west-midlands-trains"
+    ],
+    "modes": [
+      "national_rail"
+    ]
+  },
+  {
+    "id": "910GWATFDN",
+    "name": "Watford North",
+    "lat": 51.675704,
+    "lng": -0.389926,
+    "lines": [
+      "west-midlands-trains"
+    ],
+    "modes": [
+      "national_rail"
     ]
   }
 ]

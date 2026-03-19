@@ -27,6 +27,7 @@ const ALL_RAIL_MODES: { id: TransportMode; label: string }[] = [
   { id: "overground", label: "Overground" },
   { id: "dlr", label: "DLR" },
   { id: "elizabeth_line", label: "Elizabeth Line" },
+  { id: "national_rail", label: "National Rail" },
 ];
 
 const TRAVEL_METHODS: { id: TravelMethod; label: string }[] = [

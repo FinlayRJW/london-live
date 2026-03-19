@@ -12,6 +12,7 @@ export const LINE_SPEED_KMH: Record<string, number> = {
   overground: 40,  // slightly faster, fewer stops
   dlr: 30,         // similar to tube
   elizabeth_line: 45, // faster, longer gaps
+  national_rail: 50,  // fast services, longer stop spacing
 };
 
 // Dwell time at each station in seconds (doors open/close)

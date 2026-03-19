@@ -1,4 +1,4 @@
-export type TransportMode = "tube" | "overground" | "dlr" | "elizabeth_line" | "bus" | "walking" | "cycling";
+export type TransportMode = "tube" | "overground" | "dlr" | "elizabeth_line" | "national_rail" | "bus" | "walking" | "cycling";
 
 export interface GraphNode {
   id: string;
