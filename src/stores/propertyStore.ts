@@ -102,17 +102,19 @@ export const usePropertyStore = create<PropertyState>()(
       name: "london-live-properties",
       version: 1,
       partialize: (state) => ({ filters: state.filters }),
-      migrate: (persisted, version) => {
-        if (version === 0) {
-          const state = persisted as { filters?: Record<string, unknown> };
-          if (state.filters) {
-            // Add fields that didn't exist in version 0
-            state.filters.minFloorArea ??= 0;
-            state.filters.maxFloorArea ??= 300;
-            state.filters.hideNoFloorArea ??= false;
-          }
-        }
-        return persisted as PropertyState;
+      merge: (persisted, current) => {
+        const p = persisted as { filters?: Partial<PropertyFilters> };
+        return {
+          ...current,
+          filters: {
+            ...current.filters,
+            ...p.filters,
+            // Ensure new fields always have defaults
+            minFloorArea: p.filters?.minFloorArea ?? current.filters.minFloorArea,
+            maxFloorArea: p.filters?.maxFloorArea ?? current.filters.maxFloorArea,
+            hideNoFloorArea: p.filters?.hideNoFloorArea ?? current.filters.hideNoFloorArea,
+          },
+        };
       },
     },
   ),
