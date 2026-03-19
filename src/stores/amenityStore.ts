@@ -26,7 +26,7 @@ export const useAmenityStore = create<AmenityState>((set, get) => ({
     if (get().data || get().isLoading) return;
     set({ isLoading: true });
     try {
-      const res = await fetch("/data/amenities.json");
+      const res = await fetch(`${import.meta.env.BASE_URL}data/amenities.json`);
       if (!res.ok) throw new Error(`Failed to load amenities: ${res.status}`);
       const data: AmenityData = await res.json();
       set({ data, isLoading: false });

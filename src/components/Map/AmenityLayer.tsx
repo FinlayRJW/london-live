@@ -7,6 +7,7 @@ import { useFilterStore } from "../../stores/filterStore.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
 import { useTransportStore } from "../../stores/transportStore.ts";
 import type { AmenitiesConfigData } from "../../filters/amenities/AmenitiesConfig.tsx";
+import { WALKING_SPEED, CYCLING_SPEED, WALKING_DETOUR } from "../../transport/constants.ts";
 
 const AMENITY_COLORS: Record<AmenityType, string> = {
   supermarket: "#22c55e", // green
@@ -69,34 +70,23 @@ export function AmenityLayer() {
     return centroids;
   }, [scores, graphData]);
 
-  // Filter amenities to those near any reachable postcode centroid
+  // Filter amenities to only those near a passing (green/orange) postcode centroid
   const visibleAmenities = useMemo(() => {
     if (!amenityData || !amenitiesConfig) return [];
+    if (reachableCentroids.length === 0) return [];
 
     const types: AmenityType[] = ["supermarket", "cinema", "gym"];
     const enabledTypes = types.filter((t) => amenitiesConfig[t].enabled);
     if (enabledTypes.length === 0) return [];
 
-    // If no scores yet (no other filters), show all amenities of enabled types
-    if (scores.size === 0) {
-      const result: { amenity: AmenityLocation; type: AmenityType }[] = [];
-      for (const type of enabledTypes) {
-        for (const a of amenityData[type]) {
-          result.push({ amenity: a, type });
-        }
-      }
-      return result;
-    }
-
-    if (reachableCentroids.length === 0) return [];
-
-    // Max radius to check: largest configured time * generous speed
-    const maxRadiusM = 30 * 60 * (15000 / 3600) * 1.3; // 30 min cycling with detour
-
+    // For each type, use its configured max time + speed to compute a radius
     const result: { amenity: AmenityLocation; type: AmenityType }[] = [];
     for (const type of enabledTypes) {
+      const tc = amenitiesConfig[type];
+      const speed = tc.travelMethod === "cycle" ? CYCLING_SPEED : WALKING_SPEED;
+      const maxRadiusM = tc.maxTimeMinutes * 60 * speed / WALKING_DETOUR;
+
       for (const a of amenityData[type]) {
-        // Check if this amenity is near any reachable centroid
         for (const c of reachableCentroids) {
           if (haversineM(a.lat, a.lng, c.lat, c.lng) <= maxRadiusM) {
             result.push({ amenity: a, type });
@@ -106,7 +96,7 @@ export function AmenityLayer() {
       }
     }
     return result;
-  }, [amenityData, amenitiesConfig, scores, reachableCentroids]);
+  }, [amenityData, amenitiesConfig, reachableCentroids]);
 
   const enabled = amenitiesConfig !== undefined && visibleAmenities.length > 0;
 

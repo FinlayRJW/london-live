@@ -123,12 +123,11 @@ export function RouteOverlay() {
       const routeData = routeDataByFilter.get(filter.id);
       if (!routeData) continue;
 
-      let route: ReturnType<typeof reconstructRoute>;
-      if (useParentRoute) {
+      let route = reconstructRoute(routeData, `centroid:${hoveredPostcode}`);
+      // Fall back to parent district route if sector has no route data
+      if (route.length === 0 && useParentRoute) {
         const parentId = hoveredPostcode.substring(0, hoveredPostcode.lastIndexOf(" "));
         route = reconstructRoute(routeData, `centroid:${parentId}`);
-      } else {
-        route = reconstructRoute(routeData, `centroid:${hoveredPostcode}`);
       }
       if (route.length > 0) {
         allSegments.push({ filterId: filter.id, segments: route });
