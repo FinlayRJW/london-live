@@ -2,7 +2,6 @@ import { useFilterStore } from "../../stores/filterStore.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
 import { FilterCard } from "./FilterCard.tsx";
 import { AddFilterButton } from "./AddFilterButton.tsx";
-import { PropertyPanel } from "./PropertyPanel.tsx";
 
 export function FilterPanel() {
   const filters = useFilterStore((s) => s.filters);
@@ -18,8 +17,6 @@ export function FilterPanel() {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        <PropertyPanel />
-
         {filters.length === 0 && (
           <div className="text-sm text-text-muted text-center py-8">
             No filters active.

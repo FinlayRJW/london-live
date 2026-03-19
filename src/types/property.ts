@@ -31,19 +31,6 @@ export interface PostcodeGroup {
 /** Property data grouped by full postcode, with lat/lng per postcode */
 export type PropertyData = Record<string, PostcodeGroup>;
 
-export interface PropertyFilters {
-  enabled: boolean;
-  minPrice: number;
-  maxPrice: number;
-  minFloorArea: number;
-  maxFloorArea: number;
-  hideNoFloorArea: boolean;
-  types: PropertyType[];
-  tenure: Tenure | "both";
-  /** Months back from now */
-  dateRange: 6 | 12 | 24;
-}
-
 export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
   D: "Detached",
   S: "Semi-detached",

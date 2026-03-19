@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { useFilterStore } from "../../stores/filterStore.ts";
 import { getFilterPlugin } from "../../filters/registry.ts";
+import { usePropertyData } from "../../hooks/usePropertyData.ts";
 import type { FilterInstance } from "../../types/filter.ts";
+
+function formatPrice(price: number): string {
+  if (price >= 1_000_000) return `\u00a3${(price / 1_000_000).toFixed(1)}m`;
+  if (price >= 1_000) return `\u00a3${Math.round(price / 1_000)}k`;
+  return `\u00a3${price}`;
+}
 
 function getFilterSummary(filter: FilterInstance): string | null {
   const config = filter.config as Record<string, unknown>;
@@ -13,7 +20,35 @@ function getFilterSummary(filter: FilterInstance): string | null {
     const label = method === "public_transport" ? "transit" : method;
     return `${addr} · ${time} min ${label}`;
   }
+  if (filter.typeId === "property") {
+    const min = config.minPrice as number;
+    const max = config.maxPrice as number;
+    return `${formatPrice(min)} \u2013 ${formatPrice(max)}`;
+  }
   return null;
+}
+
+function PropertyLoadingBar() {
+  const { isLoading, loadingDone, loadingTotal } = usePropertyData();
+
+  if (!isLoading) return null;
+
+  return (
+    <div className="space-y-1 mt-2">
+      <div className="flex justify-between text-xs text-text-muted">
+        <span>Loading areas...</span>
+        <span>{loadingDone}/{loadingTotal}</span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-1.5">
+        <div
+          className="bg-primary h-1.5 rounded-full transition-all duration-150"
+          style={{
+            width: `${loadingTotal > 0 ? (loadingDone / loadingTotal) * 100 : 0}%`,
+          }}
+        />
+      </div>
+    </div>
+  );
 }
 
 interface Props {
@@ -78,6 +113,8 @@ export function FilterCard({ filter }: Props) {
           />
         </div>
       )}
+
+      {filter.typeId === "property" && <PropertyLoadingBar />}
     </div>
   );
 }

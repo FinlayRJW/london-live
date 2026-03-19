@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { usePropertyStore } from "../stores/propertyStore.ts";
 import { useScoreStore } from "../stores/scoreStore.ts";
+import { usePropertyFilters } from "./usePropertyFilters.ts";
 import type { PropertyData } from "../types/property.ts";
 
 const BASE = import.meta.env.BASE_URL;
@@ -11,7 +12,8 @@ const CONCURRENCY = 6;
  * the active filters. Only fetches districts that haven't been loaded yet.
  */
 export function usePropertyData() {
-  const enabled = usePropertyStore((s) => s.filters.enabled);
+  const propertyFilters = usePropertyFilters();
+  const enabled = propertyFilters !== null;
   const data = usePropertyStore((s) => s.data);
   const loadingTotal = usePropertyStore((s) => s.loadingTotal);
   const loadingDone = usePropertyStore((s) => s.loadingDone);

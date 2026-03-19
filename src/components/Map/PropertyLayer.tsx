@@ -6,6 +6,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { usePropertyStore } from "../../stores/propertyStore.ts";
 import { usePropertyData } from "../../hooks/usePropertyData.ts";
+import { usePropertyFilters } from "../../hooks/usePropertyFilters.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
 import { useMapStore } from "../../stores/mapStore.ts";
 import type { PropertyRecord, PropertyType } from "../../types/property.ts";
@@ -155,7 +156,7 @@ export function PropertyLayer() {
   const map = useMap();
   const clusterRef = useRef<L.MarkerClusterGroup | null>(null);
   const { data, enabled } = usePropertyData();
-  const filters = usePropertyStore((s) => s.filters);
+  const filters = usePropertyFilters();
   const scores = useScoreStore((s) => s.scores);
   const activeLevel = useMapStore((s) => s.activeLevel);
 
@@ -175,7 +176,7 @@ export function PropertyLayer() {
   );
 
   const filteredSales = useMemo(() => {
-    if (!data || !enabled) return [];
+    if (!data || !enabled || !filters) return [];
     return getFilteredSales(data, filters, reachablePostcodes, activeLevel);
   }, [data, enabled, filters, reachablePostcodes, activeLevel]);
 

@@ -1,4 +1,5 @@
 import { usePropertyStore } from "../../stores/propertyStore.ts";
+import { usePropertyFilters } from "../../hooks/usePropertyFilters.ts";
 import { PROPERTY_TYPE_LABELS } from "../../types/property.ts";
 import type { PropertyType } from "../../types/property.ts";
 import { TYPE_COLORS, CLUSTER_COLOR } from "./PropertyLayer.tsx";
@@ -6,7 +7,7 @@ import { TYPE_COLORS, CLUSTER_COLOR } from "./PropertyLayer.tsx";
 const LEGEND_TYPES: PropertyType[] = ["F", "T", "S", "D"];
 
 export function PropertyLegend() {
-  const enabled = usePropertyStore((s) => s.filters.enabled);
+  const enabled = usePropertyFilters() !== null;
   const data = usePropertyStore((s) => s.data);
 
   if (!enabled || Object.keys(data).length === 0) return null;

@@ -5,6 +5,7 @@ import { useMapStore } from "../../stores/mapStore.ts";
 import { DistrictLayer } from "./DistrictLayer.tsx";
 import { RouteOverlay } from "./RouteOverlay.tsx";
 import { PropertyLayer } from "./PropertyLayer.tsx";
+import { AmenityLayer } from "./AmenityLayer.tsx";
 import { ZoomController } from "./ZoomController.tsx";
 import { LondonMask } from "./LondonMask.tsx";
 import { Legend } from "./Legend.tsx";
@@ -70,6 +71,7 @@ export function MapView() {
         </Pane>
         <RouteOverlay />
         <PropertyLayer />
+        <AmenityLayer />
       </LeafletMap>
       <Legend />
       <RouteLegend />

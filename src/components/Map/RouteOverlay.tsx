@@ -2,6 +2,7 @@ import { Polyline, CircleMarker, Marker, Pane } from "react-leaflet";
 import L from "leaflet";
 import { useRouteStore, reconstructRoute, type RouteSegment } from "../../stores/routeStore.ts";
 import { useFilterStore } from "../../stores/filterStore.ts";
+import { useScoreStore } from "../../stores/scoreStore.ts";
 import type { CommuteConfigData } from "../../filters/commute/CommuteConfig.tsx";
 import type { TransportMode } from "../../types/transport.ts";
 import { useMemo } from "react";
@@ -91,9 +92,26 @@ export function RouteOverlay() {
   const hoveredPostcode = useRouteStore((s) => s.hoveredPostcode);
   const routeDataByFilter = useRouteStore((s) => s.routeDataByFilter);
   const filters = useFilterStore((s) => s.filters);
+  const scores = useScoreStore((s) => s.scores);
 
   const segments = useMemo(() => {
     if (!hoveredPostcode) return [];
+
+    // Only show routes for green (pass) and orange (approximate) postcodes
+    const score = scores.get(hoveredPostcode);
+    let isReachable = score?.pass === true;
+    let useParentRoute = false;
+
+    if (!isReachable && hoveredPostcode.includes(" ")) {
+      const parentId = hoveredPostcode.substring(0, hoveredPostcode.lastIndexOf(" "));
+      const parentScore = scores.get(parentId);
+      if (parentScore?.pass) {
+        isReachable = true;
+        useParentRoute = true;
+      }
+    }
+
+    if (!isReachable) return [];
 
     const allSegments: { filterId: string; segments: ReturnType<typeof reconstructRoute> }[] = [];
 
@@ -105,12 +123,12 @@ export function RouteOverlay() {
       const routeData = routeDataByFilter.get(filter.id);
       if (!routeData) continue;
 
-      const centroidId = `centroid:${hoveredPostcode}`;
-      let route = reconstructRoute(routeData, centroidId);
-      // Fall back to parent district route for orange (approximate) sectors
-      if (route.length === 0 && hoveredPostcode.includes(" ")) {
+      let route: ReturnType<typeof reconstructRoute>;
+      if (useParentRoute) {
         const parentId = hoveredPostcode.substring(0, hoveredPostcode.lastIndexOf(" "));
         route = reconstructRoute(routeData, `centroid:${parentId}`);
+      } else {
+        route = reconstructRoute(routeData, `centroid:${hoveredPostcode}`);
       }
       if (route.length > 0) {
         allSegments.push({ filterId: filter.id, segments: route });
@@ -118,7 +136,7 @@ export function RouteOverlay() {
     }
 
     return allSegments;
-  }, [hoveredPostcode, routeDataByFilter, filters]);
+  }, [hoveredPostcode, routeDataByFilter, filters, scores]);
 
   // Compute bus route labels from grouped consecutive bus segments
   const busLabels = useMemo(() => {

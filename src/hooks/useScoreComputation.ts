@@ -3,6 +3,7 @@ import { useFilterStore } from "../stores/filterStore.ts";
 import { useScoreStore } from "../stores/scoreStore.ts";
 import { usePostcodeBoundaries } from "./usePostcodeBoundaries.ts";
 import { useMapStore } from "../stores/mapStore.ts";
+import { useAmenityStore } from "../stores/amenityStore.ts";
 import { getFilterPlugin } from "../filters/registry.ts";
 import { combineScores } from "../scoring/combiner.ts";
 import type { FilterResultMap } from "../types/filter.ts";
@@ -12,6 +13,7 @@ export function useScoreComputation() {
   const activeLevel = useMapStore((s) => s.activeLevel);
   const { districts, sectors } = usePostcodeBoundaries();
   const { setScores, setComputing } = useScoreStore();
+  const amenityData = useAmenityStore((s) => s.data);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
@@ -65,5 +67,5 @@ export function useScoreComputation() {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [filters, districts, sectors, setScores, setComputing]);
+  }, [filters, districts, sectors, amenityData, setScores, setComputing]);
 }
