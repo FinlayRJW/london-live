@@ -98,10 +98,11 @@ export function AmenityLayer() {
     return result;
   }, [amenityData, amenitiesConfig, reachableCentroids]);
 
+  const showMarkers = amenitiesConfig?.showMarkers ?? true;
   const enabled = amenitiesConfig !== undefined && visibleAmenities.length > 0;
 
   useEffect(() => {
-    if (!enabled) {
+    if (!enabled || !showMarkers) {
       if (clusterRef.current) {
         map.removeLayer(clusterRef.current);
         clusterRef.current = null;
@@ -150,7 +151,7 @@ export function AmenityLayer() {
         clusterRef.current = null;
       }
     };
-  }, [map, enabled, visibleAmenities]);
+  }, [map, enabled, showMarkers, visibleAmenities]);
 
   return null;
 }

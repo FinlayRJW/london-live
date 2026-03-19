@@ -45,7 +45,10 @@ export function usePropertyData() {
       (d) => !loadedDistricts.has(d) && !loadingDistricts.has(d),
     );
 
-    if (toLoad.length === 0) return;
+    if (toLoad.length === 0) {
+      setLoadingProgress(0, 0);
+      return;
+    }
 
     // Abort previous batch if still running
     if (abortRef.current) abortRef.current.abort();

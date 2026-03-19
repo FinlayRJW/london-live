@@ -53,6 +53,7 @@ export const amenitiesFilter: FilterPlugin<AmenitiesConfigData> = {
       supermarket: { enabled: false, travelMethod: "walk", maxTimeMinutes: 15 },
       cinema: { enabled: false, travelMethod: "walk", maxTimeMinutes: 20 },
       gym: { enabled: false, travelMethod: "walk", maxTimeMinutes: 15 },
+      showMarkers: true,
     };
   },
 

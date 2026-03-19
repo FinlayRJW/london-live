@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useTransportStore } from "../stores/transportStore.ts";
+import { getCommuteWorker } from "../workers/commuteWorkerClient.ts";
 import type { TransportGraph, StationInfo } from "../types/transport.ts";
 
 export function useTransportGraph() {
@@ -27,6 +28,7 @@ export function useTransportGraph() {
         if (!cancelled) {
           setGraph(graph);
           setStations(stations);
+          getCommuteWorker().initGraph(graph);
         }
       } catch (e) {
         console.error("Error loading transport data:", e);

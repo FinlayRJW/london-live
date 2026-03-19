@@ -15,6 +15,7 @@ export function useScoreComputation() {
   const { setScores, setComputing } = useScoreStore();
   const amenityData = useAmenityStore((s) => s.data);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const generationRef = useRef(0);
 
   useEffect(() => {
     if (debounceRef.current) {
@@ -22,6 +23,8 @@ export function useScoreComputation() {
     }
 
     debounceRef.current = setTimeout(async () => {
+      const generation = ++generationRef.current;
+
       const enabledFilters = filters.filter((f) => {
         if (!f.enabled) return false;
         const plugin = getFilterPlugin(f.typeId);
@@ -55,6 +58,10 @@ export function useScoreComputation() {
           activeLevel,
           filter.id,
         );
+
+        // Discard stale results if a newer evaluation started
+        if (generation !== generationRef.current) return;
+
         filterResults.set(filter.id, result);
       }
 

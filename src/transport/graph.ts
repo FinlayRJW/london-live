@@ -41,6 +41,24 @@ export class Graph {
     this.addEdge(to, { target: from, weight, mode, line });
   }
 
+  shallowClone(): Graph {
+    const g = new Graph();
+    g.nodes = new Map(this.nodes);
+    const orig = this.adjacency;
+    g.adjacency = new Map(this.adjacency);
+    // Copy-on-write: clone adjacency arrays only when mutated
+    const baseAddEdge = Graph.prototype.addEdge;
+    g.addEdge = function (from: string, edge: GraphEdge) {
+      const arr = g.adjacency.get(from);
+      if (arr && arr === orig.get(from)) {
+        g.adjacency.set(from, [...arr, edge]);
+      } else {
+        baseAddEdge.call(g, from, edge);
+      }
+    };
+    return g;
+  }
+
   toJSON(): TransportGraph {
     const nodes: Record<string, GraphNode> = {};
     const adjacency: Record<string, GraphEdge[]> = {};

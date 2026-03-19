@@ -160,12 +160,22 @@ export function PropertyLayer() {
   const scores = useScoreStore((s) => s.scores);
   const activeLevel = useMapStore((s) => s.activeLevel);
 
-  // Collect reachable postcode IDs from scores (district or sector level)
+  // Collect reachable postcode IDs from scores (district or sector level).
+  // Also include "approximate" sectors whose parent district passes — these
+  // show as orange on the map and should still display properties.
   const reachablePostcodes = useMemo(() => {
     const reachable = new Set<string>();
     for (const [postcode, score] of scores) {
       if (score.pass) {
         reachable.add(postcode);
+      }
+    }
+    for (const [postcode, score] of scores) {
+      if (!score.pass && postcode.includes(" ")) {
+        const parentId = postcode.substring(0, postcode.lastIndexOf(" "));
+        if (reachable.has(parentId)) {
+          reachable.add(postcode);
+        }
       }
     }
     return reachable;
@@ -204,8 +214,10 @@ export function PropertyLayer() {
     setPostcodesWithProperties(prefixes);
   }, [filteredSales, enabled, activeLevel, setPostcodesWithProperties]);
 
+  const showMarkers = filters?.showMarkers ?? true;
+
   useEffect(() => {
-    if (!enabled) {
+    if (!enabled || !showMarkers) {
       if (clusterRef.current) {
         map.removeLayer(clusterRef.current);
         clusterRef.current = null;
@@ -280,7 +292,7 @@ export function PropertyLayer() {
         clusterRef.current = null;
       }
     };
-  }, [map, enabled, filteredSales]);
+  }, [map, enabled, showMarkers, filteredSales]);
 
   return null;
 }

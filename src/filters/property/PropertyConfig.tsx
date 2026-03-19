@@ -29,6 +29,7 @@ export interface PropertyConfigData {
   types: PropertyType[];
   tenure: Tenure | "both";
   dateRange: 6 | 12 | 24;
+  showMarkers: boolean;
 }
 
 interface Props {
@@ -147,6 +148,17 @@ export function PropertyConfig({ config, onChange }: Props) {
           ))}
         </div>
       </div>
+
+      <label className="flex items-center gap-2 text-xs cursor-pointer">
+        <input
+          type="checkbox"
+          checked={config.showMarkers ?? true}
+          onChange={() =>
+            onChange({ ...config, showMarkers: !(config.showMarkers ?? true) })
+          }
+        />
+        Show markers on map
+      </label>
     </div>
   );
 }

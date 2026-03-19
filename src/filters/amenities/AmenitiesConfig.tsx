@@ -11,6 +11,7 @@ export interface AmenitiesConfigData {
   supermarket: AmenityTypeConfig;
   cinema: AmenityTypeConfig;
   gym: AmenityTypeConfig;
+  showMarkers: boolean;
 }
 
 interface Props {
@@ -36,6 +37,17 @@ export function AmenitiesConfig({ config, onChange }: Props) {
       {isLoading && !data && (
         <div className="text-xs text-text-muted">Loading amenity data...</div>
       )}
+
+      <label className="flex items-center gap-2 text-xs cursor-pointer">
+        <input
+          type="checkbox"
+          checked={config.showMarkers ?? true}
+          onChange={() =>
+            onChange({ ...config, showMarkers: !(config.showMarkers ?? true) })
+          }
+        />
+        Show markers on map
+      </label>
 
       {AMENITY_ROWS.map(({ type, label }) => {
         const typeConfig = config[type];

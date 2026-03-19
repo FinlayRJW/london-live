@@ -58,14 +58,22 @@ function getStyleForPostcode(postcodeId: string): L.PathOptions {
   );
   if (pass && propertyFilterActive && propState.loadedDistricts.size > 0) {
     if (!propState.postcodesWithProperties.has(postcodeId)) {
-      pass = false;
-      approximate = false;
+      // For approximate sectors, check parent district for properties
+      if (approximate) {
+        const parentId = postcodeId.substring(0, postcodeId.lastIndexOf(" "));
+        if (!propState.postcodesWithProperties.has(parentId)) {
+          pass = false;
+          approximate = false;
+        }
+      } else {
+        pass = false;
+      }
     }
   }
 
   return {
     fillColor: pass ? (approximate ? APPROXIMATE_COLOR : REACHABLE_COLOR) : GREYED_COLOR,
-    fillOpacity: pass ? 0.25 : 0.5,
+    fillOpacity: pass ? 0.4 : 0.5,
     color: BORDER_COLOR,
     weight: 1,
     opacity: 0.7,
@@ -131,17 +139,39 @@ export function DistrictLayer({ data }: Props) {
     [map],
   );
 
-  // Update styles when scores or property filter changes
+  // Update styles when scores or property filter changes (chunked via rAF)
   useEffect(() => {
-    if (geoJsonRef.current) {
-      geoJsonRef.current.eachLayer((layer) => {
+    if (!geoJsonRef.current) return;
+
+    const layers: L.Layer[] = [];
+    geoJsonRef.current.eachLayer((layer) => layers.push(layer));
+
+    const CHUNK_SIZE = 200;
+    let i = 0;
+    let rafId: number | undefined;
+
+    function processChunk() {
+      const end = Math.min(i + CHUNK_SIZE, layers.length);
+      for (; i < end; i++) {
+        const layer = layers[i];
         const feature = (layer as L.GeoJSON & { feature: GeoJSON.Feature }).feature;
         if (feature) {
           const id = (feature.properties as { id: string }).id;
           (layer as L.Path).setStyle(getStyleForPostcode(id));
         }
-      });
+      }
+      if (i < layers.length) {
+        rafId = requestAnimationFrame(processChunk);
+      }
     }
+
+    rafId = requestAnimationFrame(processChunk);
+
+    return () => {
+      if (rafId !== undefined) {
+        cancelAnimationFrame(rafId);
+      }
+    };
   }, [scores, postcodesWithProperties, propertyEnabled, propertyDataLoaded]);
 
   return (

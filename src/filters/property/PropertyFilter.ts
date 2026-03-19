@@ -17,6 +17,7 @@ export const propertyFilter: FilterPlugin<PropertyConfigData> = {
       types: ["D", "S", "T", "F"],
       tenure: "both",
       dateRange: 24,
+      showMarkers: true,
     };
   },
 
