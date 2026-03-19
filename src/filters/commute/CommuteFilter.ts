@@ -4,7 +4,12 @@ import type { DijkstraConstraints, TransportMode } from "../../types/transport.t
 import { useTransportStore } from "../../stores/transportStore.ts";
 import { Graph } from "../../transport/graph.ts";
 import { getPostcodeTimes } from "../../transport/dijkstra.ts";
-import { WALKING_SPEED, WALKING_DETOUR, MAX_WALK_TO_STATION } from "../../transport/constants.ts";
+import {
+  WALKING_SPEED,
+  CYCLING_SPEED,
+  WALKING_DETOUR,
+  MAX_WALK_TO_STATION,
+} from "../../transport/constants.ts";
 import { CommuteConfig, type CommuteConfigData } from "./CommuteConfig.tsx";
 
 function haversineM(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -19,6 +24,137 @@ function haversineM(lat1: number, lng1: number, lat2: number, lng2: number): num
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+function evaluateWalkOrCycle(
+  config: CommuteConfigData,
+  postcodes: string[],
+): FilterResultMap {
+  const results: FilterResultMap = new Map();
+  const maxTimeSec = config.maxTimeMinutes * 60;
+  const speed = config.travelMethod === "cycle" ? CYCLING_SPEED : WALKING_SPEED;
+
+  // Load centroids from the graph to get lat/lng per postcode
+  const graphData = useTransportStore.getState().graph;
+  if (!graphData || config.destinationLat === null || config.destinationLng === null) {
+    for (const pc of postcodes) {
+      results.set(pc, { pass: true });
+    }
+    return results;
+  }
+
+  for (const pc of postcodes) {
+    const node = graphData.nodes[`centroid:${pc}`];
+    if (!node) {
+      results.set(pc, { pass: false, detail: "No data" });
+      continue;
+    }
+
+    const dist = haversineM(
+      config.destinationLat, config.destinationLng,
+      node.lat, node.lng,
+    );
+    const travelTime = (dist * WALKING_DETOUR) / speed;
+
+    if (travelTime > maxTimeSec) {
+      results.set(pc, { pass: false, detail: "Too far" });
+    } else {
+      const minutes = Math.round(travelTime / 60);
+      results.set(pc, {
+        pass: true,
+        score: 1 - travelTime / maxTimeSec,
+        detail: `${minutes} min ${config.travelMethod}`,
+      });
+    }
+  }
+
+  return results;
+}
+
+function evaluatePublicTransport(
+  config: CommuteConfigData,
+  postcodes: string[],
+): FilterResultMap {
+  const results: FilterResultMap = new Map();
+
+  const graphData = useTransportStore.getState().graph;
+  if (!graphData || config.destinationLat === null || config.destinationLng === null) {
+    for (const pc of postcodes) {
+      results.set(pc, { pass: true });
+    }
+    return results;
+  }
+
+  const graph = Graph.fromJSON(graphData);
+  const maxTimeSec = config.maxTimeMinutes * 60;
+
+  // Add temporary destination node connected to nearby stations via walking
+  const destId = "__destination__";
+  graph.addNode({
+    id: destId,
+    lat: config.destinationLat,
+    lng: config.destinationLng,
+    type: "station",
+    name: "Destination",
+  });
+
+  let connectedStations = 0;
+  for (const [nodeId, node] of graph.nodes) {
+    if (node.type !== "station" || nodeId === destId) continue;
+    const dist = haversineM(
+      config.destinationLat, config.destinationLng,
+      node.lat, node.lng,
+    );
+    if (dist <= MAX_WALK_TO_STATION) {
+      const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
+      graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
+      connectedStations++;
+    }
+  }
+
+  if (connectedStations === 0) {
+    const widerRadius = MAX_WALK_TO_STATION * 2;
+    for (const [nodeId, node] of graph.nodes) {
+      if (node.type !== "station" || nodeId === destId) continue;
+      const dist = haversineM(
+        config.destinationLat, config.destinationLng,
+        node.lat, node.lng,
+      );
+      if (dist <= widerRadius) {
+        const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
+        graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
+      }
+    }
+  }
+
+  const railModes: TransportMode[] = config.allowedModes;
+  const allowedModes = new Set<TransportMode>([...railModes, "walking"]);
+
+  const constraints: DijkstraConstraints = {
+    maxChanges: config.maxChanges >= 5 ? Infinity : config.maxChanges,
+    allowedModes,
+    maxTime: maxTimeSec,
+  };
+
+  const times = getPostcodeTimes(graph, destId, constraints);
+
+  for (const pc of postcodes) {
+    const centroidId = `centroid:${pc}`;
+    const time = times.get(centroidId);
+
+    if (time === undefined || time > maxTimeSec) {
+      results.set(pc, {
+        pass: false,
+        detail: "Not reachable within time limit",
+      });
+    } else {
+      const score = 1 - time / maxTimeSec;
+      const minutes = Math.round(time / 60);
+      results.set(pc, { pass: true, score, detail: `${minutes} min` });
+    }
+  }
+
+  return results;
+}
+
 export const commuteFilter: FilterPlugin<CommuteConfigData> = {
   typeId: "commute",
   displayName: "Commute Time",
@@ -31,6 +167,7 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
       destinationLng: null,
       maxTimeMinutes: 45,
       maxChanges: 5,
+      travelMethod: "public_transport",
       allowedModes: ["tube", "overground", "dlr", "elizabeth_line"],
     };
   },
@@ -40,104 +177,19 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
     postcodes: string[],
     _level: PostcodeLevel,
   ): FilterResultMap {
-    const results: FilterResultMap = new Map();
-
     if (config.destinationLat === null || config.destinationLng === null) {
+      const results: FilterResultMap = new Map();
       for (const pc of postcodes) {
         results.set(pc, { pass: true });
       }
       return results;
     }
 
-    const graphData = useTransportStore.getState().graph;
-    if (!graphData) {
-      for (const pc of postcodes) {
-        results.set(pc, { pass: true });
-      }
-      return results;
+    if (config.travelMethod === "walk" || config.travelMethod === "cycle") {
+      return evaluateWalkOrCycle(config, postcodes);
     }
 
-    const graph = Graph.fromJSON(graphData);
-    const maxTimeSec = config.maxTimeMinutes * 60;
-
-    // Add a temporary "destination" node at the geocoded lat/lng
-    // and connect it to nearby stations via walking
-    const destId = "__destination__";
-    graph.addNode({
-      id: destId,
-      lat: config.destinationLat,
-      lng: config.destinationLng,
-      type: "station",
-      name: "Destination",
-    });
-
-    // Find nearby stations and connect via walking
-    let connectedStations = 0;
-    for (const [nodeId, node] of graph.nodes) {
-      if (node.type !== "station" || nodeId === destId) continue;
-      const dist = haversineM(
-        config.destinationLat, config.destinationLng,
-        node.lat, node.lng,
-      );
-      if (dist <= MAX_WALK_TO_STATION) {
-        const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
-        graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
-        connectedStations++;
-      }
-    }
-
-    // If no stations nearby, try a wider radius
-    if (connectedStations === 0) {
-      const widerRadius = MAX_WALK_TO_STATION * 2;
-      for (const [nodeId, node] of graph.nodes) {
-        if (node.type !== "station" || nodeId === destId) continue;
-        const dist = haversineM(
-          config.destinationLat, config.destinationLng,
-          node.lat, node.lng,
-        );
-        if (dist <= widerRadius) {
-          const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
-          graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
-        }
-      }
-    }
-
-    const railModes: TransportMode[] = config.allowedModes;
-    const allowedModes = new Set<TransportMode>([
-      ...railModes,
-      "walking",
-      "cycling",
-    ]);
-
-    const constraints: DijkstraConstraints = {
-      maxChanges: config.maxChanges >= 5 ? Infinity : config.maxChanges,
-      allowedModes,
-      maxTime: maxTimeSec,
-    };
-
-    const times = getPostcodeTimes(graph, destId, constraints);
-
-    for (const pc of postcodes) {
-      const centroidId = `centroid:${pc}`;
-      const time = times.get(centroidId);
-
-      if (time === undefined || time > maxTimeSec) {
-        results.set(pc, {
-          pass: false,
-          detail: "Not reachable within time limit",
-        });
-      } else {
-        const score = 1 - time / maxTimeSec;
-        const minutes = Math.round(time / 60);
-        results.set(pc, {
-          pass: true,
-          score,
-          detail: `${minutes} min`,
-        });
-      }
-    }
-
-    return results;
+    return evaluatePublicTransport(config, postcodes);
   },
 
   ConfigComponent: CommuteConfig,

@@ -1,12 +1,15 @@
 import { useState, useCallback, useRef } from "react";
 import type { TransportMode } from "../../types/transport.ts";
 
+export type TravelMethod = "public_transport" | "cycle" | "walk";
+
 export interface CommuteConfigData {
   destinationAddress: string;
   destinationLat: number | null;
   destinationLng: number | null;
   maxTimeMinutes: number;
   maxChanges: number;
+  travelMethod: TravelMethod;
   allowedModes: TransportMode[];
 }
 
@@ -21,6 +24,12 @@ const ALL_RAIL_MODES: { id: TransportMode; label: string }[] = [
   { id: "overground", label: "Overground" },
   { id: "dlr", label: "DLR" },
   { id: "elizabeth_line", label: "Elizabeth Line" },
+];
+
+const TRAVEL_METHODS: { id: TravelMethod; label: string }[] = [
+  { id: "public_transport", label: "Public transport" },
+  { id: "cycle", label: "Cycle" },
+  { id: "walk", label: "Walk" },
 ];
 
 interface Props {
@@ -99,9 +108,7 @@ export function CommuteConfig({ config, onChange }: Props) {
           <div className="absolute right-2 top-8 text-xs text-text-muted">...</div>
         )}
         {config.destinationLat && (
-          <div className="text-xs text-green-600 mt-0.5">
-            Location set
-          </div>
+          <div className="text-xs text-green-600 mt-0.5">Location set</div>
         )}
         {suggestions.length > 0 && (
           <div className="absolute left-0 right-0 top-full mt-1 bg-card-bg border border-border rounded-lg shadow-lg z-50 overflow-hidden max-h-48 overflow-y-auto">
@@ -120,12 +127,33 @@ export function CommuteConfig({ config, onChange }: Props) {
 
       <div>
         <label className="block text-sm font-medium text-text mb-1">
+          Travel method
+        </label>
+        <div className="flex gap-1">
+          {TRAVEL_METHODS.map((method) => (
+            <button
+              key={method.id}
+              className={`flex-1 px-2 py-1.5 text-xs rounded border transition-colors ${
+                config.travelMethod === method.id
+                  ? "bg-primary text-white border-primary"
+                  : "bg-card-bg text-text border-border hover:bg-gray-50"
+              }`}
+              onClick={() => onChange({ ...config, travelMethod: method.id })}
+            >
+              {method.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-text mb-1">
           Max commute time: {config.maxTimeMinutes} min
         </label>
         <input
           type="range"
-          min={10}
-          max={90}
+          min={config.travelMethod === "walk" ? 5 : 10}
+          max={config.travelMethod === "public_transport" ? 90 : config.travelMethod === "cycle" ? 60 : 45}
           step={5}
           value={config.maxTimeMinutes}
           onChange={(e) =>
@@ -135,51 +163,55 @@ export function CommuteConfig({ config, onChange }: Props) {
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-text mb-1">
-          Max changes: {config.maxChanges === 5 ? "Unlimited" : config.maxChanges}
-        </label>
-        <input
-          type="range"
-          min={0}
-          max={5}
-          step={1}
-          value={config.maxChanges}
-          onChange={(e) =>
-            onChange({ ...config, maxChanges: Number(e.target.value) })
-          }
-          className="w-full"
-        />
-      </div>
+      {config.travelMethod === "public_transport" && (
+        <>
+          <div>
+            <label className="block text-sm font-medium text-text mb-1">
+              Max changes: {config.maxChanges === 5 ? "Unlimited" : config.maxChanges}
+            </label>
+            <input
+              type="range"
+              min={0}
+              max={5}
+              step={1}
+              value={config.maxChanges}
+              onChange={(e) =>
+                onChange({ ...config, maxChanges: Number(e.target.value) })
+              }
+              className="w-full"
+            />
+          </div>
 
-      <div>
-        <label className="block text-sm font-medium text-text mb-1">
-          Transport modes
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {ALL_RAIL_MODES.map((mode) => {
-            const checked = config.allowedModes.includes(mode.id);
-            return (
-              <label
-                key={mode.id}
-                className="flex items-center gap-1 text-sm cursor-pointer"
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => {
-                    const next = checked
-                      ? config.allowedModes.filter((m) => m !== mode.id)
-                      : [...config.allowedModes, mode.id];
-                    onChange({ ...config, allowedModes: next });
-                  }}
-                />
-                {mode.label}
-              </label>
-            );
-          })}
-        </div>
-      </div>
+          <div>
+            <label className="block text-sm font-medium text-text mb-1">
+              Rail modes
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {ALL_RAIL_MODES.map((mode) => {
+                const checked = config.allowedModes.includes(mode.id);
+                return (
+                  <label
+                    key={mode.id}
+                    className="flex items-center gap-1 text-sm cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => {
+                        const next = checked
+                          ? config.allowedModes.filter((m) => m !== mode.id)
+                          : [...config.allowedModes, mode.id];
+                        onChange({ ...config, allowedModes: next });
+                      }}
+                    />
+                    {mode.label}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
