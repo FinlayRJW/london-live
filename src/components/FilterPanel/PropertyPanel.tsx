@@ -50,14 +50,7 @@ export function PropertyPanel() {
   return (
     <div className="border border-border rounded-lg bg-card-bg">
       <div className="flex items-center justify-between p-3">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={filters.enabled}
-            onChange={(e) => setEnabled(e.target.checked)}
-          />
-          <span className="text-sm font-medium text-text">Sold Properties</span>
-        </label>
+        <span className="text-sm font-medium text-text">Sold Properties</span>
         {filters.enabled && hasData && (
           <span className="text-xs text-text-muted">
             {count.toLocaleString()} shown
@@ -65,145 +58,148 @@ export function PropertyPanel() {
         )}
       </div>
 
-      {filters.enabled && (
-        <div className="px-3 pb-3 space-y-3 border-t border-border pt-3">
-          {!hasScores && (
-            <div className="text-xs text-text-muted text-center py-2">
-              Add a commute filter to see sold prices in reachable areas
-            </div>
-          )}
+      <div className="px-3 pb-3 space-y-3 border-t border-border pt-3">
+        <div>
+          <label className="block text-xs font-medium text-text mb-1">
+            Price: {formatPrice(filters.minPrice)} &ndash; {formatPrice(filters.maxPrice)}
+          </label>
+          <DualRangeSlider
+            min={0}
+            max={2_000_000}
+            step={25_000}
+            valueLow={filters.minPrice}
+            valueHigh={filters.maxPrice}
+            onChangeLow={setMinPrice}
+            onChangeHigh={setMaxPrice}
+          />
+        </div>
 
-          {isLoading && (
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs text-text-muted">
-                <span>Loading areas...</span>
-                <span>{loadingDone}/{loadingTotal}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div
-                  className="bg-primary h-1.5 rounded-full transition-all duration-150"
-                  style={{
-                    width: `${loadingTotal > 0 ? (loadingDone / loadingTotal) * 100 : 0}%`,
-                  }}
-                />
-              </div>
-            </div>
-          )}
+        <div>
+          <label className="block text-xs font-medium text-text mb-1">
+            Floor area: {filters.minFloorArea} &ndash; {filters.maxFloorArea} m&sup2;
+          </label>
+          <DualRangeSlider
+            min={0}
+            max={300}
+            step={5}
+            valueLow={filters.minFloorArea}
+            valueHigh={filters.maxFloorArea}
+            onChangeLow={setMinFloorArea}
+            onChangeHigh={setMaxFloorArea}
+          />
+          <label className="flex items-center gap-1.5 mt-1 text-xs text-text-muted cursor-pointer">
+            <input
+              type="checkbox"
+              checked={filters.hideNoFloorArea}
+              onChange={(e) => setHideNoFloorArea(e.target.checked)}
+            />
+            Hide properties with no floor area
+          </label>
+        </div>
 
-          {hasScores && (
-            <>
-              <div>
-                <label className="block text-xs font-medium text-text mb-1">
-                  Price: {formatPrice(filters.minPrice)} &ndash; {formatPrice(filters.maxPrice)}
-                </label>
-                <DualRangeSlider
-                  min={0}
-                  max={2_000_000}
-                  step={25_000}
-                  valueLow={filters.minPrice}
-                  valueHigh={filters.maxPrice}
-                  onChangeLow={setMinPrice}
-                  onChangeHigh={setMaxPrice}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-text mb-1">
-                  Floor area: {filters.minFloorArea} &ndash; {filters.maxFloorArea} m&sup2;
-                </label>
-                <DualRangeSlider
-                  min={0}
-                  max={300}
-                  step={5}
-                  valueLow={filters.minFloorArea}
-                  valueHigh={filters.maxFloorArea}
-                  onChangeLow={setMinFloorArea}
-                  onChangeHigh={setMaxFloorArea}
-                />
-                <label className="flex items-center gap-1.5 mt-1 text-xs text-text-muted cursor-pointer">
+        <div>
+          <label className="block text-xs font-medium text-text mb-1">
+            Property type
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {ALL_TYPES.map((type) => {
+              const checked = filters.types.includes(type);
+              return (
+                <label
+                  key={type}
+                  className="flex items-center gap-1 text-xs cursor-pointer"
+                >
                   <input
                     type="checkbox"
-                    checked={filters.hideNoFloorArea}
-                    onChange={(e) => setHideNoFloorArea(e.target.checked)}
+                    checked={checked}
+                    onChange={() => {
+                      const next = checked
+                        ? filters.types.filter((t) => t !== type)
+                        : [...filters.types, type];
+                      setTypes(next);
+                    }}
                   />
-                  Hide properties with no floor area
+                  {PROPERTY_TYPE_LABELS[type]}
                 </label>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-text mb-1">
-                  Property type
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {ALL_TYPES.map((type) => {
-                    const checked = filters.types.includes(type);
-                    return (
-                      <label
-                        key={type}
-                        className="flex items-center gap-1 text-xs cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={() => {
-                            const next = checked
-                              ? filters.types.filter((t) => t !== type)
-                              : [...filters.types, type];
-                            setTypes(next);
-                          }}
-                        />
-                        {PROPERTY_TYPE_LABELS[type]}
-                      </label>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-text mb-1">
-                  Period
-                </label>
-                <div className="flex gap-1">
-                  {DATE_RANGES.map((opt) => (
-                    <button
-                      key={opt.value}
-                      className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
-                        filters.dateRange === opt.value
-                          ? "bg-primary text-white border-primary"
-                          : "bg-card-bg text-text border-border hover:bg-gray-50"
-                      }`}
-                      onClick={() => setDateRange(opt.value)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-text mb-1">
-                  Tenure
-                </label>
-                <div className="flex gap-1">
-                  {TENURE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
-                        filters.tenure === opt.value
-                          ? "bg-primary text-white border-primary"
-                          : "bg-card-bg text-text border-border hover:bg-gray-50"
-                      }`}
-                      onClick={() => setTenure(opt.value)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
+              );
+            })}
+          </div>
         </div>
-      )}
+
+        <div>
+          <label className="block text-xs font-medium text-text mb-1">
+            Period
+          </label>
+          <div className="flex gap-1">
+            {DATE_RANGES.map((opt) => (
+              <button
+                key={opt.value}
+                className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
+                  filters.dateRange === opt.value
+                    ? "bg-primary text-white border-primary"
+                    : "bg-card-bg text-text border-border hover:bg-gray-50"
+                }`}
+                onClick={() => setDateRange(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-text mb-1">
+            Tenure
+          </label>
+          <div className="flex gap-1">
+            {TENURE_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
+                  filters.tenure === opt.value
+                    ? "bg-primary text-white border-primary"
+                    : "bg-card-bg text-text border-border hover:bg-gray-50"
+                }`}
+                onClick={() => setTenure(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <label className="flex items-center gap-2 cursor-pointer pt-1">
+          <input
+            type="checkbox"
+            checked={filters.enabled}
+            onChange={(e) => setEnabled(e.target.checked)}
+          />
+          <span className="text-xs font-medium text-text">Show on map</span>
+        </label>
+
+        {filters.enabled && !hasScores && (
+          <div className="text-xs text-text-muted text-center py-2">
+            Add a commute filter to see sold prices in reachable areas
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs text-text-muted">
+              <span>Loading areas...</span>
+              <span>{loadingDone}/{loadingTotal}</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-1.5">
+              <div
+                className="bg-primary h-1.5 rounded-full transition-all duration-150"
+                style={{
+                  width: `${loadingTotal > 0 ? (loadingDone / loadingTotal) * 100 : 0}%`,
+                }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -13,8 +13,6 @@ const CONCURRENCY = 6;
 export function usePropertyData() {
   const enabled = usePropertyStore((s) => s.filters.enabled);
   const data = usePropertyStore((s) => s.data);
-  const loadedDistricts = usePropertyStore((s) => s.loadedDistricts);
-  const loadingDistricts = usePropertyStore((s) => s.loadingDistricts);
   const loadingTotal = usePropertyStore((s) => s.loadingTotal);
   const loadingDone = usePropertyStore((s) => s.loadingDone);
   const mergeDistrictData = usePropertyStore((s) => s.mergeDistrictData);
@@ -24,6 +22,10 @@ export function usePropertyData() {
 
   useEffect(() => {
     if (!enabled) return;
+
+    // Read current loading state from store snapshot (not as reactive deps)
+    const { loadedDistricts, loadingDistricts } =
+      usePropertyStore.getState();
 
     // Determine which districts are needed from reachable postcodes
     const neededDistricts = new Set<string>();
@@ -78,14 +80,7 @@ export function usePropertyData() {
     return () => {
       abort.abort();
     };
-  }, [
-    enabled,
-    scores,
-    loadedDistricts,
-    loadingDistricts,
-    mergeDistrictData,
-    setLoadingProgress,
-  ]);
+  }, [enabled, scores, mergeDistrictData, setLoadingProgress]);
 
   const isLoading = loadingDone < loadingTotal && loadingTotal > 0;
 

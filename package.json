@@ -16,6 +16,7 @@
     "data:sectors": "tsx scripts/fetch-sector-boundaries.ts",
     "data:boundary": "tsx scripts/compute-london-boundary.ts",
     "data:properties": "tsx scripts/fetch-property-prices.ts",
+    "data:amenities": "tsx scripts/fetch-amenities.ts",
     "data:all": "npm run data:boundaries && npm run data:centroids && npm run data:stations && npm run data:sectors && npm run data:graph && npm run data:boundary"
   },
   "dependencies": {
