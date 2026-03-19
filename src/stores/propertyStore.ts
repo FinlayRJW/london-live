@@ -99,23 +99,8 @@ export const usePropertyStore = create<PropertyState>()(
         set((s) => ({ filters: { ...s.filters, dateRange } })),
     }),
     {
-      name: "london-live-properties",
-      version: 1,
+      name: "london-live-properties-v2",
       partialize: (state) => ({ filters: state.filters }),
-      merge: (persisted, current) => {
-        const p = persisted as { filters?: Partial<PropertyFilters> };
-        return {
-          ...current,
-          filters: {
-            ...current.filters,
-            ...p.filters,
-            // Ensure new fields always have defaults
-            minFloorArea: p.filters?.minFloorArea ?? current.filters.minFloorArea,
-            maxFloorArea: p.filters?.maxFloorArea ?? current.filters.maxFloorArea,
-            hideNoFloorArea: p.filters?.hideNoFloorArea ?? current.filters.hideNoFloorArea,
-          },
-        };
-      },
     },
   ),
 );
