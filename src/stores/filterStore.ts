@@ -11,7 +11,7 @@ interface FilterState {
   toggleEnabled: (id: string) => void;
 }
 
-let nextId = 1;
+let nextId = Date.now();
 
 export const useFilterStore = create<FilterState>()(
   persist(
