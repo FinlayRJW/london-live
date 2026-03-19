@@ -33,7 +33,7 @@ function makeIcon(type: PropertyType, hasEpc: boolean): L.DivIcon {
   const size = 12;
   const outline = hasEpc
     ? `border:2px solid #333;`
-    : `border:2px dashed #999;opacity:0.5;`;
+    : `border:2px solid #333;opacity:0.45;`;
   return L.divIcon({
     className: "",
     iconSize: [size, size],

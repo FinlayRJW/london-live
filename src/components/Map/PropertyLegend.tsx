@@ -34,8 +34,8 @@ export function PropertyLegend() {
             className="w-3.5 h-3.5 rounded-full flex-shrink-0"
             style={{
               backgroundColor: "#6366f1",
-              border: "2px dashed #999",
-              opacity: 0.5,
+              border: "2px solid #333",
+              opacity: 0.45,
             }}
           />
           <span className="text-text-muted">No floor area data</span>
