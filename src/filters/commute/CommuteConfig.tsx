@@ -167,19 +167,28 @@ export function CommuteConfig({ config, onChange }: Props) {
         <>
           <div>
             <label className="block text-sm font-medium text-text mb-1">
-              Max changes: {config.maxChanges === 5 ? "Unlimited" : config.maxChanges}
+              Max changes
             </label>
-            <input
-              type="range"
-              min={0}
-              max={5}
-              step={1}
-              value={config.maxChanges}
-              onChange={(e) =>
-                onChange({ ...config, maxChanges: Number(e.target.value) })
-              }
-              className="w-full"
-            />
+            <div className="flex gap-1">
+              {([
+                { value: 0, label: "0" },
+                { value: 1, label: "1" },
+                { value: 2, label: "2" },
+                { value: 99, label: "Unlimited" },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.value}
+                  className={`flex-1 px-2 py-1.5 text-xs rounded border transition-colors ${
+                    config.maxChanges === opt.value
+                      ? "bg-primary text-white border-primary"
+                      : "bg-card-bg text-text border-border hover:bg-gray-50"
+                  }`}
+                  onClick={() => onChange({ ...config, maxChanges: opt.value })}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div>

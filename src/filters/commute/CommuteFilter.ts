@@ -129,7 +129,7 @@ function evaluatePublicTransport(
   const allowedModes = new Set<TransportMode>([...railModes, "walking"]);
 
   const constraints: DijkstraConstraints = {
-    maxChanges: config.maxChanges >= 5 ? Infinity : config.maxChanges,
+    maxChanges: config.maxChanges >= 99 ? Infinity : config.maxChanges,
     allowedModes,
     maxTime: maxTimeSec,
   };
@@ -166,7 +166,7 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
       destinationLat: null,
       destinationLng: null,
       maxTimeMinutes: 45,
-      maxChanges: 5,
+      maxChanges: 99,
       travelMethod: "public_transport",
       allowedModes: ["tube", "overground", "dlr", "elizabeth_line"],
     };

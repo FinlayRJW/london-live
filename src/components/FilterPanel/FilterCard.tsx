@@ -7,8 +7,7 @@ interface Props {
 }
 
 export function FilterCard({ filter }: Props) {
-  const { removeFilter, updateConfig, toggleEnabled, setWeight } =
-    useFilterStore();
+  const { removeFilter, updateConfig, toggleEnabled } = useFilterStore();
   const plugin = getFilterPlugin(filter.typeId);
 
   if (!plugin) return null;
@@ -43,26 +42,10 @@ export function FilterCard({ filter }: Props) {
       </div>
 
       {filter.enabled && (
-        <>
-          <ConfigComponent
-            config={filter.config as never}
-            onChange={(config: unknown) => updateConfig(filter.id, config)}
-          />
-          <div className="mt-3 pt-2 border-t border-border">
-            <label className="block text-xs text-text-muted mb-0.5">
-              Weight: {filter.weight.toFixed(1)}
-            </label>
-            <input
-              type="range"
-              min={0.1}
-              max={3}
-              step={0.1}
-              value={filter.weight}
-              onChange={(e) => setWeight(filter.id, Number(e.target.value))}
-              className="w-full"
-            />
-          </div>
-        </>
+        <ConfigComponent
+          config={filter.config as never}
+          onChange={(config: unknown) => updateConfig(filter.id, config)}
+        />
       )}
     </div>
   );

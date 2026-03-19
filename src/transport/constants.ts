@@ -21,11 +21,12 @@ export const STATION_DWELL = 30;
 export const TRACK_DETOUR = 1.35;
 
 // Average wait time when first boarding a train (half headway)
-export const BOARDING_WAIT = 150; // 2.5 minutes
+export const BOARDING_WAIT = 120; // 2 minutes
 
-// Penalty for changing lines at an interchange (seconds)
-// Covers walking between platforms + waiting for next train
-export const INTERCHANGE_PENALTY = 300; // 5 minutes
+// Penalty for changing lines at a same-node interchange (seconds).
+// This is just the wait for the next train - any physical walking
+// between stations is already in the interchange edge weights.
+export const INTERCHANGE_PENALTY = 120; // 2 minutes
 
 // Maximum walking distance to a station (meters)
 export const MAX_WALK_TO_STATION = 2000;
