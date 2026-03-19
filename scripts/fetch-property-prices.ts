@@ -568,6 +568,17 @@ async function main() {
   console.log(`\nWritten ${byDistrict.size} district files to ${districtDir}`);
   console.log(`Total size: ${(totalSize / 1024 / 1024).toFixed(1)} MB`);
   console.log(`Index: ${indexPath} (${Object.keys(index).length} districts)`);
+
+  // Write single bundle containing all districts keyed by district code
+  const bundle: Record<string, Record<string, PostcodeGroup>> = {};
+  for (const [district, data] of byDistrict) {
+    bundle[district] = data;
+  }
+  const bundleJson = JSON.stringify(bundle);
+  const bundlePath = join("public", "data", "properties-all.json");
+  writeFileSync(bundlePath, bundleJson);
+  const bundleSize = Buffer.byteLength(bundleJson, "utf-8");
+  console.log(`Bundle: ${bundlePath} (${(bundleSize / 1024 / 1024).toFixed(1)} MB)`);
 }
 
 main().catch(console.error);

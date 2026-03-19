@@ -16,6 +16,9 @@ dist-ssr
 /data/cache/
 /data/sectors/geocode-cache.json
 
+# Generated property bundle (regenerated from district files)
+/public/data/properties-all.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

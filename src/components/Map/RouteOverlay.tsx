@@ -3,6 +3,7 @@ import L from "leaflet";
 import { useRouteStore, reconstructRoute, type RouteSegment } from "../../stores/routeStore.ts";
 import { useFilterStore } from "../../stores/filterStore.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
+import { usePropertyStore } from "../../stores/propertyStore.ts";
 import type { CommuteConfigData } from "../../filters/commute/CommuteConfig.tsx";
 import type { TransportMode } from "../../types/transport.ts";
 import { useMemo } from "react";
@@ -112,6 +113,27 @@ export function RouteOverlay() {
     }
 
     if (!isReachable) return [];
+
+    // Suppress routes when property filter is active and postcode has no matching properties
+    const propState = usePropertyStore.getState();
+    const propertyFilterActive = filters.some(
+      (f) => f.typeId === "property" && f.enabled,
+    );
+    if (propertyFilterActive) {
+      const district = hoveredPostcode.split(" ")[0];
+      const districtLoaded = propState.loadedDistricts.has(district);
+      if (!districtLoaded || !propState.postcodesWithProperties.has(hoveredPostcode)) {
+        // Also check parent for approximate sectors
+        if (useParentRoute) {
+          const parentId = hoveredPostcode.substring(0, hoveredPostcode.lastIndexOf(" "));
+          if (!propState.postcodesWithProperties.has(parentId)) {
+            return [];
+          }
+        } else {
+          return [];
+        }
+      }
+    }
 
     const allSegments: { filterId: string; segments: ReturnType<typeof reconstructRoute> }[] = [];
 

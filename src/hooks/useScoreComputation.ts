@@ -4,6 +4,7 @@ import { useScoreStore } from "../stores/scoreStore.ts";
 import { usePostcodeBoundaries } from "./usePostcodeBoundaries.ts";
 import { useMapStore } from "../stores/mapStore.ts";
 import { useAmenityStore } from "../stores/amenityStore.ts";
+import { useTransportStore } from "../stores/transportStore.ts";
 import { getFilterPlugin } from "../filters/registry.ts";
 import { combineScores } from "../scoring/combiner.ts";
 import type { FilterResultMap } from "../types/filter.ts";
@@ -14,6 +15,7 @@ export function useScoreComputation() {
   const { districts, sectors } = usePostcodeBoundaries();
   const { setScores, setComputing } = useScoreStore();
   const amenityData = useAmenityStore((s) => s.data);
+  const transportLoaded = useTransportStore((s) => s.isLoaded);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const generationRef = useRef(0);
 
@@ -74,5 +76,5 @@ export function useScoreComputation() {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [filters, districts, sectors, amenityData, setScores, setComputing]);
+  }, [filters, districts, sectors, amenityData, transportLoaded, setScores, setComputing]);
 }

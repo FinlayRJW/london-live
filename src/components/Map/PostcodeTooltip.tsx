@@ -1,6 +1,7 @@
 import { useScoreStore } from "../../stores/scoreStore.ts";
 import { getFilterPlugin } from "../../filters/registry.ts";
 import { useFilterStore } from "../../stores/filterStore.ts";
+import { usePropertyStore } from "../../stores/propertyStore.ts";
 
 interface Props {
   postcodeId: string | null;
@@ -25,10 +26,35 @@ export function PostcodeTooltip({ postcodeId }: Props) {
     }
   }
 
+  // Check if property filter is active and this postcode has no matching properties
+  const propState = usePropertyStore.getState();
+  const propertyFilterActive = filters.some(
+    (f) => f.typeId === "property" && f.enabled,
+  );
+  let propertyGreyed = false;
+  if (propertyFilterActive && postcodeId) {
+    const district = postcodeId.split(" ")[0];
+    const districtLoaded = propState.loadedDistricts.has(district);
+    if (districtLoaded && !propState.postcodesWithProperties.has(postcodeId)) {
+      // For approximate sectors, also check parent
+      if (approximate) {
+        const parentId = postcodeId.substring(0, postcodeId.lastIndexOf(" "));
+        if (!propState.postcodesWithProperties.has(parentId)) {
+          propertyGreyed = true;
+        }
+      } else {
+        propertyGreyed = true;
+      }
+    }
+  }
+
   return (
     <div className="bg-overlay-bg shadow-lg rounded-lg px-3 py-2 text-sm border border-border pointer-events-none">
       <div className="font-semibold text-text mb-1">{postcodeId}</div>
-      {score && (
+      {propertyGreyed && (
+        <div className="text-red-600 text-xs">No matching properties</div>
+      )}
+      {score && !propertyGreyed && (
         <div className="space-y-0.5">
           {!score.pass && !approximate && (
             <div className="text-red-600 text-xs">Not reachable</div>

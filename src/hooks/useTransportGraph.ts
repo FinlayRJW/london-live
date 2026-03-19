@@ -1,13 +1,17 @@
 import { useEffect } from "react";
 import { useTransportStore } from "../stores/transportStore.ts";
+import { useFilterStore } from "../stores/filterStore.ts";
 import { getCommuteWorker } from "../workers/commuteWorkerClient.ts";
 import type { TransportGraph, StationInfo } from "../types/transport.ts";
 
 export function useTransportGraph() {
   const { isLoaded, setGraph, setStations } = useTransportStore();
+  const hasCommuteFilter = useFilterStore((s) =>
+    s.filters.some((f) => f.typeId === "commute"),
+  );
 
   useEffect(() => {
-    if (isLoaded) return;
+    if (isLoaded || !hasCommuteFilter) return;
     let cancelled = false;
 
     async function load() {
@@ -39,5 +43,5 @@ export function useTransportGraph() {
     return () => {
       cancelled = true;
     };
-  }, [isLoaded, setGraph, setStations]);
+  }, [isLoaded, hasCommuteFilter, setGraph, setStations]);
 }

@@ -16,6 +16,7 @@ interface PropertyState {
   postcodesWithProperties: Set<string>;
 
   mergeDistrictData: (district: string, data: PropertyData) => void;
+  markDistrictEmpty: (district: string) => void;
   setLoadingDistricts: (districts: Set<string>) => void;
   setLoadingProgress: (done: number, total: number) => void;
   setPostcodesWithProperties: (postcodes: Set<string>) => void;
@@ -37,6 +38,18 @@ export const usePropertyStore = create<PropertyState>()((set) => ({
       newLoading.delete(district);
       return {
         data: { ...s.data, ...districtData },
+        loadedDistricts: newLoaded,
+        loadingDistricts: newLoading,
+        loadingDone: s.loadingDone + 1,
+      };
+    }),
+  markDistrictEmpty: (district) =>
+    set((s) => {
+      const newLoaded = new Set(s.loadedDistricts);
+      newLoaded.add(district);
+      const newLoading = new Set(s.loadingDistricts);
+      newLoading.delete(district);
+      return {
         loadedDistricts: newLoaded,
         loadingDistricts: newLoading,
         loadingDone: s.loadingDone + 1,

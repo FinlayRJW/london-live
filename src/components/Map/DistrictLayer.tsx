@@ -51,13 +51,21 @@ function getStyleForPostcode(postcodeId: string): L.PathOptions {
     }
   }
 
-  // If properties layer is active and data has been loaded, require matching properties
+  // If properties layer is active, grey out postcodes whose district has been
+  // loaded but has no matching properties. Districts not yet loaded are also
+  // greyed so they don't flash green before property data arrives.
   const propState = usePropertyStore.getState();
   const propertyFilterActive = useFilterStore.getState().filters.some(
     (f) => f.typeId === "property" && f.enabled,
   );
-  if (pass && propertyFilterActive && propState.loadedDistricts.size > 0) {
-    if (!propState.postcodesWithProperties.has(postcodeId)) {
+  if (pass && propertyFilterActive) {
+    const district = postcodeId.split(" ")[0];
+    const districtLoaded = propState.loadedDistricts.has(district);
+
+    if (!districtLoaded) {
+      // District not loaded yet — grey it out (don't show green prematurely)
+      pass = false;
+    } else if (!propState.postcodesWithProperties.has(postcodeId)) {
       // For approximate sectors, check parent district for properties
       if (approximate) {
         const parentId = postcodeId.substring(0, postcodeId.lastIndexOf(" "));
@@ -93,7 +101,7 @@ export function DistrictLayer({ data }: Props) {
   const propertyEnabled = useFilterStore(
     (s) => s.filters.some((f) => f.typeId === "property" && f.enabled),
   );
-  const propertyDataLoaded = usePropertyStore((s) => s.loadedDistricts.size > 0);
+  const propertyLoadedCount = usePropertyStore((s) => s.loadedDistricts.size);
   const geoJsonRef = useRef<L.GeoJSON | null>(null);
   const tooltipRef = useRef<L.Tooltip | null>(null);
 
@@ -172,7 +180,7 @@ export function DistrictLayer({ data }: Props) {
         cancelAnimationFrame(rafId);
       }
     };
-  }, [scores, postcodesWithProperties, propertyEnabled, propertyDataLoaded]);
+  }, [scores, postcodesWithProperties, propertyEnabled, propertyLoadedCount]);
 
   return (
     <GeoJSON

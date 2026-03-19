@@ -2,14 +2,40 @@ import { useEffect, useRef } from "react";
 import { usePropertyStore } from "../stores/propertyStore.ts";
 import { useScoreStore } from "../stores/scoreStore.ts";
 import { usePropertyFilters } from "./usePropertyFilters.ts";
+import { getPropertyIndex } from "./usePropertyIndex.ts";
 import type { PropertyData } from "../types/property.ts";
 
 const BASE = import.meta.env.BASE_URL;
-const CONCURRENCY = 6;
+
+/** Module-level cache for the full property bundle. */
+let bundleCache: Record<string, PropertyData> | null = null;
+let bundleFetchPromise: Promise<Record<string, PropertyData>> | null = null;
+
+function fetchBundle(
+  signal: AbortSignal,
+): Promise<Record<string, PropertyData>> {
+  if (bundleCache) return Promise.resolve(bundleCache);
+  if (!bundleFetchPromise) {
+    bundleFetchPromise = fetch(`${BASE}data/properties-all.json`, { signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`properties-all.json: ${res.status}`);
+        return res.json() as Promise<Record<string, PropertyData>>;
+      })
+      .then((data) => {
+        bundleCache = data;
+        return data;
+      })
+      .catch((err) => {
+        bundleFetchPromise = null;
+        throw err;
+      });
+  }
+  return bundleFetchPromise;
+}
 
 /**
- * Loads property data per-district, driven by which postcodes pass
- * the active filters. Only fetches districts that haven't been loaded yet.
+ * Loads property data from a single bundled JSON file.
+ * Only fetches districts that haven't been loaded yet, using the cached bundle.
  */
 export function usePropertyData() {
   const propertyFilters = usePropertyFilters();
@@ -18,6 +44,7 @@ export function usePropertyData() {
   const loadingTotal = usePropertyStore((s) => s.loadingTotal);
   const loadingDone = usePropertyStore((s) => s.loadingDone);
   const mergeDistrictData = usePropertyStore((s) => s.mergeDistrictData);
+  const markDistrictEmpty = usePropertyStore((s) => s.markDistrictEmpty);
   const setLoadingProgress = usePropertyStore((s) => s.setLoadingProgress);
   const scores = useScoreStore((s) => s.scores);
   const abortRef = useRef<AbortController | null>(null);
@@ -25,7 +52,6 @@ export function usePropertyData() {
   useEffect(() => {
     if (!enabled) return;
 
-    // Read current loading state from store snapshot (not as reactive deps)
     const { loadedDistricts, loadingDistricts } =
       usePropertyStore.getState();
 
@@ -57,35 +83,42 @@ export function usePropertyData() {
 
     setLoadingProgress(0, toLoad.length);
 
-    // Fetch districts with concurrency limit
-    let idx = 0;
-    const fetchNext = async (): Promise<void> => {
-      while (idx < toLoad.length) {
-        if (abort.signal.aborted) return;
-        const district = toLoad[idx++];
-        try {
-          const res = await fetch(
-            `${BASE}data/properties/${district}.json`,
-            { signal: abort.signal },
-          );
-          if (!res.ok) continue;
-          const districtData = (await res.json()) as PropertyData;
-          if (!abort.signal.aborted) {
-            mergeDistrictData(district, districtData);
-          }
-        } catch {
-          // Aborted or network error - skip
-        }
-      }
-    };
+    // Use property index to know which districts have data
+    const index = getPropertyIndex();
 
-    const workers = Array.from({ length: CONCURRENCY }, () => fetchNext());
-    Promise.all(workers);
+    fetchBundle(abort.signal)
+      .then((bundle) => {
+        if (abort.signal.aborted) return;
+
+        for (const district of toLoad) {
+          if (abort.signal.aborted) return;
+
+          const districtData = bundle[district];
+          if (districtData) {
+            mergeDistrictData(district, districtData);
+          } else if (index && !(district in index)) {
+            // District has no property data at all
+            markDistrictEmpty(district);
+          } else {
+            // District not in bundle (shouldn't happen, but handle gracefully)
+            markDistrictEmpty(district);
+          }
+        }
+      })
+      .catch(() => {
+        // Aborted or network error — ignore
+      });
 
     return () => {
       abort.abort();
     };
-  }, [enabled, scores, mergeDistrictData, setLoadingProgress]);
+  }, [
+    enabled,
+    scores,
+    mergeDistrictData,
+    markDistrictEmpty,
+    setLoadingProgress,
+  ]);
 
   const isLoading = loadingDone < loadingTotal && loadingTotal > 0;
 
