@@ -3,6 +3,7 @@ import { useCallback, useRef, useEffect } from "react";
 import L from "leaflet";
 import type { PostcodeCollection } from "../../types/geo.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
+import { useRouteStore } from "../../stores/routeStore.ts";
 import { GREYED_COLOR } from "./colorScale.ts";
 import { PostcodeTooltip } from "./PostcodeTooltip.tsx";
 import { createRoot } from "react-dom/client";
@@ -27,7 +28,7 @@ function getStyleForPostcode(postcodeId: string): L.PathOptions {
 
   return {
     fillColor: pass ? REACHABLE_COLOR : GREYED_COLOR,
-    fillOpacity: pass ? 0.45 : 0.5,
+    fillOpacity: pass ? 0.25 : 0.5,
     color: BORDER_COLOR,
     weight: 1,
     opacity: 0.7,
@@ -55,6 +56,7 @@ export function DistrictLayer({ data }: Props) {
           const current = getStyleForPostcode(id);
           target.setStyle({ ...current, weight: 3, color: "#333" });
           target.bringToFront();
+          useRouteStore.getState().setHoveredPostcode(id);
 
           const container = document.createElement("div");
           const root = createRoot(container);
@@ -75,6 +77,7 @@ export function DistrictLayer({ data }: Props) {
             map.removeLayer(tooltipRef.current);
             tooltipRef.current = null;
           }
+          useRouteStore.getState().setHoveredPostcode(null);
         },
         mousemove: (e: L.LeafletMouseEvent) => {
           tooltipRef.current?.setLatLng(e.latlng);

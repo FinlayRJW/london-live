@@ -2,6 +2,17 @@ import type { DijkstraConstraints, TransportMode } from "../types/transport.ts";
 import type { Graph } from "./graph.ts";
 import { INTERCHANGE_PENALTY, BOARDING_WAIT, BUS_BOARDING_WAIT } from "./constants.ts";
 
+export interface ParentInfo {
+  fromNode: string;
+  mode: TransportMode;
+  line?: string;
+}
+
+export interface DijkstraOutput {
+  times: Map<string, number>;
+  parents: Map<string, ParentInfo>;
+}
+
 interface DijkstraState {
   nodeId: string;
   changesUsed: number;
@@ -99,13 +110,14 @@ class MinHeap {
  * - Walking edges reset currentLine to null to prevent double-counting
  *   the interchange penalty
  *
- * Returns a Map from nodeId to best travel time in seconds.
+ * Returns times (nodeId -> best travel time in seconds) and
+ * parents (nodeId -> ParentInfo for path reconstruction).
  */
 export function dijkstraOneToAll(
   graph: Graph,
   sourceId: string,
   constraints: DijkstraConstraints = {},
-): Map<string, number> {
+): DijkstraOutput {
   const {
     maxChanges = Infinity,
     allowedModes,
@@ -121,6 +133,7 @@ export function dijkstraOneToAll(
 
   const dist = new Map<string, number>(); // stateKey -> cost
   const bestPerNode = new Map<string, number>(); // nodeId -> best cost
+  const bestParentPerNode = new Map<string, ParentInfo>(); // nodeId -> parent info
 
   const heap = new MinHeap();
   const startState: DijkstraState = {
@@ -203,24 +216,30 @@ export function dijkstraOneToAll(
         const prevBest = bestPerNode.get(edge.target);
         if (prevBest === undefined || newCost < prevBest) {
           bestPerNode.set(edge.target, newCost);
+          bestParentPerNode.set(edge.target, {
+            fromNode: state.nodeId,
+            mode: edge.mode,
+            line: edge.line,
+          });
         }
       }
     }
   }
 
-  return bestPerNode;
+  return { times: bestPerNode, parents: bestParentPerNode };
 }
 
 /**
  * Get travel times from source to all postcode centroids.
  * Filters bestPerNode to only include centroid nodes.
+ * Returns the full DijkstraOutput (times filtered to centroids, all parents).
  */
 export function getPostcodeTimes(
   graph: Graph,
   sourceId: string,
   constraints: DijkstraConstraints = {},
-): Map<string, number> {
-  const allTimes = dijkstraOneToAll(graph, sourceId, constraints);
+): DijkstraOutput {
+  const { times: allTimes, parents } = dijkstraOneToAll(graph, sourceId, constraints);
   const postcodeTimes = new Map<string, number>();
 
   for (const [nodeId, time] of allTimes) {
@@ -230,7 +249,7 @@ export function getPostcodeTimes(
     }
   }
 
-  return postcodeTimes;
+  return { times: postcodeTimes, parents };
 }
 
 export function isRailMode(mode: TransportMode): boolean {

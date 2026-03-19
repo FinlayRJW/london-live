@@ -39,7 +39,7 @@ function buildTestGraph(): Graph {
 describe("dijkstraOneToAll", () => {
   it("adds boarding wait when first taking a rail edge", () => {
     const g = buildTestGraph();
-    const times = dijkstraOneToAll(g, "A");
+    const { times } = dijkstraOneToAll(g, "A");
 
     expect(times.get("A")).toBe(0);
     expect(times.get("B")).toBe(120 + BOARDING_WAIT);
@@ -49,7 +49,7 @@ describe("dijkstraOneToAll", () => {
 
   it("respects max time constraint", () => {
     const g = buildTestGraph();
-    const times = dijkstraOneToAll(g, "A", { maxTime: 300 });
+    const { times } = dijkstraOneToAll(g, "A", { maxTime: 300 });
 
     expect(times.get("A")).toBe(0);
     expect(times.get("B")).toBe(120 + BOARDING_WAIT);
@@ -59,10 +59,10 @@ describe("dijkstraOneToAll", () => {
   it("counts interchanges correctly", () => {
     const g = buildTestGraph();
 
-    const times0changes = dijkstraOneToAll(g, "A", { maxChanges: 0 });
+    const { times: times0changes } = dijkstraOneToAll(g, "A", { maxChanges: 0 });
     expect(times0changes.has("E")).toBe(false);
 
-    const times1change = dijkstraOneToAll(g, "A", { maxChanges: 1 });
+    const { times: times1change } = dijkstraOneToAll(g, "A", { maxChanges: 1 });
     // A->B: 120 + BOARDING_WAIT, B->E on line2: 120 + INTERCHANGE_PENALTY
     expect(times1change.get("E")).toBe(120 + BOARDING_WAIT + 120 + INTERCHANGE_PENALTY);
   });
@@ -70,7 +70,7 @@ describe("dijkstraOneToAll", () => {
   it("respects mode constraints", () => {
     const g = buildTestGraph();
 
-    const walkOnly = dijkstraOneToAll(g, "A", {
+    const { times: walkOnly } = dijkstraOneToAll(g, "A", {
       allowedModes: new Set(["walking"]),
     });
     expect(walkOnly.get("centroid:SW1")).toBe(300);
@@ -94,7 +94,7 @@ describe("dijkstraOneToAll", () => {
     // W -> X on lineA, walk X -> Y, Y -> Z on lineB
     // Walking preserves currentLine (lineA), so Y->Z on lineB is a
     // line change (INTERCHANGE_PENALTY), not a fresh boarding
-    const times = dijkstraOneToAll(g, "W");
+    const { times } = dijkstraOneToAll(g, "W");
 
     // W->X: 100 + BOARDING_WAIT, X->Y: 120 walk, Y->Z: 100 + INTERCHANGE_PENALTY
     expect(times.get("Z")).toBe(100 + BOARDING_WAIT + 120 + 100 + INTERCHANGE_PENALTY);
@@ -126,7 +126,7 @@ describe("bus edges", () => {
 
   it("uses bus edge when bus rides allowed", () => {
     const g = buildBusTestGraph();
-    const times = dijkstraOneToAll(g, "A", {
+    const { times } = dijkstraOneToAll(g, "A", {
       allowedModes: new Set(["tube", "bus", "walking"]),
       maxBusRides: 1,
     });
@@ -137,7 +137,7 @@ describe("bus edges", () => {
 
   it("skips bus edge when maxBusRides is 0", () => {
     const g = buildBusTestGraph();
-    const times = dijkstraOneToAll(g, "A", {
+    const { times } = dijkstraOneToAll(g, "A", {
       allowedModes: new Set(["tube", "bus", "walking"]),
       maxBusRides: 0,
     });
@@ -149,7 +149,7 @@ describe("bus edges", () => {
 
   it("enforces bus time limit", () => {
     const g = buildBusTestGraph();
-    const times = dijkstraOneToAll(g, "A", {
+    const { times } = dijkstraOneToAll(g, "A", {
       allowedModes: new Set(["tube", "bus", "walking"]),
       maxBusRides: 5,
       maxBusTime: 100, // bus edge is 180s, exceeds limit
@@ -161,7 +161,7 @@ describe("bus edges", () => {
   it("bus rides are independent of rail changes", () => {
     const g = buildBusTestGraph();
     // 0 rail changes but 1 bus ride allowed
-    const times = dijkstraOneToAll(g, "A", {
+    const { times } = dijkstraOneToAll(g, "A", {
       allowedModes: new Set(["tube", "bus", "walking"]),
       maxChanges: 0,
       maxBusRides: 1,
@@ -186,7 +186,7 @@ describe("bus edges", () => {
     g.addBidirectionalEdge("Q", "R", 150, "bus");
 
     // With maxBusRides: 1, can reach Q but not R
-    const times1 = dijkstraOneToAll(g, "P", {
+    const { times: times1 } = dijkstraOneToAll(g, "P", {
       allowedModes: new Set(["bus"]),
       maxBusRides: 1,
     });
@@ -194,7 +194,7 @@ describe("bus edges", () => {
     expect(times1.has("R")).toBe(false);
 
     // With maxBusRides: 2, can reach R
-    const times2 = dijkstraOneToAll(g, "P", {
+    const { times: times2 } = dijkstraOneToAll(g, "P", {
       allowedModes: new Set(["bus"]),
       maxBusRides: 2,
     });
@@ -205,7 +205,7 @@ describe("bus edges", () => {
 describe("getPostcodeTimes", () => {
   it("returns only centroid nodes", () => {
     const g = buildTestGraph();
-    const times = getPostcodeTimes(g, "A");
+    const { times } = getPostcodeTimes(g, "A");
 
     expect(times.has("centroid:SW1")).toBe(true);
     expect(times.has("centroid:N1")).toBe(true);
@@ -214,7 +214,7 @@ describe("getPostcodeTimes", () => {
 
   it("computes correct times to centroids", () => {
     const g = buildTestGraph();
-    const times = getPostcodeTimes(g, "A");
+    const { times } = getPostcodeTimes(g, "A");
 
     // centroid:SW1 -> A: 300s walking (no rail)
     expect(times.get("centroid:SW1")).toBe(300);

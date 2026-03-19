@@ -48,6 +48,7 @@ export function useScoreComputation() {
           filter.config,
           postcodes,
           activeLevel,
+          filter.id,
         );
         filterResults.set(filter.id, result);
       }

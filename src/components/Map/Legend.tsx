@@ -12,7 +12,7 @@ export function Legend() {
     <div className="absolute bottom-6 right-3 z-[1000] bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: REACHABLE_COLOR, opacity: 0.7 }} />
+          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: REACHABLE_COLOR, opacity: 0.5 }} />
           <span className="text-text-muted">Reachable</span>
         </div>
         <div className="flex items-center gap-1">

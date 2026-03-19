@@ -20,6 +20,7 @@ export interface FilterPlugin<TConfig = unknown> {
     config: TConfig,
     postcodes: string[],
     level: PostcodeLevel,
+    filterId?: string,
   ): FilterResultMap | Promise<FilterResultMap>;
   ConfigComponent: React.ComponentType<{
     config: TConfig;

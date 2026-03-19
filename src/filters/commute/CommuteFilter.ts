@@ -2,6 +2,7 @@ import type { FilterPlugin, FilterResultMap } from "../../types/filter.ts";
 import type { PostcodeLevel } from "../../types/geo.ts";
 import type { DijkstraConstraints, TransportMode } from "../../types/transport.ts";
 import { useTransportStore } from "../../stores/transportStore.ts";
+import { useRouteStore } from "../../stores/routeStore.ts";
 import { Graph } from "../../transport/graph.ts";
 import { getPostcodeTimes } from "../../transport/dijkstra.ts";
 import {
@@ -72,6 +73,7 @@ function evaluateWalkOrCycle(
 function evaluatePublicTransport(
   config: CommuteConfigData,
   postcodes: string[],
+  filterId?: string,
 ): FilterResultMap {
   const results: FilterResultMap = new Map();
 
@@ -140,7 +142,17 @@ function evaluatePublicTransport(
     maxBusTime: maxBusRides > 0 ? (config.maxBusTimeMinutes ?? 10) * 60 : 0,
   };
 
-  const times = getPostcodeTimes(graph, destId, constraints);
+  const { times, parents } = getPostcodeTimes(graph, destId, constraints);
+
+  if (config.showRoute && filterId) {
+    useRouteStore.getState().setRouteData(filterId, {
+      parents,
+      nodes: graph.nodes,
+      sourceId: destId,
+    });
+  } else if (filterId) {
+    useRouteStore.getState().clearRouteData(filterId);
+  }
 
   for (const pc of postcodes) {
     const centroidId = `centroid:${pc}`;
@@ -181,6 +193,7 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
       allowedModes: ["tube", "overground", "dlr", "elizabeth_line"],
       maxBusRides: 0,
       maxBusTimeMinutes: 10,
+      showRoute: false,
     };
   },
 
@@ -188,6 +201,7 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
     config: CommuteConfigData,
     postcodes: string[],
     _level: PostcodeLevel,
+    filterId?: string,
   ): FilterResultMap {
     if (config.destinationLat === null || config.destinationLng === null) {
       const results: FilterResultMap = new Map();
@@ -198,10 +212,13 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
     }
 
     if (config.travelMethod === "walk" || config.travelMethod === "cycle") {
+      if (filterId) {
+        useRouteStore.getState().clearRouteData(filterId);
+      }
       return evaluateWalkOrCycle(config, postcodes);
     }
 
-    return evaluatePublicTransport(config, postcodes);
+    return evaluatePublicTransport(config, postcodes, filterId);
   },
 
   ConfigComponent: CommuteConfig,

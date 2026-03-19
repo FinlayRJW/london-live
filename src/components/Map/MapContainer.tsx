@@ -2,9 +2,11 @@ import { MapContainer as LeafletMap, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import { useMapStore } from "../../stores/mapStore.ts";
 import { DistrictLayer } from "./DistrictLayer.tsx";
+import { RouteOverlay } from "./RouteOverlay.tsx";
 import { ZoomController } from "./ZoomController.tsx";
 import { LondonMask } from "./LondonMask.tsx";
 import { Legend } from "./Legend.tsx";
+import { RouteLegend } from "./RouteLegend.tsx";
 import { usePostcodeBoundaries } from "../../hooks/usePostcodeBoundaries.ts";
 import "leaflet/dist/leaflet.css";
 
@@ -39,8 +41,10 @@ export function MapView() {
         <ZoomController />
         <LondonMask />
         {districts && <DistrictLayer data={districts} />}
+        <RouteOverlay />
       </LeafletMap>
       <Legend />
+      <RouteLegend />
       {isLoading && (
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] bg-white/95 rounded-lg shadow px-3 py-1 text-sm text-text-muted">
           Loading boundaries...
