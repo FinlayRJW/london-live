@@ -1,4 +1,4 @@
-import { Polyline, CircleMarker } from "react-leaflet";
+import { Polyline, CircleMarker, Pane } from "react-leaflet";
 import { useRouteStore, reconstructRoute } from "../../stores/routeStore.ts";
 import { useFilterStore } from "../../stores/filterStore.ts";
 import type { CommuteConfigData } from "../../filters/commute/CommuteConfig.tsx";
@@ -94,7 +94,7 @@ export function RouteOverlay() {
   }
 
   return (
-    <>
+    <Pane name="route-overlay" style={{ zIndex: 620, pointerEvents: "none" }}>
       {/* White outline behind coloured lines for contrast */}
       {segments.flatMap(({ filterId, segments: segs }) =>
         segs.map((seg, i) => (
@@ -146,6 +146,6 @@ export function RouteOverlay() {
           }}
         />
       ))}
-    </>
+    </Pane>
   );
 }

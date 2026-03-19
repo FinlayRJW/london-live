@@ -4,13 +4,17 @@ import { INTERCHANGE_PENALTY, BOARDING_WAIT, BUS_BOARDING_WAIT } from "./constan
 
 export interface ParentInfo {
   fromNode: string;
+  fromStateKey: string;
   mode: TransportMode;
   line?: string;
 }
 
 export interface DijkstraOutput {
   times: Map<string, number>;
+  /** Parent info keyed by state key (not node ID) for consistent path reconstruction. */
   parents: Map<string, ParentInfo>;
+  /** Maps each node ID to the state key that achieved its best cost. */
+  bestState: Map<string, string>;
 }
 
 interface DijkstraState {
@@ -133,7 +137,8 @@ export function dijkstraOneToAll(
 
   const dist = new Map<string, number>(); // stateKey -> cost
   const bestPerNode = new Map<string, number>(); // nodeId -> best cost
-  const bestParentPerNode = new Map<string, ParentInfo>(); // nodeId -> parent info
+  const parentPerState = new Map<string, ParentInfo>(); // stateKey -> parent info
+  const bestStatePerNode = new Map<string, string>(); // nodeId -> stateKey
 
   const heap = new MinHeap();
   const startState: DijkstraState = {
@@ -144,8 +149,10 @@ export function dijkstraOneToAll(
     busTimeUsed: 0,
   };
 
-  dist.set(stateKey(startState, trackChanges, trackBus), 0);
+  const startKey = stateKey(startState, trackChanges, trackBus);
+  dist.set(startKey, 0);
   bestPerNode.set(sourceId, 0);
+  bestStatePerNode.set(sourceId, startKey);
   heap.push({ cost: 0, state: startState });
 
   while (heap.size > 0) {
@@ -212,21 +219,23 @@ export function dijkstraOneToAll(
       if (prevCost === undefined || newCost < prevCost) {
         dist.set(nsk, newCost);
         heap.push({ cost: newCost, state: newState });
+        parentPerState.set(nsk, {
+          fromNode: state.nodeId,
+          fromStateKey: sk,
+          mode: edge.mode,
+          line: edge.line,
+        });
 
         const prevBest = bestPerNode.get(edge.target);
         if (prevBest === undefined || newCost < prevBest) {
           bestPerNode.set(edge.target, newCost);
-          bestParentPerNode.set(edge.target, {
-            fromNode: state.nodeId,
-            mode: edge.mode,
-            line: edge.line,
-          });
+          bestStatePerNode.set(edge.target, nsk);
         }
       }
     }
   }
 
-  return { times: bestPerNode, parents: bestParentPerNode };
+  return { times: bestPerNode, parents: parentPerState, bestState: bestStatePerNode };
 }
 
 /**
@@ -239,7 +248,7 @@ export function getPostcodeTimes(
   sourceId: string,
   constraints: DijkstraConstraints = {},
 ): DijkstraOutput {
-  const { times: allTimes, parents } = dijkstraOneToAll(graph, sourceId, constraints);
+  const { times: allTimes, parents, bestState } = dijkstraOneToAll(graph, sourceId, constraints);
   const postcodeTimes = new Map<string, number>();
 
   for (const [nodeId, time] of allTimes) {
@@ -249,7 +258,7 @@ export function getPostcodeTimes(
     }
   }
 
-  return { times: postcodeTimes, parents };
+  return { times: postcodeTimes, parents, bestState };
 }
 
 export function isRailMode(mode: TransportMode): boolean {

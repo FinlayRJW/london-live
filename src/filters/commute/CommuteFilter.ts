@@ -142,11 +142,12 @@ function evaluatePublicTransport(
     maxBusTime: maxBusRides > 0 ? (config.maxBusTimeMinutes ?? 10) * 60 : 0,
   };
 
-  const { times, parents } = getPostcodeTimes(graph, destId, constraints);
+  const { times, parents, bestState } = getPostcodeTimes(graph, destId, constraints);
 
   if (config.showRoute && filterId) {
     useRouteStore.getState().setRouteData(filterId, {
       parents,
+      bestState,
       nodes: graph.nodes,
       sourceId: destId,
     });
