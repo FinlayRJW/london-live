@@ -5,15 +5,26 @@ export const CYCLING_SPEED = 15000 / 3600; // 15 km/h
 // Walking distance multiplier (roads aren't straight lines)
 export const WALKING_DETOUR = 1.3;
 
-// Average time between stations in seconds, by mode
-export const INTER_STATION_TIME: Record<string, number> = {
-  tube: 120,
-  overground: 150,
-  dlr: 120,
-  elizabeth_line: 150,
+// Average speed by mode in km/h (used for distance-based segment times)
+// These are conservative averages including acceleration/deceleration
+export const LINE_SPEED_KMH: Record<string, number> = {
+  tube: 33,        // average tube speed including stops
+  overground: 40,  // slightly faster, fewer stops
+  dlr: 30,         // similar to tube
+  elizabeth_line: 45, // faster, longer gaps
 };
 
+// Dwell time at each station in seconds (doors open/close)
+export const STATION_DWELL = 30;
+
+// Track detour factor (tracks aren't straight lines between stations)
+export const TRACK_DETOUR = 1.35;
+
+// Average wait time when first boarding a train (half headway)
+export const BOARDING_WAIT = 150; // 2.5 minutes
+
 // Penalty for changing lines at an interchange (seconds)
+// Covers walking between platforms + waiting for next train
 export const INTERCHANGE_PENALTY = 300; // 5 minutes
 
 // Maximum walking distance to a station (meters)

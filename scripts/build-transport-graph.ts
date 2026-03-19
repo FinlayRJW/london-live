@@ -6,12 +6,9 @@
  * - Centroid nodes (id = "centroid:<postcodeId>")
  *
  * Edge types:
- * - Station-to-station on same line: weighted by inter-station time
- * - Interchange: same physical station, different line = penalty edge
+ * - Station-to-station on same line: weighted by distance-based travel time
+ * - Interchange: nearby stations, different lines = walking edge (no line)
  * - Centroid-to-station: walking distance
- *
- * The TfL API provides line route sequences which give us ordered station lists
- * per line. We connect consecutive stations on each line.
  */
 import { readFileSync, writeFileSync, mkdirSync } from "fs";
 
@@ -67,15 +64,41 @@ function haversineM(lat1: number, lng1: number, lat2: number, lng2: number): num
 const WALKING_SPEED = 5000 / 3600; // m/s
 const WALKING_DETOUR = 1.3;
 const MAX_WALK_M = 2000;
-const INTERCHANGE_PENALTY = 300; // seconds
 
-// Average inter-station time by mode
-const INTER_STATION_SECS: Record<string, number> = {
-  tube: 120,
-  overground: 150,
-  dlr: 120,
-  elizabeth_line: 150,
+// Interchange walking edges get a small walking weight (2 min to walk
+// between platforms). The main interchange cost (waiting for next train)
+// is handled by INTERCHANGE_PENALTY in Dijkstra when the line changes.
+const INTERCHANGE_WALK_TIME = 120; // seconds
+
+// Track detour factor (tracks curve more than straight-line distance)
+const TRACK_DETOUR = 1.35;
+
+// Station dwell time in seconds (doors open/close, passenger flow)
+const STATION_DWELL = 30;
+
+// Average line speed in km/h (conservative, includes accel/decel)
+const LINE_SPEED_KMH: Record<string, number> = {
+  tube: 33,
+  overground: 40,
+  dlr: 30,
+  elizabeth_line: 45,
 };
+
+/**
+ * Compute realistic travel time between two stations on a rail line.
+ * Uses distance-based calculation: (distance * track_detour) / speed + dwell
+ */
+function computeSegmentTime(
+  fromLat: number, fromLng: number,
+  toLat: number, toLng: number,
+  mode: string,
+): number {
+  const dist = haversineM(fromLat, fromLng, toLat, toLng);
+  const trackDist = dist * TRACK_DETOUR;
+  const speedMs = ((LINE_SPEED_KMH[mode] ?? 33) * 1000) / 3600;
+  const travelTime = trackDist / speedMs;
+  return Math.round(travelTime + STATION_DWELL);
+}
 
 interface TfLRouteSequence {
   lineId: string;
@@ -89,7 +112,6 @@ interface TfLRouteSequence {
 }
 
 async function fetchLineRouteSequences(lineId: string): Promise<string[][]> {
-  // Get ordered sequences of stations on this line
   const url = `https://api.tfl.gov.uk/Line/${lineId}/Route/Sequence/inbound`;
   try {
     const res = await fetch(url);
@@ -176,7 +198,6 @@ async function main() {
       }
     }
 
-    const interStationTime = INTER_STATION_SECS[mode] ?? 120;
     const addedPairs = new Set<string>();
 
     for (const seq of sequences) {
@@ -184,22 +205,31 @@ async function main() {
         const from = seq[i];
         const to = seq[i + 1];
 
-        // Skip if station not in our dataset
         if (!stationMap.has(from) || !stationMap.has(to)) continue;
 
         const pairKey = [from, to].sort().join("|");
         if (addedPairs.has(pairKey)) continue;
         addedPairs.add(pairKey);
 
-        addBidirectional(from, to, interStationTime, mode, lineId);
+        const fromStation = stationMap.get(from)!;
+        const toStation = stationMap.get(to)!;
+        const segmentTime = computeSegmentTime(
+          fromStation.lat, fromStation.lng,
+          toStation.lat, toStation.lng,
+          mode,
+        );
+
+        addBidirectional(from, to, segmentTime, mode, lineId);
       }
     }
     console.log(`    Added ${addedPairs.size} edges`);
   }
 
-  // Add interchange edges (same physical station, different lines)
+  // Add interchange edges (nearby stations, different lines)
+  // These are walking-only edges with NO line property, so Dijkstra
+  // will reset currentLine to null and detect the line change on
+  // the next rail edge (applying the interchange penalty once).
   console.log("Adding interchange edges...");
-  // Group stations by approximate location (within 200m = same station complex)
   const stationList = Array.from(stationMap.values());
   let interchangeCount = 0;
   for (let i = 0; i < stationList.length; i++) {
@@ -208,13 +238,13 @@ async function main() {
       const b = stationList[j];
       const dist = haversineM(a.lat, a.lng, b.lat, b.lng);
       if (dist < 200 && a.id !== b.id) {
-        // Check they share at least partially different lines
         const aLines = new Set(a.lines);
         const bLines = new Set(b.lines);
         const hasDiffLine = [...bLines].some((l) => !aLines.has(l)) ||
                             [...aLines].some((l) => !bLines.has(l));
         if (hasDiffLine) {
-          addBidirectional(a.id, b.id, INTERCHANGE_PENALTY, "walking");
+          // Small walking time only - interchange penalty applied by Dijkstra
+          addBidirectional(a.id, b.id, INTERCHANGE_WALK_TIME, "walking");
           interchangeCount++;
         }
       }
@@ -228,7 +258,6 @@ async function main() {
   for (const c of centroids) {
     const centroidId = `centroid:${c.id}`;
 
-    // Find stations within walking distance
     const nearby: { id: string; dist: number }[] = [];
     for (const s of stations) {
       const dist = haversineM(c.lat, c.lng, s.lat, s.lng);
@@ -237,7 +266,6 @@ async function main() {
       }
     }
 
-    // Sort by distance, take closest ones (max 5 to keep graph manageable)
     nearby.sort((a, b) => a.dist - b.dist);
     const toConnect = nearby.slice(0, 5);
 

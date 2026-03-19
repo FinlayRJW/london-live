@@ -1,6 +1,6 @@
 import type { DijkstraConstraints, TransportMode } from "../types/transport.ts";
 import type { Graph } from "./graph.ts";
-import { INTERCHANGE_PENALTY } from "./constants.ts";
+import { INTERCHANGE_PENALTY, BOARDING_WAIT } from "./constants.ts";
 
 interface DijkstraState {
   nodeId: string;
@@ -77,6 +77,14 @@ class MinHeap {
  * State includes (nodeId, changesUsed, currentLine) to support constraints
  * on maximum interchanges and allowed transport modes.
  *
+ * Costs include:
+ * - Edge weight (distance-based travel time for rail, walk time for walking)
+ * - Boarding wait (BOARDING_WAIT) when first stepping onto a rail line
+ *   (i.e. currentLine is null and we take a rail edge)
+ * - Interchange penalty (INTERCHANGE_PENALTY) when switching between rail lines
+ * - Walking edges reset currentLine to null to prevent double-counting
+ *   the interchange penalty
+ *
  * Returns a Map from nodeId to best travel time in seconds.
  */
 export function dijkstraOneToAll(
@@ -116,24 +124,37 @@ export function dijkstraOneToAll(
       // Check mode constraint
       if (allowedModes && !allowedModes.has(edge.mode)) continue;
 
-      // Compute changes
       let changes = state.changesUsed;
-      let isInterchange = false;
-      if (edge.line && state.currentLine && edge.line !== state.currentLine) {
-        changes += 1;
-        isInterchange = true;
+      let penalty = 0;
+
+      if (edge.line) {
+        // Rail edge
+        if (state.currentLine === null) {
+          // First time boarding a train (or re-boarding after walking interchange)
+          penalty = BOARDING_WAIT;
+        } else if (edge.line !== state.currentLine) {
+          // Changing lines at a same-node interchange
+          changes += 1;
+          penalty = INTERCHANGE_PENALTY;
+        }
       }
+
       if (changes > maxChanges) continue;
 
-      const penalty = isInterchange ? INTERCHANGE_PENALTY : 0;
       const newCost = cost + edge.weight + penalty;
 
       if (newCost > maxTime) continue;
 
+      // Walking edges reset currentLine to null. This ensures that
+      // when you walk between interchange stations, the next rail
+      // edge triggers a boarding/interchange penalty correctly
+      // (instead of double-counting).
+      const newLine = edge.line ?? (edge.mode === "walking" ? null : state.currentLine);
+
       const newState: DijkstraState = {
         nodeId: edge.target,
         changesUsed: changes,
-        currentLine: edge.line ?? state.currentLine,
+        currentLine: newLine,
       };
 
       const nsk = stateKey(newState, trackChanges);
