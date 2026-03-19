@@ -4,6 +4,7 @@ import { useScoreStore } from "../../stores/scoreStore.ts";
 import { useMemo } from "react";
 import type { PropertyType, Tenure } from "../../types/property.ts";
 import { PROPERTY_TYPE_LABELS } from "../../types/property.ts";
+import { DualRangeSlider } from "./DualRangeSlider.tsx";
 
 const ALL_TYPES: PropertyType[] = ["F", "T", "S", "D"];
 const DATE_RANGES: { value: 6 | 12 | 24; label: string }[] = [
@@ -31,6 +32,7 @@ export function PropertyPanel() {
   const setMaxPrice = usePropertyStore((s) => s.setMaxPrice);
   const setMinFloorArea = usePropertyStore((s) => s.setMinFloorArea);
   const setMaxFloorArea = usePropertyStore((s) => s.setMaxFloorArea);
+  const setHideNoFloorArea = usePropertyStore((s) => s.setHideNoFloorArea);
   const setTypes = usePropertyStore((s) => s.setTypes);
   const setTenure = usePropertyStore((s) => s.setTenure);
   const setDateRange = usePropertyStore((s) => s.setDateRange);
@@ -94,52 +96,38 @@ export function PropertyPanel() {
                 <label className="block text-xs font-medium text-text mb-1">
                   Price: {formatPrice(filters.minPrice)} &ndash; {formatPrice(filters.maxPrice)}
                 </label>
-                <div className="flex gap-2 items-center">
-                  <input
-                    type="range"
-                    min={0}
-                    max={2_000_000}
-                    step={25_000}
-                    value={filters.minPrice}
-                    onChange={(e) => setMinPrice(Number(e.target.value))}
-                    className="flex-1"
-                  />
-                  <input
-                    type="range"
-                    min={0}
-                    max={2_000_000}
-                    step={25_000}
-                    value={filters.maxPrice}
-                    onChange={(e) => setMaxPrice(Number(e.target.value))}
-                    className="flex-1"
-                  />
-                </div>
+                <DualRangeSlider
+                  min={0}
+                  max={2_000_000}
+                  step={25_000}
+                  valueLow={filters.minPrice}
+                  valueHigh={filters.maxPrice}
+                  onChangeLow={setMinPrice}
+                  onChangeHigh={setMaxPrice}
+                />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-text mb-1">
                   Floor area: {filters.minFloorArea} &ndash; {filters.maxFloorArea} m&sup2;
                 </label>
-                <div className="flex gap-2 items-center">
+                <DualRangeSlider
+                  min={0}
+                  max={300}
+                  step={5}
+                  valueLow={filters.minFloorArea}
+                  valueHigh={filters.maxFloorArea}
+                  onChangeLow={setMinFloorArea}
+                  onChangeHigh={setMaxFloorArea}
+                />
+                <label className="flex items-center gap-1.5 mt-1 text-xs text-text-muted cursor-pointer">
                   <input
-                    type="range"
-                    min={0}
-                    max={300}
-                    step={5}
-                    value={filters.minFloorArea}
-                    onChange={(e) => setMinFloorArea(Number(e.target.value))}
-                    className="flex-1"
+                    type="checkbox"
+                    checked={filters.hideNoFloorArea}
+                    onChange={(e) => setHideNoFloorArea(e.target.checked)}
                   />
-                  <input
-                    type="range"
-                    min={0}
-                    max={300}
-                    step={5}
-                    value={filters.maxFloorArea}
-                    onChange={(e) => setMaxFloorArea(Number(e.target.value))}
-                    className="flex-1"
-                  />
-                </div>
+                  Hide properties with no floor area
+                </label>
               </div>
 
               <div>

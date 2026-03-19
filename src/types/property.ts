@@ -37,6 +37,7 @@ export interface PropertyFilters {
   maxPrice: number;
   minFloorArea: number;
   maxFloorArea: number;
+  hideNoFloorArea: boolean;
   types: PropertyType[];
   tenure: Tenure | "both";
   /** Months back from now */

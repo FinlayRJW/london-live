@@ -19,14 +19,6 @@ export const TYPE_COLORS: Record<PropertyType, string> = {
   O: "#6b7280", // grey - other
 };
 
-const TYPE_ICONS: Record<PropertyType, string> = {
-  F: "&#127970;", // 🏢 office/apartment building
-  T: "&#127969;", // 🏡 house with garden
-  S: "&#127968;", // 🏠 house
-  D: "&#127960;", // 🏘 houses
-  O: "&#127959;", // 🏗 building
-};
-
 export const CLUSTER_COLOR = "rgba(30, 64, 110, 0.55)";
 
 function formatPrice(price: number): string {
@@ -38,16 +30,16 @@ function formatPrice(price: number): string {
 
 function makeIcon(type: PropertyType, hasEpc: boolean): L.DivIcon {
   const color = TYPE_COLORS[type];
-  const icon = TYPE_ICONS[type];
+  const size = 12;
   const border = hasEpc
     ? "2px solid white"
-    : "2px dashed rgba(255,255,255,0.6)";
-  const opacity = hasEpc ? "1" : "0.6";
+    : "2px dashed rgba(200,200,200,0.8)";
+  const opacity = hasEpc ? "1" : "0.5";
   return L.divIcon({
     className: "",
-    iconSize: [22, 22],
-    iconAnchor: [11, 11],
-    html: `<div style="width:22px;height:22px;border-radius:50%;background:${color};border:${border};box-shadow:0 1px 3px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;opacity:${opacity};">${icon}</div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:${border};box-shadow:0 1px 3px rgba(0,0,0,0.3);opacity:${opacity};"></div>`,
   });
 }
 
@@ -118,6 +110,7 @@ function getFilteredSales(
     maxPrice: number;
     minFloorArea: number;
     maxFloorArea: number;
+    hideNoFloorArea: boolean;
     types: PropertyType[];
     tenure: "F" | "L" | "both";
     dateRange: 6 | 12 | 24;
@@ -149,6 +142,8 @@ function getFilteredSales(
       if (sale.d < cutoff) continue;
       if (sale.fa !== null) {
         if (sale.fa < filters.minFloorArea || sale.fa > filters.maxFloorArea) continue;
+      } else if (filters.hideNoFloorArea) {
+        continue;
       }
       results.push({ postcode, lat: group.lat, lng: group.lng, sale });
     }

@@ -30,6 +30,7 @@ interface PropertyState {
   setMaxPrice: (price: number) => void;
   setMinFloorArea: (area: number) => void;
   setMaxFloorArea: (area: number) => void;
+  setHideNoFloorArea: (hide: boolean) => void;
   setTypes: (types: PropertyType[]) => void;
   setTenure: (tenure: Tenure | "both") => void;
   setDateRange: (range: 6 | 12 | 24) => void;
@@ -49,6 +50,7 @@ export const usePropertyStore = create<PropertyState>()(
         maxPrice: 2_000_000,
         minFloorArea: 0,
         maxFloorArea: 300,
+        hideNoFloorArea: false,
         types: ["D", "S", "T", "F"],
         tenure: "both",
         dateRange: 24,
@@ -81,6 +83,8 @@ export const usePropertyStore = create<PropertyState>()(
         set((s) => ({ filters: { ...s.filters, minFloorArea } })),
       setMaxFloorArea: (maxFloorArea) =>
         set((s) => ({ filters: { ...s.filters, maxFloorArea } })),
+      setHideNoFloorArea: (hideNoFloorArea) =>
+        set((s) => ({ filters: { ...s.filters, hideNoFloorArea } })),
       setTypes: (types) =>
         set((s) => ({ filters: { ...s.filters, types } })),
       setTenure: (tenure) =>
@@ -108,9 +112,11 @@ function matchesFilters(record: PropertyRecord, filters: PropertyFilters): boole
   if (filters.tenure !== "both" && record.te !== filters.tenure) return false;
   const cutoff = getCutoffDate(filters.dateRange);
   if (record.d < cutoff) return false;
-  // Floor area filter - only apply to properties that have EPC data
+  // Floor area filter
   if (record.fa !== null) {
     if (record.fa < filters.minFloorArea || record.fa > filters.maxFloorArea) return false;
+  } else if (filters.hideNoFloorArea) {
+    return false;
   }
   return true;
 }
