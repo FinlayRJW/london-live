@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-# Generated data (kept in public/data/ for serving)
+# Generated data build cache (raw downloads, geocode cache)
 data/
 
 # Editor directories and files
