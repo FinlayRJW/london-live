@@ -276,22 +276,29 @@ async function main() {
   }
   console.log(`  Added ${interchangeCount} interchange edges`);
 
-  // Connect centroids to nearest stations via walking
+  // Connect centroids to nearest stations via walking.
+  // Every centroid must connect to at least 3 stations so no postcode
+  // is permanently unreachable. For distant stations the walk time
+  // will be high, which naturally penalises those routes.
   console.log("Connecting centroids to stations...");
   let walkEdgeCount = 0;
+  const MIN_STATION_CONNECTIONS = 3;
   for (const c of centroids) {
     const centroidId = `centroid:${c.id}`;
 
-    const nearby: { id: string; dist: number }[] = [];
+    // Compute distance to ALL stations, sorted by distance
+    const allDists: { id: string; dist: number }[] = [];
     for (const s of stations) {
       const dist = haversineM(c.lat, c.lng, s.lat, s.lng);
-      if (dist <= MAX_WALK_M) {
-        nearby.push({ id: s.id, dist });
-      }
+      allDists.push({ id: s.id, dist });
     }
+    allDists.sort((a, b) => a.dist - b.dist);
 
-    nearby.sort((a, b) => a.dist - b.dist);
-    const toConnect = nearby.slice(0, 5);
+    // Take all within 2km, or at least MIN_STATION_CONNECTIONS
+    const withinWalk = allDists.filter((d) => d.dist <= MAX_WALK_M);
+    const toConnect = withinWalk.length >= MIN_STATION_CONNECTIONS
+      ? withinWalk.slice(0, 5)
+      : allDists.slice(0, MIN_STATION_CONNECTIONS);
 
     for (const { id, dist } of toConnect) {
       const walkTime = (dist * WALKING_DETOUR) / WALKING_SPEED;
