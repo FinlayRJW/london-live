@@ -14,20 +14,44 @@ export function PropertyLegend() {
   return (
     <div className="absolute bottom-6 left-3 z-[1000] bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
       <div className="font-medium text-text mb-1.5">Sold properties</div>
-      <div className="space-y-1">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1">
         {LEGEND_TYPES.map((type) => (
           <div key={type} className="flex items-center gap-1.5">
             <div
-              className="w-3.5 h-3.5 rounded-full flex-shrink-0 border border-white"
-              style={{ backgroundColor: TYPE_COLORS[type] }}
+              className="w-3.5 h-3.5 rounded-full flex-shrink-0"
+              style={{
+                backgroundColor: TYPE_COLORS[type],
+                border: "2px solid white",
+                boxShadow: "0 0 0 1px rgba(0,0,0,0.15)",
+              }}
             />
             <span className="text-text-muted">{PROPERTY_TYPE_LABELS[type]}</span>
           </div>
         ))}
-        <div className="flex items-center gap-1.5 border-t border-gray-200 pt-1 mt-1">
+      </div>
+      <div className="border-t border-gray-200 mt-1.5 pt-1.5 space-y-1">
+        <div className="flex items-center gap-1.5">
           <div
-            className="w-3.5 h-3.5 rounded-full flex-shrink-0 border border-white flex items-center justify-center text-white"
-            style={{ backgroundColor: CLUSTER_COLOR, fontSize: "7px", fontWeight: 600 }}
+            className="w-3.5 h-3.5 rounded-full flex-shrink-0"
+            style={{
+              backgroundColor: "#6366f1",
+              border: "2px dashed rgba(180,180,180,0.8)",
+              opacity: 0.6,
+              boxShadow: "0 0 0 1px rgba(0,0,0,0.1)",
+            }}
+          />
+          <span className="text-text-muted">No floor area data</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div
+            className="w-3.5 h-3.5 rounded-full flex-shrink-0 flex items-center justify-center text-white"
+            style={{
+              backgroundColor: CLUSTER_COLOR,
+              border: "2px solid white",
+              fontSize: "7px",
+              fontWeight: 600,
+              boxShadow: "0 0 0 1px rgba(0,0,0,0.15)",
+            }}
           >
             n
           </div>

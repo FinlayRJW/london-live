@@ -35,14 +35,18 @@ function formatPrice(price: number): string {
   return `£${(price / 1_000).toFixed(0)}k`;
 }
 
-function makeIcon(type: PropertyType): L.DivIcon {
+function makeIcon(type: PropertyType, hasEpc: boolean): L.DivIcon {
   const color = TYPE_COLORS[type];
   const icon = TYPE_ICONS[type];
+  const border = hasEpc
+    ? "2px solid white"
+    : "2px dashed rgba(255,255,255,0.6)";
+  const opacity = hasEpc ? "1" : "0.6";
   return L.divIcon({
     className: "",
     iconSize: [22, 22],
     iconAnchor: [11, 11],
-    html: `<div style="width:22px;height:22px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;">${icon}</div>`,
+    html: `<div style="width:22px;height:22px;border-radius:50%;background:${color};border:${border};box-shadow:0 1px 3px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;opacity:${opacity};">${icon}</div>`,
   });
 }
 
@@ -215,7 +219,7 @@ export function PropertyLayer() {
       const jLng = lng + radius * Math.sin(angle);
 
       const marker = L.marker([jLat, jLng], {
-        icon: makeIcon(sale.t),
+        icon: makeIcon(sale.t, sale.fa !== null),
       });
 
       marker.bindPopup(buildPopupHtml(postcode, sale), {
