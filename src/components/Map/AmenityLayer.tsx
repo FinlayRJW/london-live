@@ -120,7 +120,7 @@ export function AmenityLayer() {
           const count = cluster.getChildCount();
           const size = count < 10 ? "26px" : count < 50 ? "32px" : "38px";
           return L.divIcon({
-            html: `<div style="width:${size};height:${size};border-radius:50%;background:rgba(100,100,100,0.7);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:system-ui;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">${count}</div>`,
+            html: `<div style="width:${size};height:${size};border-radius:6px;background:rgba(168,85,247,0.8);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:system-ui;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">${count}</div>`,
             className: "",
             iconSize: L.point(parseInt(size), parseInt(size)),
           });
