@@ -3,6 +3,7 @@ import L from "leaflet";
 import { useMapStore } from "../../stores/mapStore.ts";
 import { DistrictLayer } from "./DistrictLayer.tsx";
 import { RouteOverlay } from "./RouteOverlay.tsx";
+import { PropertyLayer } from "./PropertyLayer.tsx";
 import { ZoomController } from "./ZoomController.tsx";
 import { LondonMask } from "./LondonMask.tsx";
 import { Legend } from "./Legend.tsx";
@@ -19,7 +20,7 @@ const LONDON_BOUNDS = L.latLngBounds(
 export function MapView() {
   const center = useMapStore((s) => s.center);
   const zoom = useMapStore((s) => s.zoom);
-  const { districts, isLoading } = usePostcodeBoundaries();
+  const { boundaries, isLoading } = usePostcodeBoundaries();
 
   return (
     <div className="relative flex-1 h-full">
@@ -40,8 +41,9 @@ export function MapView() {
         />
         <ZoomController />
         <LondonMask />
-        {districts && <DistrictLayer data={districts} />}
+        {boundaries && <DistrictLayer data={boundaries} />}
         <RouteOverlay />
+        <PropertyLayer />
       </LeafletMap>
       <Legend />
       <RouteLegend />

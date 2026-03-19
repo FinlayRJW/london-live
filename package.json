@@ -13,14 +13,17 @@
     "data:centroids": "tsx scripts/compute-centroids.ts",
     "data:stations": "tsx scripts/fetch-stations.ts",
     "data:graph": "tsx scripts/build-transport-graph.ts",
+    "data:sectors": "tsx scripts/fetch-sector-boundaries.ts",
     "data:boundary": "tsx scripts/compute-london-boundary.ts",
-    "data:all": "npm run data:boundaries && npm run data:centroids && npm run data:stations && npm run data:graph && npm run data:boundary"
+    "data:properties": "tsx scripts/fetch-property-prices.ts",
+    "data:all": "npm run data:boundaries && npm run data:centroids && npm run data:stations && npm run data:sectors && npm run data:graph && npm run data:boundary"
   },
   "dependencies": {
     "d3-interpolate": "^3.0.1",
     "d3-scale": "^4.0.2",
     "d3-scale-chromatic": "^3.1.0",
     "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-leaflet": "^5.0.0",
@@ -35,6 +38,7 @@
     "@types/d3-scale-chromatic": "^3.1.0",
     "@types/geojson": "^7946.0.16",
     "@types/leaflet": "^1.9.21",
+    "@types/leaflet.markercluster": "^1.5.6",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
