@@ -7,8 +7,32 @@ import { GREYED_COLOR } from "./colorScale.ts";
 import { PostcodeTooltip } from "./PostcodeTooltip.tsx";
 import { createRoot } from "react-dom/client";
 
-const REACHABLE_COLOR = "#4ade80"; // green-400
+const REACHABLE_COLOR = "#4ade80";
 const BORDER_COLOR = "#555";
+
+function getStyleForPostcode(postcodeId: string): L.PathOptions {
+  const scores = useScoreStore.getState().scores;
+  if (scores.size === 0) {
+    return {
+      fillColor: "transparent",
+      fillOpacity: 0,
+      color: BORDER_COLOR,
+      weight: 1.5,
+      opacity: 0.7,
+    };
+  }
+
+  const score = scores.get(postcodeId);
+  const pass = score?.pass ?? false;
+
+  return {
+    fillColor: pass ? REACHABLE_COLOR : GREYED_COLOR,
+    fillOpacity: pass ? 0.45 : 0.5,
+    color: BORDER_COLOR,
+    weight: 1,
+    opacity: 0.7,
+  };
+}
 
 interface Props {
   data: PostcodeCollection;
@@ -20,34 +44,6 @@ export function DistrictLayer({ data }: Props) {
   const geoJsonRef = useRef<L.GeoJSON | null>(null);
   const tooltipRef = useRef<L.Tooltip | null>(null);
 
-  const hasScores = scores.size > 0;
-
-  const getStyle = useCallback(
-    (postcodeId: string): L.PathOptions => {
-      if (!hasScores) {
-        return {
-          fillColor: "transparent",
-          fillOpacity: 0,
-          color: BORDER_COLOR,
-          weight: 1.5,
-          opacity: 0.7,
-        };
-      }
-
-      const score = scores.get(postcodeId);
-      const pass = score?.pass ?? false;
-
-      return {
-        fillColor: pass ? REACHABLE_COLOR : GREYED_COLOR,
-        fillOpacity: pass ? 0.45 : 0.5,
-        color: BORDER_COLOR,
-        weight: 1,
-        opacity: 0.7,
-      };
-    },
-    [scores, hasScores],
-  );
-
   const onEachFeature = useCallback(
     (feature: GeoJSON.Feature, layer: L.Layer) => {
       const id = (feature.properties as { id: string }).id;
@@ -56,8 +52,7 @@ export function DistrictLayer({ data }: Props) {
       pathLayer.on({
         mouseover: (e: L.LeafletMouseEvent) => {
           const target = e.target as L.Path;
-          // Only change border on hover, keep the fill intact
-          const current = getStyle(id);
+          const current = getStyleForPostcode(id);
           target.setStyle({ ...current, weight: 3, color: "#333" });
           target.bringToFront();
 
@@ -75,7 +70,7 @@ export function DistrictLayer({ data }: Props) {
           tooltipRef.current = tooltip;
         },
         mouseout: () => {
-          pathLayer.setStyle(getStyle(id));
+          pathLayer.setStyle(getStyleForPostcode(id));
           if (tooltipRef.current) {
             map.removeLayer(tooltipRef.current);
             tooltipRef.current = null;
@@ -86,7 +81,7 @@ export function DistrictLayer({ data }: Props) {
         },
       });
     },
-    [getStyle, map],
+    [map],
   );
 
   // Update styles when scores change
@@ -96,11 +91,11 @@ export function DistrictLayer({ data }: Props) {
         const feature = (layer as L.GeoJSON & { feature: GeoJSON.Feature }).feature;
         if (feature) {
           const id = (feature.properties as { id: string }).id;
-          (layer as L.Path).setStyle(getStyle(id));
+          (layer as L.Path).setStyle(getStyleForPostcode(id));
         }
       });
     }
-  }, [scores, getStyle]);
+  }, [scores]);
 
   return (
     <GeoJSON
@@ -111,7 +106,7 @@ export function DistrictLayer({ data }: Props) {
       data={data}
       style={(feature) => {
         const id = (feature?.properties as { id: string })?.id ?? "";
-        return getStyle(id);
+        return getStyleForPostcode(id);
       }}
       onEachFeature={onEachFeature}
     />
