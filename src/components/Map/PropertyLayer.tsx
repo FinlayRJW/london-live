@@ -7,6 +7,7 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { usePropertyStore } from "../../stores/propertyStore.ts";
 import { usePropertyData } from "../../hooks/usePropertyData.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
+import { useMapStore } from "../../stores/mapStore.ts";
 import type { PropertyRecord, PropertyType } from "../../types/property.ts";
 import { PROPERTY_TYPE_LABELS } from "../../types/property.ts";
 
@@ -96,6 +97,20 @@ function buildPopupHtml(postcode: string, sale: PropertyRecord): string {
   return lines.join("");
 }
 
+/**
+ * Extract the district or sector prefix from a full postcode.
+ * Full postcode "E1 6AB" -> district "E1", sector "E1 6"
+ */
+function postcodeToDistrict(postcode: string): string {
+  return postcode.split(" ")[0];
+}
+
+function postcodeToSector(postcode: string): string {
+  const parts = postcode.split(" ");
+  if (parts.length < 2 || parts[1].length === 0) return parts[0];
+  return `${parts[0]} ${parts[1][0]}`;
+}
+
 function getFilteredSales(
   data: Record<string, { lat: number; lng: number; sales: PropertyRecord[] }>,
   filters: {
@@ -107,11 +122,14 @@ function getFilteredSales(
     tenure: "F" | "L" | "both";
     dateRange: 6 | 12 | 24;
   },
-  reachableDistricts: Set<string>,
+  reachablePostcodes: Set<string>,
+  level: "district" | "sector",
 ): Array<{ postcode: string; lat: number; lng: number; sale: PropertyRecord }> {
   const cutoffDate = new Date();
   cutoffDate.setMonth(cutoffDate.getMonth() - filters.dateRange);
   const cutoff = cutoffDate.toISOString().slice(0, 7); // YYYY-MM
+  const toPrefix = level === "sector" ? postcodeToSector : postcodeToDistrict;
+
   const results: Array<{
     postcode: string;
     lat: number;
@@ -120,9 +138,9 @@ function getFilteredSales(
   }> = [];
 
   for (const [postcode, group] of Object.entries(data)) {
-    // Only show properties in reachable districts
-    const district = postcode.split(" ")[0];
-    if (reachableDistricts.size > 0 && !reachableDistricts.has(district)) continue;
+    // Only show properties in reachable areas at the current zoom level
+    const prefix = toPrefix(postcode);
+    if (reachablePostcodes.size > 0 && !reachablePostcodes.has(prefix)) continue;
 
     for (const sale of group.sales) {
       if (sale.p < filters.minPrice || sale.p > filters.maxPrice) continue;
@@ -145,22 +163,23 @@ export function PropertyLayer() {
   const { data, enabled } = usePropertyData();
   const filters = usePropertyStore((s) => s.filters);
   const scores = useScoreStore((s) => s.scores);
+  const activeLevel = useMapStore((s) => s.activeLevel);
 
-  // Compute which districts are currently reachable
-  const reachableDistricts = useMemo(() => {
-    const districts = new Set<string>();
+  // Collect reachable postcode IDs from scores (district or sector level)
+  const reachablePostcodes = useMemo(() => {
+    const reachable = new Set<string>();
     for (const [postcode, score] of scores) {
       if (score.pass) {
-        districts.add(postcode.split(" ")[0]);
+        reachable.add(postcode);
       }
     }
-    return districts;
+    return reachable;
   }, [scores]);
 
   const filteredSales = useMemo(() => {
     if (!data || !enabled) return [];
-    return getFilteredSales(data, filters, reachableDistricts);
-  }, [data, enabled, filters, reachableDistricts]);
+    return getFilteredSales(data, filters, reachablePostcodes, activeLevel);
+  }, [data, enabled, filters, reachablePostcodes, activeLevel]);
 
   useEffect(() => {
     if (!enabled) {
