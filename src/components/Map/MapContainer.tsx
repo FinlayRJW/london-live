@@ -12,8 +12,8 @@ import { Legend } from "./Legend.tsx";
 import { RouteLegend } from "./RouteLegend.tsx";
 import { PropertyLegend } from "./PropertyLegend.tsx";
 import { AmenityLegend } from "./AmenityLegend.tsx";
+import { CommuteMarkers } from "./CommuteMarkers.tsx";
 import { usePostcodeBoundaries } from "../../hooks/usePostcodeBoundaries.ts";
-import type { PostcodeLevel } from "../../types/geo.ts";
 import "leaflet/dist/leaflet.css";
 
 /** Imperatively toggle a Leaflet pane's visibility + pointer-events. */
@@ -71,6 +71,7 @@ export function MapView() {
           {sectors && <DistrictLayer data={sectors} />}
         </Pane>
         <RouteOverlay />
+        <CommuteMarkers />
         <PropertyLayer />
         <AmenityLayer />
       </LeafletMap>
@@ -81,7 +82,7 @@ export function MapView() {
         <Legend />
       </div>
       {isLoading && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] bg-white/95 rounded-lg shadow px-3 py-1 text-sm text-text-muted">
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] bg-overlay-bg/95 rounded-lg shadow px-3 py-1 text-sm text-text-muted">
           Loading boundaries...
         </div>
       )}
