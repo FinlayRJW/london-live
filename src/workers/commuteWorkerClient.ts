@@ -31,11 +31,28 @@ interface EvaluateResult {
   routeData?: RouteData;
 }
 
+function configCacheKey(config: EvaluateConfig): string {
+  return JSON.stringify({
+    lat: config.destinationLat,
+    lng: config.destinationLng,
+    time: config.maxTimeMinutes,
+    changes: config.maxChanges,
+    modes: [...config.allowedModes].sort(),
+    busRides: config.maxBusRides,
+    busTime: config.maxBusTimeMinutes,
+    route: config.showRoute,
+  });
+}
+
 class CommuteWorkerClient {
   private worker: Worker;
   private nextRequestId = 0;
   private pendingResolve: ((result: EvaluateResult) => void) | null = null;
   private pendingRequestId = -1;
+
+  /** Cache keyed by config hash, stores the last result per unique config. */
+  private resultCache = new Map<string, EvaluateResult>();
+  private lastCacheKey: string | null = null;
 
   constructor() {
     this.worker = new Worker(
@@ -49,6 +66,9 @@ class CommuteWorkerClient {
 
   initGraph(graphData: TransportGraph): void {
     this.worker.postMessage({ type: "init", graphData });
+    // Graph changed — invalidate cache
+    this.resultCache.clear();
+    this.lastCacheKey = null;
   }
 
   evaluate(
@@ -56,6 +76,13 @@ class CommuteWorkerClient {
     postcodes: string[],
     filterId?: string,
   ): Promise<EvaluateResult> {
+    // Check cache — if same config, return cached result immediately
+    const cacheKey = configCacheKey(config);
+    const cached = this.resultCache.get(cacheKey);
+    if (cached && cached.results.size >= postcodes.length) {
+      return Promise.resolve(cached);
+    }
+
     const requestId = ++this.nextRequestId;
 
     // Discard any pending request — only the latest matters
@@ -64,6 +91,8 @@ class CommuteWorkerClient {
         results: new Map(),
       });
     }
+
+    this.lastCacheKey = cacheKey;
 
     return new Promise<EvaluateResult>((resolve) => {
       this.pendingResolve = resolve;
@@ -100,7 +129,16 @@ class CommuteWorkerClient {
       };
     }
 
-    resolve({ results, routeData });
+    const evalResult = { results, routeData };
+
+    // Cache the result
+    if (this.lastCacheKey) {
+      // Only keep one cached entry to limit memory
+      this.resultCache.clear();
+      this.resultCache.set(this.lastCacheKey, evalResult);
+    }
+
+    resolve(evalResult);
   }
 }
 

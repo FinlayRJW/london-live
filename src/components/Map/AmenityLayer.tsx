@@ -6,6 +6,7 @@ import { useAmenityStore, type AmenityType, type AmenityLocation } from "../../s
 import { useFilterStore } from "../../stores/filterStore.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
 import { useTransportStore } from "../../stores/transportStore.ts";
+import { usePropertyStore } from "../../stores/propertyStore.ts";
 import type { AmenitiesConfigData } from "../../filters/amenities/AmenitiesConfig.tsx";
 import { WALKING_SPEED, CYCLING_SPEED, WALKING_DETOUR } from "../../transport/constants.ts";
 
@@ -58,17 +59,46 @@ export function AmenityLayer() {
     return f?.config as AmenitiesConfigData | undefined;
   }, [filters]);
 
-  // Collect reachable postcode centroids
+  // Track property filter state so amenities respect property-greyed postcodes
+  const propertyFilterActive = useFilterStore(
+    (s) => s.filters.some((f) => f.typeId === "property" && f.enabled),
+  );
+  const postcodesWithProperties = usePropertyStore(
+    (s) => s.postcodesWithProperties,
+  );
+  const propertyLoadedCount = usePropertyStore(
+    (s) => s.loadedDistricts.size,
+  );
+
+  // Collect reachable postcode centroids (respecting property filter)
   const reachableCentroids = useMemo(() => {
     if (!graphData) return [];
     const centroids: { lat: number; lng: number }[] = [];
+    const propState = usePropertyStore.getState();
     for (const [postcode, score] of scores) {
       if (!score.pass) continue;
+
+      // If property filter is active, skip postcodes with no matching properties
+      if (propertyFilterActive) {
+        const district = postcode.split(" ")[0];
+        const districtLoaded = propState.loadedDistricts.has(district);
+        if (!districtLoaded) continue;
+        if (!propState.postcodesWithProperties.has(postcode)) {
+          // For sectors, check parent district
+          if (postcode.includes(" ")) {
+            const parentId = postcode.substring(0, postcode.lastIndexOf(" "));
+            if (!propState.postcodesWithProperties.has(parentId)) continue;
+          } else {
+            continue;
+          }
+        }
+      }
+
       const node = graphData.nodes[`centroid:${postcode}`];
       if (node) centroids.push({ lat: node.lat, lng: node.lng });
     }
     return centroids;
-  }, [scores, graphData]);
+  }, [scores, graphData, propertyFilterActive, postcodesWithProperties, propertyLoadedCount]);
 
   // Filter amenities to only those near a passing (green/orange) postcode centroid
   const visibleAmenities = useMemo(() => {

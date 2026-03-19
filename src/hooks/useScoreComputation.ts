@@ -9,6 +9,12 @@ import { getFilterPlugin } from "../filters/registry.ts";
 import { combineScores } from "../scoring/combiner.ts";
 import type { FilterResultMap } from "../types/filter.ts";
 
+interface CachedFilterResult {
+  configJson: string;
+  postcodeCount: number;
+  result: FilterResultMap;
+}
+
 export function useScoreComputation() {
   const filters = useFilterStore((s) => s.filters);
   const activeLevel = useMapStore((s) => s.activeLevel);
@@ -18,6 +24,7 @@ export function useScoreComputation() {
   const transportLoaded = useTransportStore((s) => s.isLoaded);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const generationRef = useRef(0);
+  const cacheRef = useRef<Map<string, CachedFilterResult>>(new Map());
 
   useEffect(() => {
     if (debounceRef.current) {
@@ -41,18 +48,34 @@ export function useScoreComputation() {
 
       setComputing(true);
 
-      // Evaluate ALL postcodes (district + sector) so both layers always
-      // have scores ready. The Dijkstra already explores all centroid nodes
-      // — the extra mapping cost is negligible.
       const districtPcs = districts.features.map((f) => f.properties.id);
       const sectorPcs = sectors?.features.map((f) => f.properties.id) ?? [];
       const allPostcodes = [...districtPcs, ...sectorPcs];
 
       const filterResults = new Map<string, FilterResultMap>();
+      const cache = cacheRef.current;
+
+      // Clean stale cache entries for filters that no longer exist
+      const enabledIds = new Set(enabledFilters.map((f) => f.id));
+      for (const key of cache.keys()) {
+        if (!enabledIds.has(key)) cache.delete(key);
+      }
 
       for (const filter of enabledFilters) {
         const plugin = getFilterPlugin(filter.typeId);
         if (!plugin) continue;
+
+        // Check if we can reuse cached results for this filter
+        const configJson = JSON.stringify(filter.config);
+        const cached = cache.get(filter.id);
+        if (
+          cached &&
+          cached.configJson === configJson &&
+          cached.postcodeCount === allPostcodes.length
+        ) {
+          filterResults.set(filter.id, cached.result);
+          continue;
+        }
 
         const result = await plugin.evaluate(
           filter.config,
@@ -61,8 +84,14 @@ export function useScoreComputation() {
           filter.id,
         );
 
-        // Discard stale results if a newer evaluation started
         if (generation !== generationRef.current) return;
+
+        // Cache this result
+        cache.set(filter.id, {
+          configJson,
+          postcodeCount: allPostcodes.length,
+          result,
+        });
 
         filterResults.set(filter.id, result);
       }
