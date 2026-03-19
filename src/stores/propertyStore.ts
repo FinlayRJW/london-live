@@ -34,7 +34,7 @@ export const usePropertyStore = create<PropertyState>()(
       filters: {
         enabled: false,
         minPrice: 0,
-        maxPrice: 5_000_000,
+        maxPrice: 2_000_000,
         types: ["D", "S", "T", "F"],
         tenure: "both",
         dateRange: 24,

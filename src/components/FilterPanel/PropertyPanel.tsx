@@ -59,7 +59,7 @@ export function PropertyPanel() {
 
       {filters.enabled && (
         <div className="px-3 pb-3 space-y-3 border-t border-border pt-3">
-          {isLoading && (
+          {isLoading && !data && (
             <div className="text-xs text-text-muted text-center py-2">
               Loading property data...
             </div>
@@ -73,7 +73,7 @@ export function PropertyPanel() {
               <input
                 type="range"
                 min={0}
-                max={5_000_000}
+                max={2_000_000}
                 step={25_000}
                 value={filters.minPrice}
                 onChange={(e) => setMinPrice(Number(e.target.value))}
@@ -82,7 +82,7 @@ export function PropertyPanel() {
               <input
                 type="range"
                 min={0}
-                max={5_000_000}
+                max={2_000_000}
                 step={25_000}
                 value={filters.maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
