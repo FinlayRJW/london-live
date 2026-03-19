@@ -343,6 +343,9 @@ async function main() {
   const centroids: Centroid[] = JSON.parse(
     readFileSync("data/district-centroids.json", "utf-8"),
   );
+  const sectorCentroids: Centroid[] = existsSync("data/sector-centroids.json")
+    ? JSON.parse(readFileSync("data/sector-centroids.json", "utf-8"))
+    : [];
 
   const stationMap = new Map(stations.map((s) => [s.id, s]));
 
@@ -378,8 +381,8 @@ async function main() {
     });
   }
 
-  // Add centroid nodes
-  console.log("Adding centroid nodes...");
+  // Add district centroid nodes
+  console.log("Adding district centroid nodes...");
   for (const c of centroids) {
     addNode({
       id: `centroid:${c.id}`,
@@ -387,6 +390,19 @@ async function main() {
       lng: c.lng,
       type: "centroid",
     });
+  }
+
+  // Add sector centroid nodes
+  if (sectorCentroids.length > 0) {
+    console.log(`Adding ${sectorCentroids.length} sector centroid nodes...`);
+    for (const c of sectorCentroids) {
+      addNode({
+        id: `centroid:${c.id}`,
+        lat: c.lat,
+        lng: c.lng,
+        type: "centroid",
+      });
+    }
   }
 
   // Known rail lines - only these have usable route sequences.
@@ -490,10 +506,11 @@ async function main() {
   // Every centroid must connect to at least 3 stations so no postcode
   // is permanently unreachable. For distant stations the walk time
   // will be high, which naturally penalises those routes.
-  console.log("Connecting centroids to stations...");
+  const allCentroids = [...centroids, ...sectorCentroids];
+  console.log(`Connecting ${allCentroids.length} centroids to stations (${centroids.length} district + ${sectorCentroids.length} sector)...`);
   let walkEdgeCount = 0;
   const MIN_STATION_CONNECTIONS = 3;
-  for (const c of centroids) {
+  for (const c of allCentroids) {
     const centroidId = `centroid:${c.id}`;
 
     // Compute distance to ALL stations, sorted by distance
@@ -522,7 +539,7 @@ async function main() {
   console.log("Generating sequential bus edges...");
   const busRouteSequences = await fetchBusRouteSequences(KNOWN_RAIL_LINES);
   const { busEdgeCount, busStopCount, walkEdgeCount: busWalkEdges } =
-    generateSequentialBusEdges(graph, addNode, addBidirectional, busRouteSequences, stations, centroids);
+    generateSequentialBusEdges(graph, addNode, addBidirectional, busRouteSequences, stations, allCentroids);
   console.log(`  Added ${busStopCount} bus stop nodes, ${busEdgeCount} bus edges, ${busWalkEdges} bus-walk edges`);
 
   // Summary

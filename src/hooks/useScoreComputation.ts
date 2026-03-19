@@ -10,7 +10,7 @@ import type { FilterResultMap } from "../types/filter.ts";
 export function useScoreComputation() {
   const filters = useFilterStore((s) => s.filters);
   const activeLevel = useMapStore((s) => s.activeLevel);
-  const { districts } = usePostcodeBoundaries();
+  const { boundaries } = usePostcodeBoundaries();
   const { setScores, setComputing } = useScoreStore();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -27,14 +27,14 @@ export function useScoreComputation() {
         return plugin.isConfigured(f.config);
       });
 
-      if (enabledFilters.length === 0 || !districts) {
+      if (enabledFilters.length === 0 || !boundaries) {
         setScores(new Map());
         return;
       }
 
       setComputing(true);
 
-      const postcodes = districts.features.map(
+      const postcodes = boundaries.features.map(
         (f) => f.properties.id,
       );
 
@@ -62,5 +62,5 @@ export function useScoreComputation() {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [filters, districts, activeLevel, setScores, setComputing]);
+  }, [filters, boundaries, activeLevel, setScores, setComputing]);
 }

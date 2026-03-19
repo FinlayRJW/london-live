@@ -1,5 +1,6 @@
-import { Polyline, CircleMarker, Pane } from "react-leaflet";
-import { useRouteStore, reconstructRoute } from "../../stores/routeStore.ts";
+import { Polyline, CircleMarker, Marker, Pane } from "react-leaflet";
+import L from "leaflet";
+import { useRouteStore, reconstructRoute, type RouteSegment } from "../../stores/routeStore.ts";
 import { useFilterStore } from "../../stores/filterStore.ts";
 import type { CommuteConfigData } from "../../filters/commute/CommuteConfig.tsx";
 import type { TransportMode } from "../../types/transport.ts";
@@ -50,6 +51,40 @@ function getSegmentColor(mode: TransportMode, line?: string): string {
   return "#999";
 }
 
+interface BusLabel {
+  routeNumber: string;
+  lat: number;
+  lng: number;
+}
+
+/** Group consecutive bus segments with the same line (route ID) and return a label at each group's midpoint. */
+function getBusLabels(segs: RouteSegment[]): BusLabel[] {
+  const labels: BusLabel[] = [];
+  let i = 0;
+  while (i < segs.length) {
+    const seg = segs[i];
+    if (seg.mode !== "bus" || !seg.line) {
+      i++;
+      continue;
+    }
+    // Collect consecutive bus segments with the same route
+    const routeId = seg.line;
+    const groupStart = i;
+    while (i < segs.length && segs[i].mode === "bus" && segs[i].line === routeId) {
+      i++;
+    }
+    // Pick the midpoint segment
+    const midIdx = groupStart + Math.floor((i - groupStart) / 2);
+    const midSeg = segs[midIdx];
+    labels.push({
+      routeNumber: routeId.toUpperCase(),
+      lat: (midSeg.from.lat + midSeg.to.lat) / 2,
+      lng: (midSeg.from.lng + midSeg.to.lng) / 2,
+    });
+  }
+  return labels;
+}
+
 export function RouteOverlay() {
   const hoveredPostcode = useRouteStore((s) => s.hoveredPostcode);
   const routeDataByFilter = useRouteStore((s) => s.routeDataByFilter);
@@ -77,6 +112,17 @@ export function RouteOverlay() {
 
     return allSegments;
   }, [hoveredPostcode, routeDataByFilter, filters]);
+
+  // Compute bus route labels from grouped consecutive bus segments
+  const busLabels = useMemo(() => {
+    const labels: (BusLabel & { filterId: string })[] = [];
+    for (const { filterId, segments: segs } of segments) {
+      for (const label of getBusLabels(segs)) {
+        labels.push({ ...label, filterId });
+      }
+    }
+    return labels;
+  }, [segments]);
 
   if (segments.length === 0) return null;
 
@@ -144,6 +190,20 @@ export function RouteOverlay() {
             fillOpacity: 1,
             weight: 2,
           }}
+        />
+      ))}
+      {/* Bus route number badges */}
+      {busLabels.map((label, i) => (
+        <Marker
+          key={`bus-label-${label.filterId}-${i}`}
+          position={[label.lat, label.lng]}
+          interactive={false}
+          icon={L.divIcon({
+            className: "",
+            html: `<div style="background:#CE312D;color:#fff;padding:2px 6px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;border:1.5px solid #fff;line-height:1.3;text-align:center;transform:translate(-50%,-50%);width:fit-content">${label.routeNumber}</div>`,
+            iconSize: [0, 0],
+            iconAnchor: [0, 0],
+          })}
         />
       ))}
     </Pane>

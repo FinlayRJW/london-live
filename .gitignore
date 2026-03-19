@@ -12,8 +12,9 @@ dist
 dist-ssr
 *.local
 
-# Generated data build cache (raw downloads, geocode cache)
-/data/
+# Build caches (large downloads, regenerable)
+/data/cache/
+/data/sectors/geocode-cache.json
 
 # Editor directories and files
 .vscode/*
