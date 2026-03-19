@@ -27,7 +27,7 @@ const TYPE_ICONS: Record<PropertyType, string> = {
   O: "&#127959;", // 🏗 building
 };
 
-export const CLUSTER_COLOR = "rgba(30, 64, 110, 0.85)";
+export const CLUSTER_COLOR = "rgba(30, 64, 110, 0.55)";
 
 function formatPrice(price: number): string {
   if (price >= 1_000_000) {
