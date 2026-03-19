@@ -31,15 +31,14 @@ function formatPrice(price: number): string {
 function makeIcon(type: PropertyType, hasEpc: boolean): L.DivIcon {
   const color = TYPE_COLORS[type];
   const size = 12;
-  const border = hasEpc
-    ? "2px solid white"
-    : "2px dashed rgba(200,200,200,0.8)";
-  const opacity = hasEpc ? "1" : "0.5";
+  const outline = hasEpc
+    ? `border:2px solid #333;`
+    : `border:2px dashed #999;opacity:0.5;`;
   return L.divIcon({
     className: "",
     iconSize: [size, size],
     iconAnchor: [size / 2, size / 2],
-    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:${border};box-shadow:0 1px 3px rgba(0,0,0,0.3);opacity:${opacity};"></div>`,
+    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};${outline}box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>`,
   });
 }
 

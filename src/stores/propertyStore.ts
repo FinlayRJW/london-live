@@ -100,7 +100,20 @@ export const usePropertyStore = create<PropertyState>()(
     }),
     {
       name: "london-live-properties",
+      version: 1,
       partialize: (state) => ({ filters: state.filters }),
+      migrate: (persisted, version) => {
+        if (version === 0) {
+          const state = persisted as { filters?: Record<string, unknown> };
+          if (state.filters) {
+            // Add fields that didn't exist in version 0
+            state.filters.minFloorArea ??= 0;
+            state.filters.maxFloorArea ??= 300;
+            state.filters.hideNoFloorArea ??= false;
+          }
+        }
+        return persisted as PropertyState;
+      },
     },
   ),
 );

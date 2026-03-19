@@ -21,8 +21,7 @@ export function PropertyLegend() {
               className="w-3.5 h-3.5 rounded-full flex-shrink-0"
               style={{
                 backgroundColor: TYPE_COLORS[type],
-                border: "2px solid white",
-                boxShadow: "0 0 0 1px rgba(0,0,0,0.15)",
+                border: "2px solid #333",
               }}
             />
             <span className="text-text-muted">{PROPERTY_TYPE_LABELS[type]}</span>
@@ -35,9 +34,8 @@ export function PropertyLegend() {
             className="w-3.5 h-3.5 rounded-full flex-shrink-0"
             style={{
               backgroundColor: "#6366f1",
-              border: "2px dashed rgba(180,180,180,0.8)",
-              opacity: 0.6,
-              boxShadow: "0 0 0 1px rgba(0,0,0,0.1)",
+              border: "2px dashed #999",
+              opacity: 0.5,
             }}
           />
           <span className="text-text-muted">No floor area data</span>
@@ -47,10 +45,9 @@ export function PropertyLegend() {
             className="w-3.5 h-3.5 rounded-full flex-shrink-0 flex items-center justify-center text-white"
             style={{
               backgroundColor: CLUSTER_COLOR,
-              border: "2px solid white",
+              border: "2px solid #333",
               fontSize: "7px",
               fontWeight: 600,
-              boxShadow: "0 0 0 1px rgba(0,0,0,0.15)",
             }}
           >
             n
