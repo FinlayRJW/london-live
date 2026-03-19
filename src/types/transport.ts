@@ -1,4 +1,4 @@
-export type TransportMode = "tube" | "overground" | "dlr" | "elizabeth_line" | "walking" | "cycling";
+export type TransportMode = "tube" | "overground" | "dlr" | "elizabeth_line" | "bus" | "walking" | "cycling";
 
 export interface GraphNode {
   id: string;
@@ -39,4 +39,6 @@ export interface DijkstraConstraints {
   maxChanges?: number;
   allowedModes?: Set<TransportMode>;
   maxTime?: number; // seconds
+  maxBusRides?: number;
+  maxBusTime?: number; // seconds
 }

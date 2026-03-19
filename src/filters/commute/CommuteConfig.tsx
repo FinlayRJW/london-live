@@ -11,6 +11,8 @@ export interface CommuteConfigData {
   maxChanges: number;
   travelMethod: TravelMethod;
   allowedModes: TransportMode[];
+  maxBusRides: number;
+  maxBusTimeMinutes: number;
 }
 
 interface NominatimResult {
@@ -219,6 +221,51 @@ export function CommuteConfig({ config, onChange }: Props) {
               })}
             </div>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-text mb-1">
+              Max bus rides
+            </label>
+            <div className="flex gap-1">
+              {([
+                { value: 0, label: "0" },
+                { value: 1, label: "1" },
+                { value: 2, label: "2" },
+                { value: 99, label: "Unlimited" },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.value}
+                  className={`flex-1 px-2 py-1.5 text-xs rounded border transition-colors ${
+                    (config.maxBusRides ?? 0) === opt.value
+                      ? "bg-primary text-white border-primary"
+                      : "bg-card-bg text-text border-border hover:bg-gray-50"
+                  }`}
+                  onClick={() => onChange({ ...config, maxBusRides: opt.value })}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {(config.maxBusRides ?? 0) > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-text mb-1">
+                Max bus time: {config.maxBusTimeMinutes ?? 10} min
+              </label>
+              <input
+                type="range"
+                min={5}
+                max={30}
+                step={5}
+                value={config.maxBusTimeMinutes ?? 10}
+                onChange={(e) =>
+                  onChange({ ...config, maxBusTimeMinutes: Number(e.target.value) })
+                }
+                className="w-full"
+              />
+            </div>
+          )}
         </>
       )}
     </div>

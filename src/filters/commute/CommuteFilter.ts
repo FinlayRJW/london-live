@@ -126,12 +126,18 @@ function evaluatePublicTransport(
   }
 
   const railModes: TransportMode[] = config.allowedModes;
+  const maxBusRides = config.maxBusRides ?? 0;
   const allowedModes = new Set<TransportMode>([...railModes, "walking"]);
+  if (maxBusRides > 0) {
+    allowedModes.add("bus");
+  }
 
   const constraints: DijkstraConstraints = {
     maxChanges: config.maxChanges >= 99 ? Infinity : config.maxChanges,
     allowedModes,
     maxTime: maxTimeSec,
+    maxBusRides: maxBusRides >= 99 ? Infinity : maxBusRides,
+    maxBusTime: maxBusRides > 0 ? (config.maxBusTimeMinutes ?? 10) * 60 : 0,
   };
 
   const times = getPostcodeTimes(graph, destId, constraints);
@@ -173,6 +179,8 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
       maxChanges: 99,
       travelMethod: "public_transport",
       allowedModes: ["tube", "overground", "dlr", "elizabeth_line"],
+      maxBusRides: 0,
+      maxBusTimeMinutes: 10,
     };
   },
 

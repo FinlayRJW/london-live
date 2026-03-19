@@ -10,7 +10,7 @@
  * - Interchange: nearby stations, different lines = walking edge (no line)
  * - Centroid-to-station: walking distance
  */
-import { readFileSync, writeFileSync, mkdirSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 
 interface StationInfo {
   id: string;
@@ -123,6 +123,152 @@ async function fetchLineRouteSequences(lineId: string): Promise<string[][]> {
   } catch {
     return [];
   }
+}
+
+// Bus constants
+const BUS_SPEED_KMH = 12;
+const BUS_DETOUR = 1.4;
+const MAX_BUS_EDGE_DISTANCE = 5000; // 5km
+const MIN_BUS_EDGE_DISTANCE = 500; // ignore very short bus edges (walkable)
+
+interface BusStop {
+  naptanId: string;
+  commonName: string;
+  lat: number;
+  lon: number;
+  lines: { id: string }[];
+}
+
+/**
+ * Fetch all London bus stops from TfL API (paginated).
+ * Results are cached to data/bus-stops.json.
+ */
+async function fetchBusStops(): Promise<BusStop[]> {
+  const cachePath = "data/bus-stops.json";
+  if (existsSync(cachePath)) {
+    console.log("  Using cached bus stops from data/bus-stops.json");
+    return JSON.parse(readFileSync(cachePath, "utf-8"));
+  }
+
+  console.log("  Fetching bus stops from TfL API (this may take a moment)...");
+  const allStops: BusStop[] = [];
+  let page = 1;
+
+  while (true) {
+    const url = `https://api.tfl.gov.uk/StopPoint/Mode/bus?page=${page}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error(`  Failed to fetch bus stops page ${page}: ${res.status}`);
+      break;
+    }
+    const data = await res.json();
+    const stops: BusStop[] = (data.stopPoints ?? []).map((s: any) => ({
+      naptanId: s.naptanId,
+      commonName: s.commonName,
+      lat: s.lat,
+      lon: s.lon,
+      lines: (s.lines ?? []).map((l: any) => ({ id: l.id })),
+    }));
+
+    if (stops.length === 0) break;
+    allStops.push(...stops);
+    console.log(`    Page ${page}: ${stops.length} stops (total: ${allStops.length})`);
+    page++;
+  }
+
+  mkdirSync("data", { recursive: true });
+  writeFileSync(cachePath, JSON.stringify(allStops));
+  console.log(`  Cached ${allStops.length} bus stops to ${cachePath}`);
+  return allStops;
+}
+
+/**
+ * Generate virtual bus edges between graph nodes that share bus routes.
+ * Each bus stop is mapped to its nearest graph node within 500m.
+ * Node pairs sharing a bus route get a mode:"bus" edge.
+ */
+function generateBusEdges(
+  graph: TransportGraph,
+  addBidirectional: (from: string, to: string, weight: number, mode: string, line?: string) => void,
+  busStops: BusStop[],
+): number {
+  // Build list of all graph nodes with coordinates
+  const graphNodes = Object.values(graph.nodes);
+
+  // Map each bus stop to its nearest graph node within 500m
+  const stopToNode = new Map<string, string>();
+  for (const stop of busStops) {
+    let bestNodeId: string | undefined;
+    let bestDist = 500; // max 500m mapping distance
+
+    for (const node of graphNodes) {
+      const dist = haversineM(stop.lat, stop.lon, node.lat, node.lng);
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestNodeId = node.id;
+      }
+    }
+
+    if (bestNodeId) {
+      stopToNode.set(stop.naptanId, bestNodeId);
+    }
+  }
+
+  console.log(`  Mapped ${stopToNode.size}/${busStops.length} bus stops to graph nodes`);
+
+  // Build: bus route -> set of graph node IDs
+  const routeToNodes = new Map<string, Set<string>>();
+  for (const stop of busStops) {
+    const nodeId = stopToNode.get(stop.naptanId);
+    if (!nodeId) continue;
+
+    for (const line of stop.lines) {
+      let nodes = routeToNodes.get(line.id);
+      if (!nodes) {
+        nodes = new Set();
+        routeToNodes.set(line.id, nodes);
+      }
+      nodes.add(nodeId);
+    }
+  }
+
+  console.log(`  Found ${routeToNodes.size} bus routes mapped to graph nodes`);
+
+  // For each bus route, add edges between all pairs of nodes on that route
+  const addedPairs = new Set<string>();
+  let edgeCount = 0;
+
+  for (const [_routeId, nodeIds] of routeToNodes) {
+    const nodes = Array.from(nodeIds);
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i];
+        const b = nodes[j];
+
+        const pairKey = [a, b].sort().join("|");
+        if (addedPairs.has(pairKey)) continue;
+
+        const nodeA = graph.nodes[a];
+        const nodeB = graph.nodes[b];
+        const dist = haversineM(nodeA.lat, nodeA.lng, nodeB.lat, nodeB.lng);
+
+        // Skip very short (walkable) and very long edges
+        if (dist < MIN_BUS_EDGE_DISTANCE || dist > MAX_BUS_EDGE_DISTANCE) continue;
+
+        addedPairs.add(pairKey);
+
+        // Weight: road distance / bus speed
+        const roadDist = dist * BUS_DETOUR;
+        const speedMs = (BUS_SPEED_KMH * 1000) / 3600;
+        const travelTime = Math.round(roadDist / speedMs);
+
+        addBidirectional(a, b, travelTime, "bus");
+        edgeCount++;
+      }
+    }
+  }
+
+  return edgeCount;
 }
 
 async function main() {
@@ -308,6 +454,12 @@ async function main() {
   }
   console.log(`  Added ${walkEdgeCount} centroid-to-station walking edges`);
 
+  // Add virtual bus edges
+  console.log("Generating bus edges...");
+  const busStops = await fetchBusStops();
+  const busEdgeCount = generateBusEdges(graph, addBidirectional, busStops);
+  console.log(`  Added ${busEdgeCount} bus edges`);
+
   // Summary
   const nodeCount = Object.keys(graph.nodes).length;
   const edgeCount = Object.values(graph.adjacency).reduce(
@@ -319,6 +471,11 @@ async function main() {
   mkdirSync("data", { recursive: true });
   writeFileSync("data/transport-graph.json", JSON.stringify(graph));
   console.log("Written data/transport-graph.json");
+
+  // Also write to public/ so the dev server picks it up immediately
+  mkdirSync("public/data", { recursive: true });
+  writeFileSync("public/data/transport-graph.json", JSON.stringify(graph));
+  console.log("Written public/data/transport-graph.json");
 }
 
 main().catch(console.error);

@@ -1,21 +1,35 @@
 import type { DijkstraConstraints, TransportMode } from "../types/transport.ts";
 import type { Graph } from "./graph.ts";
-import { INTERCHANGE_PENALTY, BOARDING_WAIT } from "./constants.ts";
+import { INTERCHANGE_PENALTY, BOARDING_WAIT, BUS_BOARDING_WAIT } from "./constants.ts";
 
 interface DijkstraState {
   nodeId: string;
   changesUsed: number;
   currentLine: string | null;
+  busRidesUsed: number;
+  busTimeUsed: number;
 }
 
 // Maximum change count we track in state - beyond this we don't differentiate
 const MAX_TRACKED_CHANGES = 10;
 
-function stateKey(s: DijkstraState, trackChanges: boolean): string {
-  if (!trackChanges) {
-    return `${s.nodeId}|${s.currentLine ?? ""}`;
+// Maximum bus rides we track in state
+const MAX_TRACKED_BUS_RIDES = 10;
+
+// Bus time bucket granularity in seconds (limits state space)
+const BUS_TIME_BUCKET = 60;
+
+function stateKey(s: DijkstraState, trackChanges: boolean, trackBus: boolean): string {
+  let key = s.nodeId;
+  if (trackChanges) {
+    key += `|c${Math.min(s.changesUsed, MAX_TRACKED_CHANGES)}`;
   }
-  return `${s.nodeId}|${Math.min(s.changesUsed, MAX_TRACKED_CHANGES)}|${s.currentLine ?? ""}`;
+  if (trackBus) {
+    key += `|b${Math.min(s.busRidesUsed, MAX_TRACKED_BUS_RIDES)}`;
+    key += `|bt${Math.floor(s.busTimeUsed / BUS_TIME_BUCKET)}`;
+  }
+  key += `|${s.currentLine ?? ""}`;
+  return key;
 }
 
 interface HeapEntry {
@@ -92,10 +106,18 @@ export function dijkstraOneToAll(
   sourceId: string,
   constraints: DijkstraConstraints = {},
 ): Map<string, number> {
-  const { maxChanges = Infinity, allowedModes, maxTime = Infinity } = constraints;
+  const {
+    maxChanges = Infinity,
+    allowedModes,
+    maxTime = Infinity,
+    maxBusRides = Infinity,
+    maxBusTime = Infinity,
+  } = constraints;
 
   // Only track changes in state if there's a meaningful constraint
   const trackChanges = maxChanges < MAX_TRACKED_CHANGES;
+  // Only track bus in state if there's a meaningful constraint
+  const trackBus = maxBusRides < MAX_TRACKED_BUS_RIDES || maxBusTime < Infinity;
 
   const dist = new Map<string, number>(); // stateKey -> cost
   const bestPerNode = new Map<string, number>(); // nodeId -> best cost
@@ -105,9 +127,11 @@ export function dijkstraOneToAll(
     nodeId: sourceId,
     changesUsed: 0,
     currentLine: null,
+    busRidesUsed: 0,
+    busTimeUsed: 0,
   };
 
-  dist.set(stateKey(startState, trackChanges), 0);
+  dist.set(stateKey(startState, trackChanges, trackBus), 0);
   bestPerNode.set(sourceId, 0);
   heap.push({ cost: 0, state: startState });
 
@@ -116,7 +140,7 @@ export function dijkstraOneToAll(
 
     if (cost > maxTime) continue;
 
-    const sk = stateKey(state, trackChanges);
+    const sk = stateKey(state, trackChanges, trackBus);
     const known = dist.get(sk);
     if (known !== undefined && cost > known) continue;
 
@@ -125,9 +149,19 @@ export function dijkstraOneToAll(
       if (allowedModes && !allowedModes.has(edge.mode)) continue;
 
       let changes = state.changesUsed;
+      let busRides = state.busRidesUsed;
+      let busTime = state.busTimeUsed;
       let penalty = 0;
 
-      if (edge.line) {
+      if (edge.mode === "bus") {
+        // Bus edge: independent of rail changes
+        busRides += 1;
+        busTime += edge.weight;
+        penalty = BUS_BOARDING_WAIT;
+
+        if (busRides > maxBusRides) continue;
+        if (busTime > maxBusTime) continue;
+      } else if (edge.line) {
         // Rail edge
         if (state.currentLine === null) {
           // First time boarding a train (or re-boarding after walking interchange)
@@ -149,15 +183,18 @@ export function dijkstraOneToAll(
       // Walking edges preserve currentLine so that boarding a different
       // line after an interchange walk correctly triggers the interchange
       // penalty (not a second boarding wait).
-      const newLine = edge.line ?? state.currentLine;
+      // Bus edges reset currentLine to null (next rail edge pays boarding wait).
+      const newLine = edge.mode === "bus" ? null : (edge.line ?? state.currentLine);
 
       const newState: DijkstraState = {
         nodeId: edge.target,
         changesUsed: changes,
         currentLine: newLine,
+        busRidesUsed: busRides,
+        busTimeUsed: busTime,
       };
 
-      const nsk = stateKey(newState, trackChanges);
+      const nsk = stateKey(newState, trackChanges, trackBus);
       const prevCost = dist.get(nsk);
       if (prevCost === undefined || newCost < prevCost) {
         dist.set(nsk, newCost);

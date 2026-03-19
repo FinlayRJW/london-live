@@ -33,3 +33,9 @@ export const MAX_WALK_TO_STATION = 2000;
 
 // Maximum cycling distance to a station (meters)
 export const MAX_CYCLE_TO_STATION = 5000;
+
+// Bus constants
+export const BUS_SPEED_KMH = 12; // average speed including stops/traffic
+export const BUS_BOARDING_WAIT = 300; // 5 min average wait (buses less frequent than trains)
+export const BUS_DETOUR = 1.4; // road routing vs straight line
+export const MAX_BUS_EDGE_DISTANCE = 5000; // 5km max for a virtual bus edge

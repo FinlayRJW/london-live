@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Graph } from "./graph.ts";
 import { dijkstraOneToAll, getPostcodeTimes } from "./dijkstra.ts";
-import { BOARDING_WAIT, INTERCHANGE_PENALTY } from "./constants.ts";
+import { BOARDING_WAIT, INTERCHANGE_PENALTY, BUS_BOARDING_WAIT } from "./constants.ts";
 
 function buildTestGraph(): Graph {
   const g = new Graph();
@@ -98,6 +98,107 @@ describe("dijkstraOneToAll", () => {
 
     // W->X: 100 + BOARDING_WAIT, X->Y: 120 walk, Y->Z: 100 + INTERCHANGE_PENALTY
     expect(times.get("Z")).toBe(100 + BOARDING_WAIT + 120 + 100 + INTERCHANGE_PENALTY);
+  });
+});
+
+describe("bus edges", () => {
+  function buildBusTestGraph(): Graph {
+    const g = new Graph();
+
+    // Station A on line1
+    g.addNode({ id: "A", lat: 51.5, lng: -0.1, type: "station", name: "A", lines: ["line1"] });
+    // Station B on line1
+    g.addNode({ id: "B", lat: 51.51, lng: -0.1, type: "station", name: "B", lines: ["line1"] });
+    // Station C - only reachable by bus from B
+    g.addNode({ id: "C", lat: 51.52, lng: -0.05, type: "station", name: "C", lines: ["line2"] });
+    // Station D on line2 from C
+    g.addNode({ id: "D", lat: 51.53, lng: -0.05, type: "station", name: "D", lines: ["line2"] });
+
+    // Rail: A-B on line1
+    g.addBidirectionalEdge("A", "B", 120, "tube", "line1");
+    // Rail: C-D on line2
+    g.addBidirectionalEdge("C", "D", 120, "tube", "line2");
+    // Bus: B-C (virtual bus edge, 180s travel time)
+    g.addBidirectionalEdge("B", "C", 180, "bus");
+
+    return g;
+  }
+
+  it("uses bus edge when bus rides allowed", () => {
+    const g = buildBusTestGraph();
+    const times = dijkstraOneToAll(g, "A", {
+      allowedModes: new Set(["tube", "bus", "walking"]),
+      maxBusRides: 1,
+    });
+
+    // A->B: 120 + BOARDING_WAIT, B->C bus: 180 + BUS_BOARDING_WAIT
+    expect(times.get("C")).toBe(120 + BOARDING_WAIT + 180 + BUS_BOARDING_WAIT);
+  });
+
+  it("skips bus edge when maxBusRides is 0", () => {
+    const g = buildBusTestGraph();
+    const times = dijkstraOneToAll(g, "A", {
+      allowedModes: new Set(["tube", "bus", "walking"]),
+      maxBusRides: 0,
+    });
+
+    // C is only reachable via bus, so should not be reachable
+    expect(times.has("C")).toBe(false);
+    expect(times.has("D")).toBe(false);
+  });
+
+  it("enforces bus time limit", () => {
+    const g = buildBusTestGraph();
+    const times = dijkstraOneToAll(g, "A", {
+      allowedModes: new Set(["tube", "bus", "walking"]),
+      maxBusRides: 5,
+      maxBusTime: 100, // bus edge is 180s, exceeds limit
+    });
+
+    expect(times.has("C")).toBe(false);
+  });
+
+  it("bus rides are independent of rail changes", () => {
+    const g = buildBusTestGraph();
+    // 0 rail changes but 1 bus ride allowed
+    const times = dijkstraOneToAll(g, "A", {
+      allowedModes: new Set(["tube", "bus", "walking"]),
+      maxChanges: 0,
+      maxBusRides: 1,
+    });
+
+    // A->B on line1 (0 changes), B->C via bus (not a rail change),
+    // C->D on line2 (first boarding after bus, also 0 rail changes)
+    expect(times.get("C")).toBe(120 + BOARDING_WAIT + 180 + BUS_BOARDING_WAIT);
+    // C->D: bus resets currentLine, so D is reached with a fresh boarding wait
+    expect(times.get("D")).toBe(120 + BOARDING_WAIT + 180 + BUS_BOARDING_WAIT + 120 + BOARDING_WAIT);
+  });
+
+  it("multiple bus rides accumulate correctly", () => {
+    const g = new Graph();
+
+    g.addNode({ id: "P", lat: 51.5, lng: -0.1, type: "station", name: "P" });
+    g.addNode({ id: "Q", lat: 51.51, lng: -0.1, type: "station", name: "Q" });
+    g.addNode({ id: "R", lat: 51.52, lng: -0.1, type: "station", name: "R" });
+
+    // Two bus edges: P->Q (100s) and Q->R (150s)
+    g.addBidirectionalEdge("P", "Q", 100, "bus");
+    g.addBidirectionalEdge("Q", "R", 150, "bus");
+
+    // With maxBusRides: 1, can reach Q but not R
+    const times1 = dijkstraOneToAll(g, "P", {
+      allowedModes: new Set(["bus"]),
+      maxBusRides: 1,
+    });
+    expect(times1.get("Q")).toBe(100 + BUS_BOARDING_WAIT);
+    expect(times1.has("R")).toBe(false);
+
+    // With maxBusRides: 2, can reach R
+    const times2 = dijkstraOneToAll(g, "P", {
+      allowedModes: new Set(["bus"]),
+      maxBusRides: 2,
+    });
+    expect(times2.get("R")).toBe(100 + BUS_BOARDING_WAIT + 150 + BUS_BOARDING_WAIT);
   });
 });
 
