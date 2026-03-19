@@ -97,6 +97,8 @@ function getFilteredSales(
   filters: {
     minPrice: number;
     maxPrice: number;
+    minFloorArea: number;
+    maxFloorArea: number;
     types: PropertyType[];
     tenure: "F" | "L" | "both";
     dateRange: 6 | 12 | 24;
@@ -106,7 +108,6 @@ function getFilteredSales(
   const cutoffDate = new Date();
   cutoffDate.setMonth(cutoffDate.getMonth() - filters.dateRange);
   const cutoff = cutoffDate.toISOString().slice(0, 7); // YYYY-MM
-
   const results: Array<{
     postcode: string;
     lat: number;
@@ -124,6 +125,9 @@ function getFilteredSales(
       if (!filters.types.includes(sale.t)) continue;
       if (filters.tenure !== "both" && sale.te !== filters.tenure) continue;
       if (sale.d < cutoff) continue;
+      if (sale.fa !== null) {
+        if (sale.fa < filters.minFloorArea || sale.fa > filters.maxFloorArea) continue;
+      }
       results.push({ postcode, lat: group.lat, lng: group.lng, sale });
     }
   }

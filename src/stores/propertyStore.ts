@@ -108,7 +108,7 @@ function matchesFilters(record: PropertyRecord, filters: PropertyFilters): boole
   if (filters.tenure !== "both" && record.te !== filters.tenure) return false;
   const cutoff = getCutoffDate(filters.dateRange);
   if (record.d < cutoff) return false;
-  // Floor area filter - only apply if the property has EPC data
+  // Floor area filter - only apply to properties that have EPC data
   if (record.fa !== null) {
     if (record.fa < filters.minFloorArea || record.fa > filters.maxFloorArea) return false;
   }
