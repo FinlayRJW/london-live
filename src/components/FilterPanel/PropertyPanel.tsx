@@ -1,4 +1,6 @@
 import { usePropertyStore, getFilteredProperties } from "../../stores/propertyStore.ts";
+import { usePropertyData } from "../../hooks/usePropertyData.ts";
+import { useScoreStore } from "../../stores/scoreStore.ts";
 import { useMemo } from "react";
 import type { PropertyType, Tenure } from "../../types/property.ts";
 import { PROPERTY_TYPE_LABELS } from "../../types/property.ts";
@@ -24,33 +26,35 @@ function formatPrice(price: number): string {
 export function PropertyPanel() {
   const filters = usePropertyStore((s) => s.filters);
   const data = usePropertyStore((s) => s.data);
-  const isLoading = usePropertyStore((s) => s.isLoading);
   const setEnabled = usePropertyStore((s) => s.setEnabled);
   const setMinPrice = usePropertyStore((s) => s.setMinPrice);
   const setMaxPrice = usePropertyStore((s) => s.setMaxPrice);
   const setTypes = usePropertyStore((s) => s.setTypes);
   const setTenure = usePropertyStore((s) => s.setTenure);
   const setDateRange = usePropertyStore((s) => s.setDateRange);
+  const scores = useScoreStore((s) => s.scores);
+  const { isLoading, loadingDone, loadingTotal } = usePropertyData();
+
+  const hasScores = scores.size > 0;
+  const hasData = Object.keys(data).length > 0;
 
   const count = useMemo(() => {
-    if (!data || !filters.enabled) return 0;
+    if (!hasData || !filters.enabled) return 0;
     return getFilteredProperties(data, filters).length;
-  }, [data, filters]);
+  }, [data, hasData, filters]);
 
   return (
     <div className="border border-border rounded-lg bg-card-bg">
       <div className="flex items-center justify-between p-3">
-        <div className="flex items-center gap-2">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={filters.enabled}
-              onChange={(e) => setEnabled(e.target.checked)}
-            />
-            <span className="text-sm font-medium text-text">Sold Properties</span>
-          </label>
-        </div>
-        {filters.enabled && data && (
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={filters.enabled}
+            onChange={(e) => setEnabled(e.target.checked)}
+          />
+          <span className="text-sm font-medium text-text">Sold Properties</span>
+        </label>
+        {filters.enabled && hasData && (
           <span className="text-xs text-text-muted">
             {count.toLocaleString()} shown
           </span>
@@ -59,108 +63,129 @@ export function PropertyPanel() {
 
       {filters.enabled && (
         <div className="px-3 pb-3 space-y-3 border-t border-border pt-3">
-          {isLoading && !data && (
+          {!hasScores && (
             <div className="text-xs text-text-muted text-center py-2">
-              Loading property data...
+              Add a commute filter to see sold prices in reachable areas
             </div>
           )}
 
-          <div>
-            <label className="block text-xs font-medium text-text mb-1">
-              Price: {formatPrice(filters.minPrice)} &ndash; {formatPrice(filters.maxPrice)}
-            </label>
-            <div className="flex gap-2 items-center">
-              <input
-                type="range"
-                min={0}
-                max={2_000_000}
-                step={25_000}
-                value={filters.minPrice}
-                onChange={(e) => setMinPrice(Number(e.target.value))}
-                className="flex-1"
-              />
-              <input
-                type="range"
-                min={0}
-                max={2_000_000}
-                step={25_000}
-                value={filters.maxPrice}
-                onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="flex-1"
-              />
+          {isLoading && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs text-text-muted">
+                <span>Loading areas...</span>
+                <span>{loadingDone}/{loadingTotal}</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                <div
+                  className="bg-primary h-1.5 rounded-full transition-all duration-150"
+                  style={{
+                    width: `${loadingTotal > 0 ? (loadingDone / loadingTotal) * 100 : 0}%`,
+                  }}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          <div>
-            <label className="block text-xs font-medium text-text mb-1">
-              Property type
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {ALL_TYPES.map((type) => {
-                const checked = filters.types.includes(type);
-                return (
-                  <label
-                    key={type}
-                    className="flex items-center gap-1 text-xs cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => {
-                        const next = checked
-                          ? filters.types.filter((t) => t !== type)
-                          : [...filters.types, type];
-                        setTypes(next);
-                      }}
-                    />
-                    {PROPERTY_TYPE_LABELS[type]}
-                  </label>
-                );
-              })}
-            </div>
-          </div>
+          {hasScores && (
+            <>
+              <div>
+                <label className="block text-xs font-medium text-text mb-1">
+                  Price: {formatPrice(filters.minPrice)} &ndash; {formatPrice(filters.maxPrice)}
+                </label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="range"
+                    min={0}
+                    max={2_000_000}
+                    step={25_000}
+                    value={filters.minPrice}
+                    onChange={(e) => setMinPrice(Number(e.target.value))}
+                    className="flex-1"
+                  />
+                  <input
+                    type="range"
+                    min={0}
+                    max={2_000_000}
+                    step={25_000}
+                    value={filters.maxPrice}
+                    onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
 
-          <div>
-            <label className="block text-xs font-medium text-text mb-1">
-              Period
-            </label>
-            <div className="flex gap-1">
-              {DATE_RANGES.map((opt) => (
-                <button
-                  key={opt.value}
-                  className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
-                    filters.dateRange === opt.value
-                      ? "bg-primary text-white border-primary"
-                      : "bg-card-bg text-text border-border hover:bg-gray-50"
-                  }`}
-                  onClick={() => setDateRange(opt.value)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
+              <div>
+                <label className="block text-xs font-medium text-text mb-1">
+                  Property type
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {ALL_TYPES.map((type) => {
+                    const checked = filters.types.includes(type);
+                    return (
+                      <label
+                        key={type}
+                        className="flex items-center gap-1 text-xs cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => {
+                            const next = checked
+                              ? filters.types.filter((t) => t !== type)
+                              : [...filters.types, type];
+                            setTypes(next);
+                          }}
+                        />
+                        {PROPERTY_TYPE_LABELS[type]}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
 
-          <div>
-            <label className="block text-xs font-medium text-text mb-1">
-              Tenure
-            </label>
-            <div className="flex gap-1">
-              {TENURE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
-                    filters.tenure === opt.value
-                      ? "bg-primary text-white border-primary"
-                      : "bg-card-bg text-text border-border hover:bg-gray-50"
-                  }`}
-                  onClick={() => setTenure(opt.value)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
+              <div>
+                <label className="block text-xs font-medium text-text mb-1">
+                  Period
+                </label>
+                <div className="flex gap-1">
+                  {DATE_RANGES.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
+                        filters.dateRange === opt.value
+                          ? "bg-primary text-white border-primary"
+                          : "bg-card-bg text-text border-border hover:bg-gray-50"
+                      }`}
+                      onClick={() => setDateRange(opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-text mb-1">
+                  Tenure
+                </label>
+                <div className="flex gap-1">
+                  {TENURE_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
+                        filters.tenure === opt.value
+                          ? "bg-primary text-white border-primary"
+                          : "bg-card-bg text-text border-border hover:bg-gray-50"
+                      }`}
+                      onClick={() => setTenure(opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

@@ -9,15 +9,22 @@ import type {
 } from "../types/property.ts";
 
 interface PropertyState {
-  /** Raw property data keyed by postcode */
-  data: PropertyData | null;
-  /** Whether data is currently loading */
-  isLoading: boolean;
+  /** Property data keyed by postcode (merged from loaded districts) */
+  data: PropertyData;
+  /** Which districts have been loaded */
+  loadedDistricts: Set<string>;
+  /** Districts currently being fetched */
+  loadingDistricts: Set<string>;
+  /** Total districts requested in current batch */
+  loadingTotal: number;
+  /** Districts completed in current batch */
+  loadingDone: number;
   /** Filter settings (persisted) */
   filters: PropertyFilters;
 
-  setData: (data: PropertyData) => void;
-  setLoading: (loading: boolean) => void;
+  mergeDistrictData: (district: string, data: PropertyData) => void;
+  setLoadingDistricts: (districts: Set<string>) => void;
+  setLoadingProgress: (done: number, total: number) => void;
   setEnabled: (enabled: boolean) => void;
   setMinPrice: (price: number) => void;
   setMaxPrice: (price: number) => void;
@@ -29,8 +36,11 @@ interface PropertyState {
 export const usePropertyStore = create<PropertyState>()(
   persist(
     (set) => ({
-      data: null,
-      isLoading: false,
+      data: {},
+      loadedDistricts: new Set(),
+      loadingDistricts: new Set(),
+      loadingTotal: 0,
+      loadingDone: 0,
       filters: {
         enabled: false,
         minPrice: 0,
@@ -40,8 +50,23 @@ export const usePropertyStore = create<PropertyState>()(
         dateRange: 24,
       },
 
-      setData: (data) => set({ data }),
-      setLoading: (isLoading) => set({ isLoading }),
+      mergeDistrictData: (district, districtData) =>
+        set((s) => {
+          const newLoaded = new Set(s.loadedDistricts);
+          newLoaded.add(district);
+          const newLoading = new Set(s.loadingDistricts);
+          newLoading.delete(district);
+          return {
+            data: { ...s.data, ...districtData },
+            loadedDistricts: newLoaded,
+            loadingDistricts: newLoading,
+            loadingDone: s.loadingDone + 1,
+          };
+        }),
+      setLoadingDistricts: (districts) =>
+        set({ loadingDistricts: districts }),
+      setLoadingProgress: (loadingDone, loadingTotal) =>
+        set({ loadingDone, loadingTotal }),
       setEnabled: (enabled) =>
         set((s) => ({ filters: { ...s.filters, enabled } })),
       setMinPrice: (minPrice) =>
@@ -85,7 +110,6 @@ export interface FilteredProperty {
   record: PropertyRecord;
 }
 
-/** Get all filtered properties as a flat array with location data */
 export function getFilteredProperties(
   data: PropertyData,
   filters: PropertyFilters,

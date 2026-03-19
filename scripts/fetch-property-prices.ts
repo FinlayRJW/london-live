@@ -388,14 +388,45 @@ async function main() {
     console.log(`EPC matches: ${epcMatches}/${allProperties.length} (${Math.round(100 * epcMatches / allProperties.length)}%)`);
   }
 
-  // Write output
-  mkdirSync(join("public", "data"), { recursive: true });
-  const outPath = join("public", "data", "property-prices.json");
-  const json = JSON.stringify(output);
-  writeFileSync(outPath, json);
+  // Split by postcode district (outward code) and write individual files
+  const districtDir = join("public", "data", "properties");
+  mkdirSync(districtDir, { recursive: true });
 
-  const sizeMB = (Buffer.byteLength(json, "utf-8") / 1024 / 1024).toFixed(1);
-  console.log(`\nWritten ${outPath} (${sizeMB} MB)`);
+  // Group postcodes by district
+  const byDistrict = new Map<string, Record<string, PostcodeGroup>>();
+  for (const [postcode, group] of Object.entries(output)) {
+    const district = postcode.split(" ")[0];
+    if (!byDistrict.has(district)) {
+      byDistrict.set(district, {});
+    }
+    byDistrict.get(district)![postcode] = group;
+  }
+
+  // Write each district file + index
+  const index: Record<string, number> = {};
+  let totalSize = 0;
+
+  for (const [district, data] of byDistrict) {
+    const json = JSON.stringify(data);
+    const filePath = join(districtDir, `${district}.json`);
+    writeFileSync(filePath, json);
+    const size = Buffer.byteLength(json, "utf-8");
+    totalSize += size;
+
+    let salesCount = 0;
+    for (const group of Object.values(data)) {
+      salesCount += group.sales.length;
+    }
+    index[district] = salesCount;
+  }
+
+  // Write index file (district -> sale count)
+  const indexPath = join("public", "data", "property-index.json");
+  writeFileSync(indexPath, JSON.stringify(index));
+
+  console.log(`\nWritten ${byDistrict.size} district files to ${districtDir}`);
+  console.log(`Total size: ${(totalSize / 1024 / 1024).toFixed(1)} MB`);
+  console.log(`Index: ${indexPath} (${Object.keys(index).length} districts)`);
 }
 
 main().catch(console.error);
