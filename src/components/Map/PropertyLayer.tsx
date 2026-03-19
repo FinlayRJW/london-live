@@ -9,13 +9,23 @@ import { usePropertyData } from "../../hooks/usePropertyData.ts";
 import type { PropertyRecord, PropertyType } from "../../types/property.ts";
 import { PROPERTY_TYPE_LABELS } from "../../types/property.ts";
 
-const TYPE_COLORS: Record<PropertyType, string> = {
+export const TYPE_COLORS: Record<PropertyType, string> = {
   F: "#6366f1", // indigo - flats
   T: "#f59e0b", // amber - terraced
   S: "#10b981", // emerald - semi
   D: "#ef4444", // red - detached
   O: "#6b7280", // grey - other
 };
+
+const TYPE_ICONS: Record<PropertyType, string> = {
+  F: "&#127970;", // 🏢 office/apartment building
+  T: "&#127969;", // 🏡 house with garden
+  S: "&#127968;", // 🏠 house
+  D: "&#127960;", // 🏘 houses
+  O: "&#127959;", // 🏗 building
+};
+
+export const CLUSTER_COLOR = "rgba(30, 64, 110, 0.85)";
 
 function formatPrice(price: number): string {
   if (price >= 1_000_000) {
@@ -26,11 +36,12 @@ function formatPrice(price: number): string {
 
 function makeIcon(type: PropertyType): L.DivIcon {
   const color = TYPE_COLORS[type];
+  const icon = TYPE_ICONS[type];
   return L.divIcon({
     className: "",
-    iconSize: [12, 12],
-    iconAnchor: [6, 6],
-    html: `<div style="width:12px;height:12px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.3);"></div>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    html: `<div style="width:22px;height:22px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 3px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;">${icon}</div>`,
   });
 }
 
@@ -55,10 +66,12 @@ function buildPopupHtml(postcode: string, sale: PropertyRecord): string {
     lines.push(row("Floor area", `${sale.fa} m²`));
     const ppsqm = Math.round(sale.p / sale.fa);
     lines.push(row("Price/m²", `£${ppsqm.toLocaleString()}`));
+  } else {
+    lines.push(row("Floor area", `<span style="color:#ccc;">—</span>`));
   }
-  if (sale.r !== null) {
-    lines.push(row("Habitable rooms", `${sale.r}`));
-  }
+  lines.push(row("Habitable rooms", sale.r !== null
+    ? `${sale.r}`
+    : `<span style="color:#ccc;">—</span>`));
   if (sale.er) {
     lines.push(row("EPC rating", sale.er));
   }
@@ -154,7 +167,7 @@ export function PropertyLayer() {
             className = "large";
           }
           return L.divIcon({
-            html: `<div style="width:${size};height:${size};border-radius:50%;background:rgba(99,102,241,0.8);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:system-ui;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">${count}</div>`,
+            html: `<div style="width:${size};height:${size};border-radius:50%;background:${CLUSTER_COLOR};color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:system-ui;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">${count}</div>`,
             className: className,
             iconSize: L.point(parseInt(size), parseInt(size)),
           });

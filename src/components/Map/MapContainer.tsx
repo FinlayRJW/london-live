@@ -8,6 +8,7 @@ import { ZoomController } from "./ZoomController.tsx";
 import { LondonMask } from "./LondonMask.tsx";
 import { Legend } from "./Legend.tsx";
 import { RouteLegend } from "./RouteLegend.tsx";
+import { PropertyLegend } from "./PropertyLegend.tsx";
 import { usePostcodeBoundaries } from "../../hooks/usePostcodeBoundaries.ts";
 import "leaflet/dist/leaflet.css";
 
@@ -47,6 +48,7 @@ export function MapView() {
       </LeafletMap>
       <Legend />
       <RouteLegend />
+      <PropertyLegend />
       {isLoading && (
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] bg-white/95 rounded-lg shadow px-3 py-1 text-sm text-text-muted">
           Loading boundaries...
