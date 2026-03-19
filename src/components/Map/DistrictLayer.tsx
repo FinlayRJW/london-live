@@ -25,11 +25,22 @@ function getStyleForPostcode(postcodeId: string): L.PathOptions {
   }
 
   const score = scores.get(postcodeId);
-  let pass = score?.pass ?? false;
+  if (!score) {
+    // Postcode not in current scores (e.g., during level transition) — neutral
+    return {
+      fillColor: "transparent",
+      fillOpacity: 0,
+      color: BORDER_COLOR,
+      weight: 1.5,
+      opacity: 0.7,
+    };
+  }
 
-  // If properties layer is active, also require matching properties
+  let pass = score.pass;
+
+  // If properties layer is active and data has been loaded, require matching properties
   const propState = usePropertyStore.getState();
-  if (pass && propState.filters.enabled && propState.postcodesWithProperties.size > 0) {
+  if (pass && propState.filters.enabled && propState.loadedDistricts.size > 0) {
     if (!propState.postcodesWithProperties.has(postcodeId)) {
       pass = false;
     }
@@ -55,6 +66,7 @@ export function DistrictLayer({ data }: Props) {
     (s) => s.postcodesWithProperties,
   );
   const propertyEnabled = usePropertyStore((s) => s.filters.enabled);
+  const propertyDataLoaded = usePropertyStore((s) => s.loadedDistricts.size > 0);
   const geoJsonRef = useRef<L.GeoJSON | null>(null);
   const tooltipRef = useRef<L.Tooltip | null>(null);
 
@@ -111,14 +123,14 @@ export function DistrictLayer({ data }: Props) {
         }
       });
     }
-  }, [scores, postcodesWithProperties, propertyEnabled]);
+  }, [scores, postcodesWithProperties, propertyEnabled, propertyDataLoaded]);
 
   return (
     <GeoJSON
       ref={(ref) => {
         geoJsonRef.current = ref;
       }}
-      key={`districts-${data.features.length}`}
+      key="boundary-layer"
       data={data}
       style={(feature) => {
         const id = (feature?.properties as { id: string })?.id ?? "";
