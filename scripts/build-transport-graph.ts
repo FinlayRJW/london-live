@@ -179,24 +179,48 @@ async function main() {
     });
   }
 
-  // Fetch line route sequences and add station-to-station edges
+  // Known rail lines - only these have usable route sequences.
+  // Skipping bus routes (numeric IDs, night buses) avoids TfL API rate limits.
+  const KNOWN_RAIL_LINES: Record<string, string> = {
+    // Tube
+    "northern": "tube",
+    "piccadilly": "tube",
+    "district": "tube",
+    "hammersmith-city": "tube",
+    "circle": "tube",
+    "metropolitan": "tube",
+    "central": "tube",
+    "victoria": "tube",
+    "jubilee": "tube",
+    "waterloo-city": "tube",
+    "bakerloo": "tube",
+    // DLR
+    "dlr": "dlr",
+    // Elizabeth line
+    "elizabeth": "elizabeth_line",
+    // Overground (rebranded named lines)
+    "lioness": "overground",
+    "mildmay": "overground",
+    "suffragette": "overground",
+    "windrush": "overground",
+    "weaver": "overground",
+    "liberty": "overground",
+    // National Rail that TfL has route data for
+    "southern": "overground",
+    "thameslink": "overground",
+    "southeastern": "overground",
+    "great-northern": "overground",
+  };
+
+  // Only fetch route sequences for known rail lines
   const allLines = new Set(stations.flatMap((s) => s.lines));
-  console.log(`Fetching route sequences for ${allLines.size} lines...`);
+  const railLines = [...allLines].filter((l) => l in KNOWN_RAIL_LINES);
+  console.log(`Fetching route sequences for ${railLines.length} rail lines (skipping ${allLines.size - railLines.length} bus/other)...`);
 
-  for (const lineId of allLines) {
-    console.log(`  Line: ${lineId}`);
+  for (const lineId of railLines) {
+    const mode = KNOWN_RAIL_LINES[lineId];
+    console.log(`  Line: ${lineId} (${mode})`)
     const sequences = await fetchLineRouteSequences(lineId);
-
-    // Determine mode from any station on this line
-    let mode = "tube";
-    for (const s of stations) {
-      if (s.lines.includes(lineId)) {
-        if (s.modes.includes("overground")) mode = "overground";
-        else if (s.modes.includes("dlr")) mode = "dlr";
-        else if (s.modes.includes("elizabeth_line")) mode = "elizabeth_line";
-        break;
-      }
-    }
 
     const addedPairs = new Set<string>();
 
