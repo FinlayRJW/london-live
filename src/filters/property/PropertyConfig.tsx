@@ -40,6 +40,17 @@ interface Props {
 export function PropertyConfig({ config, onChange }: Props) {
   return (
     <div className="space-y-3">
+      <label className="flex items-center gap-2 text-xs cursor-pointer">
+        <input
+          type="checkbox"
+          checked={config.showMarkers ?? true}
+          onChange={() =>
+            onChange({ ...config, showMarkers: !(config.showMarkers ?? true) })
+          }
+        />
+        Show markers on map
+      </label>
+
       <div>
         <label className="block text-xs font-medium text-text mb-1">
           Price: {formatPrice(config.minPrice)} &ndash; {formatPrice(config.maxPrice)}
@@ -148,17 +159,6 @@ export function PropertyConfig({ config, onChange }: Props) {
           ))}
         </div>
       </div>
-
-      <label className="flex items-center gap-2 text-xs cursor-pointer">
-        <input
-          type="checkbox"
-          checked={config.showMarkers ?? true}
-          onChange={() =>
-            onChange({ ...config, showMarkers: !(config.showMarkers ?? true) })
-          }
-        />
-        Show markers on map
-      </label>
     </div>
   );
 }

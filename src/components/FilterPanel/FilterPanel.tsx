@@ -31,11 +31,13 @@ export function FilterPanel() {
       </div>
 
       <div className="p-4 border-t border-border">
-        {isComputing && (
-          <div className="text-xs text-text-muted mb-2 text-center">
-            Computing scores...
-          </div>
-        )}
+        <div className="h-4 mb-1">
+          {isComputing && (
+            <div className="text-xs text-text-muted text-center animate-pulse">
+              Computing scores...
+            </div>
+          )}
+        </div>
         <AddFilterButton />
       </div>
     </div>

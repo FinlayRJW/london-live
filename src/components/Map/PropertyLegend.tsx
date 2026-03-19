@@ -7,13 +7,14 @@ import { TYPE_COLORS, CLUSTER_COLOR } from "./PropertyLayer.tsx";
 const LEGEND_TYPES: PropertyType[] = ["F", "T", "S", "D"];
 
 export function PropertyLegend() {
-  const enabled = usePropertyFilters() !== null;
+  const filters = usePropertyFilters();
   const data = usePropertyStore((s) => s.data);
 
-  if (!enabled || Object.keys(data).length === 0) return null;
+  if (!filters || Object.keys(data).length === 0) return null;
+  if (!(filters.showMarkers ?? true)) return null;
 
   return (
-    <div className="absolute bottom-6 left-3 z-[1000] bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
+    <div className="bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
       <div className="font-medium text-text mb-1.5">Sold properties</div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1">
         {LEGEND_TYPES.map((type) => (

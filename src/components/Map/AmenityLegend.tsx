@@ -1,7 +1,5 @@
 import { useFilterStore } from "../../stores/filterStore.ts";
 import { useAmenityStore, type AmenityType } from "../../stores/amenityStore.ts";
-import { usePropertyStore } from "../../stores/propertyStore.ts";
-import { usePropertyFilters } from "../../hooks/usePropertyFilters.ts";
 import type { AmenitiesConfigData } from "../../filters/amenities/AmenitiesConfig.tsx";
 
 const AMENITY_COLORS: Record<AmenityType, string> = {
@@ -28,11 +26,6 @@ export function AmenityLegend() {
   const filters = useFilterStore((s) => s.filters);
   const data = useAmenityStore((s) => s.data);
 
-  // Shift up if PropertyLegend is also visible
-  const propertyEnabled = usePropertyFilters() !== null;
-  const propertyHasData = usePropertyStore((s) => Object.keys(s.data).length > 0);
-  const propertyLegendVisible = propertyEnabled && propertyHasData;
-
   const amenityFilter = filters.find(
     (f) => f.typeId === "amenities" && f.enabled,
   );
@@ -41,9 +34,10 @@ export function AmenityLegend() {
   const config = amenityFilter.config as AmenitiesConfigData;
   const enabledTypes = TYPES.filter((t) => config[t].enabled);
   if (enabledTypes.length === 0) return null;
+  if (!(config.showMarkers ?? true)) return null;
 
   return (
-    <div className={`absolute ${propertyLegendVisible ? "bottom-32" : "bottom-6"} left-3 z-[1000] bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs`}>
+    <div className="bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
       <div className="font-medium text-text mb-1.5">Nearby amenities</div>
       <div className="space-y-1">
         {enabledTypes.map((type) => (

@@ -38,7 +38,7 @@ export function RouteLegend() {
   if (!hasActiveRouteDisplay) return null;
 
   return (
-    <div className="absolute bottom-16 right-3 z-[1000] bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
+    <div className="bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
       <div className="font-medium text-text mb-1.5">Route colours</div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1">
         {TUBE_LINES.map((line) => (

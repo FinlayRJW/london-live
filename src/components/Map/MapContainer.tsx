@@ -13,7 +13,6 @@ import { RouteLegend } from "./RouteLegend.tsx";
 import { PropertyLegend } from "./PropertyLegend.tsx";
 import { AmenityLegend } from "./AmenityLegend.tsx";
 import { usePostcodeBoundaries } from "../../hooks/usePostcodeBoundaries.ts";
-import { useScoreStore } from "../../stores/scoreStore.ts";
 import type { PostcodeLevel } from "../../types/geo.ts";
 import "leaflet/dist/leaflet.css";
 
@@ -41,7 +40,6 @@ export function MapView() {
   const zoom = useMapStore((s) => s.zoom);
   const activeLevel = useMapStore((s) => s.activeLevel);
   const { districts, sectors, isLoading } = usePostcodeBoundaries();
-  const isComputing = useScoreStore((s) => s.isComputing);
 
   return (
     <div className="relative flex-1 h-full">
@@ -76,18 +74,15 @@ export function MapView() {
         <PropertyLayer />
         <AmenityLayer />
       </LeafletMap>
-      <Legend />
-      <PropertyLegend />
-      <AmenityLegend />
-      <RouteLegend />
+      <div className="absolute bottom-6 right-3 z-[1000] flex flex-col items-end gap-2">
+        <RouteLegend />
+        <AmenityLegend />
+        <PropertyLegend />
+        <Legend />
+      </div>
       {isLoading && (
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] bg-white/95 rounded-lg shadow px-3 py-1 text-sm text-text-muted">
           Loading boundaries...
-        </div>
-      )}
-      {isComputing && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] bg-white/95 rounded-lg shadow px-3 py-1 text-sm text-text-muted animate-pulse">
-          Computing scores...
         </div>
       )}
     </div>
