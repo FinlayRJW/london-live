@@ -21,6 +21,7 @@ interface DijkstraState {
   nodeId: string;
   changesUsed: number;
   currentLine: string | null;
+  currentBusLine: string | null;
   busRidesUsed: number;
   busTimeUsed: number;
 }
@@ -34,13 +35,21 @@ const MAX_TRACKED_BUS_RIDES = 10;
 // Bus time bucket granularity in seconds (limits state space)
 const BUS_TIME_BUCKET = 60;
 
-function stateKey(s: DijkstraState, trackChanges: boolean, trackBus: boolean): string {
+function stateKey(
+  s: DijkstraState,
+  trackChanges: boolean,
+  trackBusRides: boolean,
+  trackBusTime: boolean,
+): string {
   let key = s.nodeId;
   if (trackChanges) {
     key += `|c${Math.min(s.changesUsed, MAX_TRACKED_CHANGES)}`;
   }
-  if (trackBus) {
+  if (trackBusRides) {
     key += `|b${Math.min(s.busRidesUsed, MAX_TRACKED_BUS_RIDES)}`;
+    key += `|bl${s.currentBusLine ?? ""}`;
+  }
+  if (trackBusTime) {
     key += `|bt${Math.floor(s.busTimeUsed / BUS_TIME_BUCKET)}`;
   }
   key += `|${s.currentLine ?? ""}`;
@@ -132,8 +141,9 @@ export function dijkstraOneToAll(
 
   // Only track changes in state if there's a meaningful constraint
   const trackChanges = maxChanges < MAX_TRACKED_CHANGES;
-  // Only track bus in state if there's a meaningful constraint
-  const trackBus = maxBusRides < MAX_TRACKED_BUS_RIDES || maxBusTime < Infinity;
+  // Only track bus rides/time in state if there's a meaningful constraint
+  const trackBusRides = maxBusRides < MAX_TRACKED_BUS_RIDES;
+  const trackBusTime = maxBusTime < Infinity;
 
   const dist = new Map<string, number>(); // stateKey -> cost
   const bestPerNode = new Map<string, number>(); // nodeId -> best cost
@@ -145,11 +155,12 @@ export function dijkstraOneToAll(
     nodeId: sourceId,
     changesUsed: 0,
     currentLine: null,
+    currentBusLine: null,
     busRidesUsed: 0,
     busTimeUsed: 0,
   };
 
-  const startKey = stateKey(startState, trackChanges, trackBus);
+  const startKey = stateKey(startState, trackChanges, trackBusRides, trackBusTime);
   dist.set(startKey, 0);
   bestPerNode.set(sourceId, 0);
   bestStatePerNode.set(sourceId, startKey);
@@ -160,7 +171,7 @@ export function dijkstraOneToAll(
 
     if (cost > maxTime) continue;
 
-    const sk = stateKey(state, trackChanges, trackBus);
+    const sk = stateKey(state, trackChanges, trackBusRides, trackBusTime);
     const known = dist.get(sk);
     if (known !== undefined && cost > known) continue;
 
@@ -175,9 +186,12 @@ export function dijkstraOneToAll(
 
       if (edge.mode === "bus") {
         // Bus edge: independent of rail changes
-        busRides += 1;
         busTime += edge.weight;
-        penalty = BUS_BOARDING_WAIT;
+        // Only charge boarding wait when boarding a new bus (different line or not on a bus)
+        if (state.currentBusLine === null || state.currentBusLine !== edge.line) {
+          busRides += 1;
+          penalty = BUS_BOARDING_WAIT;
+        }
 
         if (busRides > maxBusRides) continue;
         if (busTime > maxBusTime) continue;
@@ -206,15 +220,19 @@ export function dijkstraOneToAll(
       // Bus edges reset currentLine to null (next rail edge pays boarding wait).
       const newLine = edge.mode === "bus" ? null : (edge.line ?? state.currentLine);
 
+      // Track current bus line: set to edge.line on bus edges, null otherwise
+      const newBusLine = edge.mode === "bus" ? (edge.line ?? null) : null;
+
       const newState: DijkstraState = {
         nodeId: edge.target,
         changesUsed: changes,
         currentLine: newLine,
+        currentBusLine: newBusLine,
         busRidesUsed: busRides,
         busTimeUsed: busTime,
       };
 
-      const nsk = stateKey(newState, trackChanges, trackBus);
+      const nsk = stateKey(newState, trackChanges, trackBusRides, trackBusTime);
       const prevCost = dist.get(nsk);
       if (prevCost === undefined || newCost < prevCost) {
         dist.set(nsk, newCost);

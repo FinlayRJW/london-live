@@ -13,7 +13,7 @@ export function LondonMask() {
   const [boundary, setBoundary] = useState<FeatureCollection | null>(null);
 
   useEffect(() => {
-    fetch("/data/london-boundary.geojson")
+    fetch(`${import.meta.env.BASE_URL}data/london-boundary.geojson`)
       .then((r) => r.json())
       .then(setBoundary)
       .catch(console.error);

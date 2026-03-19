@@ -4,7 +4,7 @@ export interface GraphNode {
   id: string;
   lat: number;
   lng: number;
-  type: "station" | "centroid";
+  type: "station" | "centroid" | "bus_stop";
   name?: string;
   lines?: string[];
 }

@@ -118,8 +118,8 @@ describe("bus edges", () => {
     g.addBidirectionalEdge("A", "B", 120, "tube", "line1");
     // Rail: C-D on line2
     g.addBidirectionalEdge("C", "D", 120, "tube", "line2");
-    // Bus: B-C (virtual bus edge, 180s travel time)
-    g.addBidirectionalEdge("B", "C", 180, "bus");
+    // Bus: B-C (bus route "73", 180s travel time)
+    g.addBidirectionalEdge("B", "C", 180, "bus", "73");
 
     return g;
   }
@@ -174,16 +174,64 @@ describe("bus edges", () => {
     expect(times.get("D")).toBe(120 + BOARDING_WAIT + 180 + BUS_BOARDING_WAIT + 120 + BOARDING_WAIT);
   });
 
-  it("multiple bus rides accumulate correctly", () => {
+  it("consecutive stops on same bus line count as 1 ride", () => {
+    const g = new Graph();
+
+    g.addNode({ id: "S1", lat: 51.5, lng: -0.1, type: "bus_stop", name: "Stop 1" });
+    g.addNode({ id: "S2", lat: 51.505, lng: -0.1, type: "bus_stop", name: "Stop 2" });
+    g.addNode({ id: "S3", lat: 51.51, lng: -0.1, type: "bus_stop", name: "Stop 3" });
+
+    // Sequential stops on bus route "73"
+    g.addBidirectionalEdge("S1", "S2", 60, "bus", "73");
+    g.addBidirectionalEdge("S2", "S3", 60, "bus", "73");
+
+    const { times } = dijkstraOneToAll(g, "S1", {
+      allowedModes: new Set(["bus"]),
+      maxBusRides: 1,
+    });
+
+    // S1->S2: 60 + BUS_BOARDING_WAIT (boarding), S2->S3: 60 (no extra boarding, same line)
+    expect(times.get("S2")).toBe(60 + BUS_BOARDING_WAIT);
+    expect(times.get("S3")).toBe(120 + BUS_BOARDING_WAIT);
+  });
+
+  it("switching bus lines counts as 2 rides with 2 boarding waits", () => {
+    const g = new Graph();
+
+    g.addNode({ id: "S1", lat: 51.5, lng: -0.1, type: "bus_stop", name: "Stop 1" });
+    g.addNode({ id: "S2", lat: 51.505, lng: -0.1, type: "bus_stop", name: "Stop 2" });
+    g.addNode({ id: "S3", lat: 51.51, lng: -0.1, type: "bus_stop", name: "Stop 3" });
+
+    // S1->S2 on route "73", S2->S3 on route "24"
+    g.addBidirectionalEdge("S1", "S2", 60, "bus", "73");
+    g.addBidirectionalEdge("S2", "S3", 60, "bus", "24");
+
+    const { times } = dijkstraOneToAll(g, "S1", {
+      allowedModes: new Set(["bus"]),
+      maxBusRides: 2,
+    });
+
+    // S1->S2: 60 + BUS_BOARDING_WAIT, S2->S3: 60 + BUS_BOARDING_WAIT (new line)
+    expect(times.get("S3")).toBe(120 + 2 * BUS_BOARDING_WAIT);
+
+    // With maxBusRides: 1, can't reach S3 (requires 2 rides)
+    const { times: times1 } = dijkstraOneToAll(g, "S1", {
+      allowedModes: new Set(["bus"]),
+      maxBusRides: 1,
+    });
+    expect(times1.has("S3")).toBe(false);
+  });
+
+  it("multiple bus rides on different lines accumulate correctly", () => {
     const g = new Graph();
 
     g.addNode({ id: "P", lat: 51.5, lng: -0.1, type: "station", name: "P" });
     g.addNode({ id: "Q", lat: 51.51, lng: -0.1, type: "station", name: "Q" });
     g.addNode({ id: "R", lat: 51.52, lng: -0.1, type: "station", name: "R" });
 
-    // Two bus edges: P->Q (100s) and Q->R (150s)
-    g.addBidirectionalEdge("P", "Q", 100, "bus");
-    g.addBidirectionalEdge("Q", "R", 150, "bus");
+    // Two bus edges on different routes: P->Q (route "73", 100s) and Q->R (route "24", 150s)
+    g.addBidirectionalEdge("P", "Q", 100, "bus", "73");
+    g.addBidirectionalEdge("Q", "R", 150, "bus", "24");
 
     // With maxBusRides: 1, can reach Q but not R
     const { times: times1 } = dijkstraOneToAll(g, "P", {

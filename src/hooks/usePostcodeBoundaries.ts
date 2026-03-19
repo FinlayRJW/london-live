@@ -11,7 +11,7 @@ export function usePostcodeBoundaries() {
 
     async function load() {
       try {
-        const res = await fetch("/data/districts.geojson");
+        const res = await fetch(`${import.meta.env.BASE_URL}data/districts.geojson`);
         if (!res.ok) throw new Error(`Failed to load districts: ${res.status}`);
         const data: PostcodeCollection = await res.json();
         if (!cancelled) {

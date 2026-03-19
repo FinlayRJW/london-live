@@ -10,6 +10,7 @@ import {
   CYCLING_SPEED,
   WALKING_DETOUR,
   MAX_WALK_TO_STATION,
+  MAX_WALK_TO_BUS_STOP,
 } from "../../transport/constants.ts";
 import { CommuteConfig, type CommuteConfigData } from "./CommuteConfig.tsx";
 
@@ -129,6 +130,21 @@ function evaluatePublicTransport(
 
   const railModes: TransportMode[] = config.allowedModes;
   const maxBusRides = config.maxBusRides ?? 0;
+
+  // Connect destination to nearby bus stops when buses are enabled
+  if (maxBusRides > 0) {
+    for (const [nodeId, node] of graph.nodes) {
+      if (node.type !== "bus_stop" || nodeId === destId) continue;
+      const dist = haversineM(
+        config.destinationLat, config.destinationLng,
+        node.lat, node.lng,
+      );
+      if (dist <= MAX_WALK_TO_BUS_STOP) {
+        const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
+        graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
+      }
+    }
+  }
   const allowedModes = new Set<TransportMode>([...railModes, "walking"]);
   if (maxBusRides > 0) {
     allowedModes.add("bus");

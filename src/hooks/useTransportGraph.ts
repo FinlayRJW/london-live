@@ -12,8 +12,8 @@ export function useTransportGraph() {
     async function load() {
       try {
         const [graphRes, stationsRes] = await Promise.all([
-          fetch("/data/transport-graph.json"),
-          fetch("/data/stations.json"),
+          fetch(`${import.meta.env.BASE_URL}data/transport-graph.json`),
+          fetch(`${import.meta.env.BASE_URL}data/stations.json`),
         ]);
 
         if (!graphRes.ok || !stationsRes.ok) {
