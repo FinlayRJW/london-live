@@ -38,7 +38,7 @@ export function RouteLegend() {
   if (!hasActiveRouteDisplay) return null;
 
   return (
-    <div className="bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
+    <div className="bg-overlay-bg/95 rounded-lg shadow-md px-3 py-2 text-xs">
       <div className="font-medium text-text mb-1.5">Route colours</div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1">
         {TUBE_LINES.map((line) => (
@@ -51,7 +51,7 @@ export function RouteLegend() {
           </div>
         ))}
       </div>
-      <div className="border-t border-gray-200 mt-1.5 pt-1.5 grid grid-cols-2 gap-x-3 gap-y-1">
+      <div className="border-t border-border mt-1.5 pt-1.5 grid grid-cols-2 gap-x-3 gap-y-1">
         {OTHER_MODES.map((mode) => (
           <div key={mode.name} className="flex items-center gap-1.5">
             <div className="w-4 h-1 flex-shrink-0 relative">

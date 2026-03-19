@@ -81,7 +81,7 @@ export function AmenitiesConfig({ config, onChange }: Props) {
                       className={`flex-1 px-2 py-1.5 text-xs rounded border transition-colors ${
                         typeConfig.travelMethod === method
                           ? "bg-primary text-white border-primary"
-                          : "bg-card-bg text-text border-border hover:bg-gray-50"
+                          : "bg-card-bg text-text border-border hover:bg-hover-bg"
                       }`}
                       onClick={() =>
                         onChange({

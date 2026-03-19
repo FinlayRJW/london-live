@@ -26,7 +26,7 @@ export function PostcodeTooltip({ postcodeId }: Props) {
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-lg px-3 py-2 text-sm border border-border pointer-events-none">
+    <div className="bg-overlay-bg shadow-lg rounded-lg px-3 py-2 text-sm border border-border pointer-events-none">
       <div className="font-semibold text-text mb-1">{postcodeId}</div>
       {score && (
         <div className="space-y-0.5">

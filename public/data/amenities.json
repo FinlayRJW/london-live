@@ -6046,11 +6046,32 @@
       "lng": -0.328064
     },
     {
+      "id": 313181119,
+      "name": "Bannatyne Health Club",
+      "brand": "Bannatyne",
+      "lat": 51.524365,
+      "lng": -0.127858
+    },
+    {
+      "id": 338472540,
+      "name": "Gymbox",
+      "brand": "Gymbox",
+      "lat": 51.518868,
+      "lng": -0.108834
+    },
+    {
       "id": 391481394,
       "name": "Third Space",
       "brand": "Third Space",
       "lat": 51.505235,
       "lng": -0.07974
+    },
+    {
+      "id": 408121748,
+      "name": "Bannatyne Health Club",
+      "brand": "Bannatyne",
+      "lat": 51.536233,
+      "lng": -0.190791
     },
     {
       "id": 505801347,
@@ -6079,6 +6100,13 @@
       "brand": "Virgin Active",
       "lat": 51.58068,
       "lng": -0.122682
+    },
+    {
+      "id": 703359261,
+      "name": "GymBox",
+      "brand": "Gymbox",
+      "lat": 51.517835,
+      "lng": -0.118954
     },
     {
       "id": 907778096,
@@ -6135,6 +6163,20 @@
       "brand": "Nuffield Health",
       "lat": 51.415544,
       "lng": -0.303161
+    },
+    {
+      "id": 2497144540,
+      "name": "Bannatyne Health Club",
+      "brand": "Bannatyne",
+      "lat": 51.408425,
+      "lng": 0.124202
+    },
+    {
+      "id": 2625944868,
+      "name": "Bannatynes Gym",
+      "brand": "Bannatyne",
+      "lat": 51.496708,
+      "lng": -0.125743
     },
     {
       "id": 3201102293,
@@ -6214,6 +6256,20 @@
       "lng": -0.115708
     },
     {
+      "id": 5828117945,
+      "name": "Gymbox",
+      "brand": "Gymbox",
+      "lat": 51.542258,
+      "lng": -0.007622
+    },
+    {
+      "id": 5909919562,
+      "name": "Gymbox",
+      "brand": "Gymbox",
+      "lat": 51.510422,
+      "lng": -0.089748
+    },
+    {
       "id": 6551299187,
       "name": "Virgin Active",
       "brand": "Virgin Active",
@@ -6233,6 +6289,13 @@
       "brand": "Equinox",
       "lat": 51.501146,
       "lng": -0.191477
+    },
+    {
+      "id": 7804693876,
+      "name": "Gymbox",
+      "brand": "Gymbox",
+      "lat": 51.514112,
+      "lng": -0.306015
     },
     {
       "id": 8384936111,
@@ -6261,6 +6324,20 @@
       "brand": "Nuffield Health",
       "lat": 51.557372,
       "lng": 0.07338
+    },
+    {
+      "id": 10884002640,
+      "name": "Gymbox Victoria",
+      "brand": "Gymbox",
+      "lat": 51.496851,
+      "lng": -0.137173
+    },
+    {
+      "id": 10884085524,
+      "name": "Gymbox Elephant and Castle",
+      "brand": "Gymbox",
+      "lat": 51.494681,
+      "lng": -0.098022
     },
     {
       "id": 10996165905,
@@ -6354,6 +6431,13 @@
       "lng": 0.038579
     },
     {
+      "id": 38162064,
+      "name": "Bannatyne's Fitness Club",
+      "brand": "Bannatyne",
+      "lat": 51.607935,
+      "lng": -0.018019
+    },
+    {
       "id": 46798417,
       "name": "Nuffield Health Fitness & Wellbeing",
       "brand": "Nuffield Health",
@@ -6387,6 +6471,13 @@
       "brand": "Virgin Active",
       "lat": 51.506442,
       "lng": -0.028642
+    },
+    {
+      "id": 251801583,
+      "name": "Bannatyne Health Club",
+      "brand": "Bannatyne",
+      "lat": 51.378596,
+      "lng": -0.446251
     },
     {
       "id": 295810542,

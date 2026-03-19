@@ -2,15 +2,30 @@ import { useEffect, useState } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
+import { useMapStore } from "../../stores/mapStore.ts";
+
+const MASK_COLORS = {
+  light: "#ffffff",
+  dark: "#1a1a1a",
+};
+
+function getEffectiveMaskColor(theme: "light" | "dark" | "system"): string {
+  if (theme === "system") {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? MASK_COLORS.dark
+      : MASK_COLORS.light;
+  }
+  return MASK_COLORS[theme];
+}
 
 /**
- * Draws a solid white mask over everything outside London.
- * Uses a Leaflet polygon on a custom pane with CSS that prevents
- * it from being hidden during zoom animations.
+ * Draws a solid mask over everything outside London.
+ * Color adapts to light/dark theme.
  */
 export function LondonMask() {
   const map = useMap();
   const [boundary, setBoundary] = useState<FeatureCollection | null>(null);
+  const theme = useMapStore((s) => s.theme);
 
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/london-boundary.geojson`)
@@ -68,7 +83,7 @@ export function LondonMask() {
 
     const mask = L.polygon([worldBounds, ...londonRings], {
       color: "none",
-      fillColor: "#ffffff",
+      fillColor: getEffectiveMaskColor(theme),
       fillOpacity: 1,
       interactive: false,
       pane: "maskPane",
@@ -82,7 +97,7 @@ export function LondonMask() {
       map.removeLayer(mask);
       document.head.removeChild(style);
     };
-  }, [map, boundary]);
+  }, [map, boundary, theme]);
 
   return null;
 }

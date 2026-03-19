@@ -119,7 +119,7 @@ export function CommuteConfig({ config, onChange }: Props) {
             {suggestions.map((s, i) => (
               <button
                 key={i}
-                className="w-full text-left px-2 py-1.5 text-xs hover:bg-gray-50 border-b border-border last:border-b-0"
+                className="w-full text-left px-2 py-1.5 text-xs hover:bg-hover-bg border-b border-border last:border-b-0"
                 onClick={() => selectAddress(s)}
               >
                 {s.display_name}
@@ -140,7 +140,7 @@ export function CommuteConfig({ config, onChange }: Props) {
               className={`flex-1 px-2 py-1.5 text-xs rounded border transition-colors ${
                 config.travelMethod === method.id
                   ? "bg-primary text-white border-primary"
-                  : "bg-card-bg text-text border-border hover:bg-gray-50"
+                  : "bg-card-bg text-text border-border hover:bg-hover-bg"
               }`}
               onClick={() => onChange({ ...config, travelMethod: method.id })}
             >
@@ -185,7 +185,7 @@ export function CommuteConfig({ config, onChange }: Props) {
                   className={`flex-1 px-2 py-1.5 text-xs rounded border transition-colors ${
                     config.maxChanges === opt.value
                       ? "bg-primary text-white border-primary"
-                      : "bg-card-bg text-text border-border hover:bg-gray-50"
+                      : "bg-card-bg text-text border-border hover:bg-hover-bg"
                   }`}
                   onClick={() => onChange({ ...config, maxChanges: opt.value })}
                 >
@@ -240,7 +240,7 @@ export function CommuteConfig({ config, onChange }: Props) {
                   className={`flex-1 px-2 py-1.5 text-xs rounded border transition-colors ${
                     (config.maxBusRides ?? 0) === opt.value
                       ? "bg-primary text-white border-primary"
-                      : "bg-card-bg text-text border-border hover:bg-gray-50"
+                      : "bg-card-bg text-text border-border hover:bg-hover-bg"
                   }`}
                   onClick={() => onChange({ ...config, maxBusRides: opt.value })}
                 >

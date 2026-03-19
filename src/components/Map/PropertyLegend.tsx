@@ -14,7 +14,7 @@ export function PropertyLegend() {
   if (!(filters.showMarkers ?? true)) return null;
 
   return (
-    <div className="bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
+    <div className="bg-overlay-bg/95 rounded-lg shadow-md px-3 py-2 text-xs">
       <div className="font-medium text-text mb-1.5">Sold properties</div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1">
         {LEGEND_TYPES.map((type) => (
@@ -30,7 +30,7 @@ export function PropertyLegend() {
           </div>
         ))}
       </div>
-      <div className="border-t border-gray-200 mt-1.5 pt-1.5 space-y-1">
+      <div className="border-t border-border mt-1.5 pt-1.5 space-y-1">
         <div className="flex items-center gap-1.5">
           <div
             className="w-3.5 h-3.5 rounded-full flex-shrink-0"

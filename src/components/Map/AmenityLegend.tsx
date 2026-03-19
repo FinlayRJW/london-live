@@ -37,7 +37,7 @@ export function AmenityLegend() {
   if (!(config.showMarkers ?? true)) return null;
 
   return (
-    <div className="bg-white/95 rounded-lg shadow-md px-3 py-2 text-xs">
+    <div className="bg-overlay-bg/95 rounded-lg shadow-md px-3 py-2 text-xs">
       <div className="font-medium text-text mb-1.5">Nearby amenities</div>
       <div className="space-y-1">
         {enabledTypes.map((type) => (

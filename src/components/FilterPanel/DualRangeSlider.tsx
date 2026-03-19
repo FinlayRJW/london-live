@@ -41,7 +41,7 @@ export function DualRangeSlider({
   return (
     <div className="dual-range relative h-5 w-full">
       {/* Track background */}
-      <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1 rounded-full bg-gray-200" />
+      <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-1 rounded-full bg-border" />
       {/* Active range fill */}
       <div
         className="absolute top-1/2 -translate-y-1/2 h-1 rounded-full bg-primary"

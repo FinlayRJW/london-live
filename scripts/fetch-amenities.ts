@@ -45,6 +45,7 @@ const BRAND_FILTERS: Record<AmenityType, string[]> = {
   ],
   gym: [
     "virgin active", "nuffield", "david lloyd", "third space", "equinox",
+    "gymbox", "bannatyne",
   ],
 };
 
@@ -73,6 +74,8 @@ const BRAND_CANONICAL: Record<string, string> = {
   "david lloyd": "David Lloyd",
   "third space": "Third Space",
   equinox: "Equinox",
+  gymbox: "Gymbox",
+  bannatyne: "Bannatyne",
 };
 
 function matchBrand(element: OverpassElement, type: AmenityType): string | null {

@@ -129,7 +129,7 @@ export function PropertyConfig({ config, onChange }: Props) {
               className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
                 config.dateRange === opt.value
                   ? "bg-primary text-white border-primary"
-                  : "bg-card-bg text-text border-border hover:bg-gray-50"
+                  : "bg-card-bg text-text border-border hover:bg-hover-bg"
               }`}
               onClick={() => onChange({ ...config, dateRange: opt.value })}
             >
@@ -150,7 +150,7 @@ export function PropertyConfig({ config, onChange }: Props) {
               className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
                 config.tenure === opt.value
                   ? "bg-primary text-white border-primary"
-                  : "bg-card-bg text-text border-border hover:bg-gray-50"
+                  : "bg-card-bg text-text border-border hover:bg-hover-bg"
               }`}
               onClick={() => onChange({ ...config, tenure: opt.value })}
             >

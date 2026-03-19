@@ -9,6 +9,21 @@
   --color-text: #1f2937;
   --color-text-muted: #6b7280;
   --color-greyed: #d1d5db;
+  --color-overlay-bg: #ffffff;
+  --color-hover-bg: #f9fafb;
+}
+
+[data-theme="dark"] {
+  --color-primary: #5b9cf6;
+  --color-primary-dark: #4a8ae8;
+  --color-sidebar-bg: #1e1e1e;
+  --color-card-bg: #2a2a2a;
+  --color-border: #404040;
+  --color-text: #e4e4e7;
+  --color-text-muted: #a1a1aa;
+  --color-greyed: #52525b;
+  --color-overlay-bg: #2a2a2a;
+  --color-hover-bg: #333333;
 }
 
 html, body, #root {
@@ -16,6 +31,7 @@ html, body, #root {
   margin: 0;
   padding: 0;
   font-family: system-ui, -apple-system, sans-serif;
+  color: var(--color-text);
 }
 
 /* Dual range slider thumbs */
@@ -26,7 +42,7 @@ html, body, #root {
   height: 14px;
   border-radius: 50%;
   background: var(--color-primary);
-  border: 2px solid white;
+  border: 2px solid var(--color-card-bg);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
@@ -36,7 +52,7 @@ html, body, #root {
   height: 10px;
   border-radius: 50%;
   background: var(--color-primary);
-  border: 2px solid white;
+  border: 2px solid var(--color-card-bg);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   cursor: pointer;
 }
