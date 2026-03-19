@@ -20,7 +20,12 @@ export function useScoreComputation() {
     }
 
     debounceRef.current = setTimeout(async () => {
-      const enabledFilters = filters.filter((f) => f.enabled);
+      const enabledFilters = filters.filter((f) => {
+        if (!f.enabled) return false;
+        const plugin = getFilterPlugin(f.typeId);
+        if (!plugin) return false;
+        return plugin.isConfigured(f.config);
+      });
 
       if (enabledFilters.length === 0 || !districts) {
         setScores(new Map());

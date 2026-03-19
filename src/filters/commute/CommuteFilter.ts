@@ -160,6 +160,10 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
   displayName: "Commute Time",
   description: "Filter by travel time to a destination address",
 
+  isConfigured(config: CommuteConfigData): boolean {
+    return config.destinationLat !== null && config.destinationLng !== null;
+  },
+
   defaultConfig(): CommuteConfigData {
     return {
       destinationAddress: "",
