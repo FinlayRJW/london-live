@@ -10,6 +10,7 @@ import { PostcodeTooltip } from "./PostcodeTooltip.tsx";
 import { createRoot } from "react-dom/client";
 
 const REACHABLE_COLOR = "#4ade80";
+const APPROXIMATE_COLOR = "#fb923c"; // orange — sector inherits from parent district
 const BORDER_COLOR = "#555";
 
 function getStyleForPostcode(postcodeId: string): L.PathOptions {
@@ -37,17 +38,29 @@ function getStyleForPostcode(postcodeId: string): L.PathOptions {
   }
 
   let pass = score.pass;
+  let approximate = false;
+
+  // If this sector failed, check if its parent district passed
+  if (!pass && postcodeId.includes(" ")) {
+    const parentId = postcodeId.substring(0, postcodeId.lastIndexOf(" "));
+    const parentScore = scores.get(parentId);
+    if (parentScore?.pass) {
+      pass = true;
+      approximate = true;
+    }
+  }
 
   // If properties layer is active and data has been loaded, require matching properties
   const propState = usePropertyStore.getState();
   if (pass && propState.filters.enabled && propState.loadedDistricts.size > 0) {
     if (!propState.postcodesWithProperties.has(postcodeId)) {
       pass = false;
+      approximate = false;
     }
   }
 
   return {
-    fillColor: pass ? REACHABLE_COLOR : GREYED_COLOR,
+    fillColor: pass ? (approximate ? APPROXIMATE_COLOR : REACHABLE_COLOR) : GREYED_COLOR,
     fillOpacity: pass ? 0.25 : 0.5,
     color: BORDER_COLOR,
     weight: 1,

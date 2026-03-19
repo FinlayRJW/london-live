@@ -150,10 +150,14 @@ function evaluatePublicTransport(
     allowedModes.add("bus");
   }
 
+  // Explore 50% beyond the time limit so sectors slightly over still
+  // have route data and times (shown as orange "maybe reachable").
+  const exploreTimeSec = Math.round(maxTimeSec * 1.5);
+
   const constraints: DijkstraConstraints = {
     maxChanges: config.maxChanges >= 99 ? Infinity : config.maxChanges,
     allowedModes,
-    maxTime: maxTimeSec,
+    maxTime: exploreTimeSec,
     maxBusRides: maxBusRides >= 99 ? Infinity : maxBusRides,
     maxBusTime: maxBusRides > 0 ? (config.maxBusTimeMinutes ?? 10) * 60 : 0,
   };
@@ -175,10 +179,17 @@ function evaluatePublicTransport(
     const centroidId = `centroid:${pc}`;
     const time = times.get(centroidId);
 
-    if (time === undefined || time > maxTimeSec) {
+    if (time === undefined) {
       results.set(pc, {
         pass: false,
-        detail: "Not reachable within time limit",
+        detail: "Not reachable",
+      });
+    } else if (time > maxTimeSec) {
+      const minutes = Math.round(time / 60);
+      results.set(pc, {
+        pass: false,
+        score: 0,
+        detail: `~${minutes} min (over limit)`,
       });
     } else {
       const score = 1 - time / maxTimeSec;

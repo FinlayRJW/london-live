@@ -104,7 +104,12 @@ export function RouteOverlay() {
       if (!routeData) continue;
 
       const centroidId = `centroid:${hoveredPostcode}`;
-      const route = reconstructRoute(routeData, centroidId);
+      let route = reconstructRoute(routeData, centroidId);
+      // Fall back to parent district route for orange (approximate) sectors
+      if (route.length === 0 && hoveredPostcode.includes(" ")) {
+        const parentId = hoveredPostcode.substring(0, hoveredPostcode.lastIndexOf(" "));
+        route = reconstructRoute(routeData, `centroid:${parentId}`);
+      }
       if (route.length > 0) {
         allSegments.push({ filterId: filter.id, segments: route });
       }
