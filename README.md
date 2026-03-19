@@ -1,73 +1,78 @@
-# React + TypeScript + Vite
+# London Living Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive web app that helps you find the best areas to live in London based on customisable filters like commute time. Postcodes are scored and visualised on a colour-coded map so you can explore trade-offs at a glance.
 
-Currently, two official plugins are available:
+## How It Works
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Transport Routing
 
-## React Compiler
+A modified Dijkstra's algorithm runs over a pre-built transport network graph that includes Tube, Overground, DLR, Elizabeth line, bus, and walking edges. The algorithm tracks multi-dimensional state (current line, number of interchanges, bus usage) so filters can constrain routes — for example "at most 1 change" or "no buses".
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Travel times are estimated from real distances between stations with mode-specific speeds (Tube 33 km/h, Overground 40 km/h, DLR 30 km/h, Elizabeth line 45 km/h) plus dwell, boarding, and interchange penalties.
 
-## Expanding the ESLint configuration
+### Filter System
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Filters follow a plugin architecture. Each filter evaluates every postcode and returns a pass/fail result plus a normalised score (0–1). Multiple filters are combined via weighted average — if any filter fails a postcode, that postcode is greyed out on the map.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Current filters:
+- **Commute** — travel time to a destination by walking, cycling, or public transport with configurable constraints (max time, max changes, allowed modes)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Scoring & Visualisation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Passing postcodes are colour-coded from red (worst) to green (best) based on their combined weighted score. Hovering a postcode draws the fastest transport route on the map. The detail level switches between postal districts (zoomed out) and sectors (zoomed in).
+
+### Data Pipeline
+
+Raw data is fetched from the TfL API and UK postcode datasets, then processed into:
+- `districts.geojson` — postcode boundary polygons
+- `district-centroids.json` — lat/lng centroids for routing
+- `stations.json` — TfL station metadata
+- `transport-graph.json` — the full routing network (stations + centroids + edges)
+- `london-boundary.geojson` — city boundary for the map mask
+
+## Tech Stack
+
+- **React 19** + **TypeScript** + **Vite**
+- **Leaflet** / **React-Leaflet** — interactive map
+- **Zustand** — state management (persisted to localStorage)
+- **Tailwind CSS** — styling
+- **D3 scales** — colour interpolation
+- **Turf.js** — geospatial processing (data scripts)
+
+## Getting Started
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Generate data
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The transport graph and boundary data must be built before the app will work:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run data:all
+```
+
+This runs the individual data scripts in order (`data:boundaries`, `data:centroids`, `data:stations`, `data:graph`, `data:boundary`). You only need to re-run this if the underlying data sources change.
+
+### Development
+
+```bash
+npm run dev
+```
+
+Opens a local dev server with hot reload.
+
+### Production build
+
+```bash
+npm run build
+npm run preview   # preview the production build locally
+```
+
+### Tests & linting
+
+```bash
+npm test
+npm run lint
 ```
