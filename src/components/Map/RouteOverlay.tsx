@@ -140,6 +140,7 @@ export function RouteOverlay() {
   }
 
   return (
+    <>
     <Pane name="route-overlay" style={{ zIndex: 620, pointerEvents: "none" }}>
       {/* White outline behind coloured lines for contrast */}
       {segments.flatMap(({ filterId, segments: segs }) =>
@@ -192,7 +193,9 @@ export function RouteOverlay() {
           }}
         />
       ))}
-      {/* Bus route number badges */}
+    </Pane>
+    {/* Bus route number badges — separate pane so they render above lines */}
+    <Pane name="bus-labels" style={{ zIndex: 625, pointerEvents: "none" }}>
       {busLabels.map((label, i) => (
         <Marker
           key={`bus-label-${label.filterId}-${i}`}
@@ -207,5 +210,6 @@ export function RouteOverlay() {
         />
       ))}
     </Pane>
+    </>
   );
 }

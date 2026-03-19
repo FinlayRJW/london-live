@@ -9,7 +9,7 @@ export function usePostcodeBoundaries() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Always load districts on mount
+  // Load both datasets on mount. Districts first, then sectors in background.
   useEffect(() => {
     let cancelled = false;
 
@@ -28,6 +28,18 @@ export function usePostcodeBoundaries() {
           setIsLoading(false);
         }
       }
+
+      // Pre-load sectors in background
+      try {
+        const res = await fetch(`${import.meta.env.BASE_URL}data/sectors.geojson`);
+        if (!res.ok) return;
+        const data: PostcodeCollection = await res.json();
+        if (!cancelled) {
+          setSectors(data);
+        }
+      } catch {
+        // Sectors are optional — failing silently is fine
+      }
     }
 
     load();
@@ -36,37 +48,8 @@ export function usePostcodeBoundaries() {
     };
   }, []);
 
-  // Lazy-load sectors when activeLevel switches to "sector"
-  useEffect(() => {
-    if (activeLevel !== "sector" || sectors) return;
-    let cancelled = false;
-    setIsLoading(true);
-
-    async function load() {
-      try {
-        const res = await fetch(`${import.meta.env.BASE_URL}data/sectors.geojson`);
-        if (!res.ok) throw new Error(`Failed to load sectors: ${res.status}`);
-        const data: PostcodeCollection = await res.json();
-        if (!cancelled) {
-          setSectors(data);
-          setIsLoading(false);
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Unknown error");
-          setIsLoading(false);
-        }
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [activeLevel, sectors]);
-
-  // Return sector data when at sector level, fall back to districts while loading
+  // The active boundaries for score computation
   const boundaries = activeLevel === "sector" ? (sectors ?? districts) : districts;
 
-  return { boundaries, isLoading, error };
+  return { districts, sectors, boundaries, isLoading, error };
 }

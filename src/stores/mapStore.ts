@@ -11,7 +11,7 @@ interface MapState {
 }
 
 const DISTRICT_TO_SECTOR_ZOOM = 13;
-const SECTOR_TO_DISTRICT_ZOOM = 11;
+const SECTOR_TO_DISTRICT_ZOOM = 12;
 
 export const useMapStore = create<MapState>((set) => ({
   center: [51.505, -0.09],

@@ -10,7 +10,7 @@ import type { FilterResultMap } from "../types/filter.ts";
 export function useScoreComputation() {
   const filters = useFilterStore((s) => s.filters);
   const activeLevel = useMapStore((s) => s.activeLevel);
-  const { boundaries } = usePostcodeBoundaries();
+  const { districts, sectors } = usePostcodeBoundaries();
   const { setScores, setComputing } = useScoreStore();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -27,16 +27,19 @@ export function useScoreComputation() {
         return plugin.isConfigured(f.config);
       });
 
-      if (enabledFilters.length === 0 || !boundaries) {
+      if (enabledFilters.length === 0 || !districts) {
         setScores(new Map());
         return;
       }
 
       setComputing(true);
 
-      const postcodes = boundaries.features.map(
-        (f) => f.properties.id,
-      );
+      // Evaluate ALL postcodes (district + sector) so both layers always
+      // have scores ready. The Dijkstra already explores all centroid nodes
+      // — the extra mapping cost is negligible.
+      const districtPcs = districts.features.map((f) => f.properties.id);
+      const sectorPcs = sectors?.features.map((f) => f.properties.id) ?? [];
+      const allPostcodes = [...districtPcs, ...sectorPcs];
 
       const filterResults = new Map<string, FilterResultMap>();
 
@@ -46,14 +49,14 @@ export function useScoreComputation() {
 
         const result = await plugin.evaluate(
           filter.config,
-          postcodes,
+          allPostcodes,
           activeLevel,
           filter.id,
         );
         filterResults.set(filter.id, result);
       }
 
-      const combined = combineScores(filterResults, filters, postcodes);
+      const combined = combineScores(filterResults, filters, allPostcodes);
       setScores(combined);
     }, 150);
 
@@ -62,5 +65,5 @@ export function useScoreComputation() {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [filters, boundaries, activeLevel, setScores, setComputing]);
+  }, [filters, districts, sectors, setScores, setComputing]);
 }

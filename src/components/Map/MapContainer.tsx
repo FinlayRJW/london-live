@@ -1,5 +1,6 @@
-import { MapContainer as LeafletMap, TileLayer } from "react-leaflet";
+import { MapContainer as LeafletMap, TileLayer, Pane, useMap } from "react-leaflet";
 import L from "leaflet";
+import { useEffect } from "react";
 import { useMapStore } from "../../stores/mapStore.ts";
 import { DistrictLayer } from "./DistrictLayer.tsx";
 import { RouteOverlay } from "./RouteOverlay.tsx";
@@ -10,7 +11,21 @@ import { Legend } from "./Legend.tsx";
 import { RouteLegend } from "./RouteLegend.tsx";
 import { PropertyLegend } from "./PropertyLegend.tsx";
 import { usePostcodeBoundaries } from "../../hooks/usePostcodeBoundaries.ts";
+import type { PostcodeLevel } from "../../types/geo.ts";
 import "leaflet/dist/leaflet.css";
+
+/** Imperatively toggle a Leaflet pane's visibility + pointer-events. */
+function PaneVisibility({ name, visible }: { name: string; visible: boolean }) {
+  const map = useMap();
+  useEffect(() => {
+    const pane = map.getPane(name);
+    if (pane) {
+      pane.style.display = visible ? "" : "none";
+      pane.style.pointerEvents = visible ? "auto" : "none";
+    }
+  }, [map, name, visible]);
+  return null;
+}
 
 // Generous bounds around London - allows panning but keeps London in view
 const LONDON_BOUNDS = L.latLngBounds(
@@ -21,7 +36,8 @@ const LONDON_BOUNDS = L.latLngBounds(
 export function MapView() {
   const center = useMapStore((s) => s.center);
   const zoom = useMapStore((s) => s.zoom);
-  const { boundaries, isLoading } = usePostcodeBoundaries();
+  const activeLevel = useMapStore((s) => s.activeLevel);
+  const { districts, sectors, isLoading } = usePostcodeBoundaries();
 
   return (
     <div className="relative flex-1 h-full">
@@ -42,7 +58,16 @@ export function MapView() {
         />
         <ZoomController />
         <LondonMask />
-        {boundaries && <DistrictLayer data={boundaries} />}
+        {/* Both layers stay mounted; display toggled so only active level is visible.
+            Scores are pre-computed for both levels so no flicker on switch. */}
+        <PaneVisibility name="district-boundaries" visible={activeLevel === "district"} />
+        <PaneVisibility name="sector-boundaries" visible={activeLevel === "sector"} />
+        <Pane name="district-boundaries" style={{ zIndex: 400 }}>
+          {districts && <DistrictLayer data={districts} />}
+        </Pane>
+        <Pane name="sector-boundaries" style={{ zIndex: 400 }}>
+          {sectors && <DistrictLayer data={sectors} />}
+        </Pane>
         <RouteOverlay />
         <PropertyLayer />
       </LeafletMap>
