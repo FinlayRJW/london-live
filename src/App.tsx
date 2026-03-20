@@ -2,6 +2,7 @@ import { Layout } from "./components/Layout.tsx";
 import { useTransportGraph } from "./hooks/useTransportGraph.ts";
 import { useScoreComputation } from "./hooks/useScoreComputation.ts";
 import { registerAllFilters } from "./filters/index.ts";
+import "./scoring/reactiveCombiner.ts";
 
 registerAllFilters();
 

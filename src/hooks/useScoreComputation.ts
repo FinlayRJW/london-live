@@ -1,13 +1,14 @@
 import { useEffect, useRef } from "react";
 import { useFilterStore } from "../stores/filterStore.ts";
 import { useScoreStore } from "../stores/scoreStore.ts";
+import { useFilterResultStore } from "../stores/filterResultStore.ts";
 import { usePostcodeBoundaries } from "./usePostcodeBoundaries.ts";
 import { useMapStore } from "../stores/mapStore.ts";
 import { useAmenityStore } from "../stores/amenityStore.ts";
 import { useTransportStore } from "../stores/transportStore.ts";
 import { getFilterPlugin } from "../filters/registry.ts";
-import { combineScores } from "../scoring/combiner.ts";
-import type { FilterResultMap } from "../types/filter.ts";
+import { setPostcodesForCombination } from "../scoring/reactiveCombiner.ts";
+import type { FilterInstance, FilterResultMap } from "../types/filter.ts";
 
 interface CachedFilterResult {
   configJson: string;
@@ -15,95 +16,198 @@ interface CachedFilterResult {
   result: FilterResultMap;
 }
 
+interface PrevFilterSnapshot {
+  configJson: string;
+  enabled: boolean;
+  weight: number;
+  typeId: string;
+}
+
 export function useScoreComputation() {
   const filters = useFilterStore((s) => s.filters);
   const activeLevel = useMapStore((s) => s.activeLevel);
   const { districts, sectors } = usePostcodeBoundaries();
-  const { setScores, setComputing } = useScoreStore();
+  const { setComputing } = useScoreStore();
   const amenityData = useAmenityStore((s) => s.data);
   const transportLoaded = useTransportStore((s) => s.isLoaded);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const generationRef = useRef(0);
+
   const cacheRef = useRef<Map<string, CachedFilterResult>>(new Map());
+  const prevFiltersRef = useRef<Map<string, PrevFilterSnapshot>>(new Map());
+  const prevPostcodesRef = useRef<string[]>([]);
+  const debounceTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const abortControllers = useRef<Map<string, AbortController>>(new Map());
 
+  // Effect 1: When postcodes change, update the combiner and re-evaluate all filters
   useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
+    const districtPcs = districts?.features.map((f) => f.properties.id) ?? [];
+    const sectorPcs = sectors?.features.map((f) => f.properties.id) ?? [];
+    const allPostcodes = [...districtPcs, ...sectorPcs];
+
+    const postcodesChanged =
+      allPostcodes.length !== prevPostcodesRef.current.length ||
+      allPostcodes.some((pc, i) => pc !== prevPostcodesRef.current[i]);
+
+    prevPostcodesRef.current = allPostcodes;
+    setPostcodesForCombination(allPostcodes);
+
+    if (postcodesChanged && allPostcodes.length > 0) {
+      // Invalidate all caches (postcode set changed) and re-evaluate all
+      cacheRef.current.clear();
+      useFilterResultStore.getState().clearAll();
+      for (const filter of filters) {
+        scheduleEvaluation(filter, allPostcodes);
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [districts, sectors]);
 
-    debounceRef.current = setTimeout(async () => {
-      const generation = ++generationRef.current;
+  // Effect 2: Diff filters to detect what changed
+  useEffect(() => {
+    const allPostcodes = prevPostcodesRef.current;
+    if (allPostcodes.length === 0) return;
 
-      const enabledFilters = filters.filter((f) => {
-        if (!f.enabled) return false;
-        const plugin = getFilterPlugin(f.typeId);
-        if (!plugin) return false;
-        return plugin.isConfigured(f.config);
+    const prevMap = prevFiltersRef.current;
+    const currentMap = new Map<string, PrevFilterSnapshot>();
+    const { removeFilterResult } = useFilterResultStore.getState();
+
+    for (const filter of filters) {
+      const configJson = JSON.stringify(filter.config);
+      currentMap.set(filter.id, {
+        configJson,
+        enabled: filter.enabled,
+        weight: filter.weight,
+        typeId: filter.typeId,
       });
 
-      if (enabledFilters.length === 0 || !districts) {
-        setScores(new Map());
-        return;
+      const prev = prevMap.get(filter.id);
+
+      if (!prev) {
+        // New filter added
+        scheduleEvaluation(filter, allPostcodes);
+        continue;
       }
 
-      setComputing(true);
-
-      const districtPcs = districts.features.map((f) => f.properties.id);
-      const sectorPcs = sectors?.features.map((f) => f.properties.id) ?? [];
-      const allPostcodes = [...districtPcs, ...sectorPcs];
-
-      const filterResults = new Map<string, FilterResultMap>();
-      const cache = cacheRef.current;
-
-      // Clean stale cache entries for filters that no longer exist
-      const enabledIds = new Set(enabledFilters.map((f) => f.id));
-      for (const key of cache.keys()) {
-        if (!enabledIds.has(key)) cache.delete(key);
+      if (!filter.enabled && prev.enabled) {
+        // Toggled off
+        cancelEvaluation(filter.id);
+        removeFilterResult(filter.id);
+        continue;
       }
 
-      for (const filter of enabledFilters) {
-        const plugin = getFilterPlugin(filter.typeId);
-        if (!plugin) continue;
-
-        // Check if we can reuse cached results for this filter
-        const configJson = JSON.stringify(filter.config);
-        const cached = cache.get(filter.id);
+      if (filter.enabled && !prev.enabled) {
+        // Toggled on - use cache if available, otherwise re-evaluate
+        const cached = cacheRef.current.get(filter.id);
         if (
           cached &&
           cached.configJson === configJson &&
           cached.postcodeCount === allPostcodes.length
         ) {
-          filterResults.set(filter.id, cached.result);
-          continue;
+          useFilterResultStore.getState().setFilterResult(filter.id, cached.result);
+        } else {
+          scheduleEvaluation(filter, allPostcodes);
         }
+        continue;
+      }
 
+      if (prev.configJson !== configJson) {
+        // Config changed - re-evaluate
+        scheduleEvaluation(filter, allPostcodes);
+        continue;
+      }
+
+      // Weight-only change: reactive combiner handles it, no re-evaluation
+    }
+
+    // Detect removed filters
+    for (const [id] of prevMap) {
+      if (!currentMap.has(id)) {
+        cancelEvaluation(id);
+        removeFilterResult(id);
+        cacheRef.current.delete(id);
+      }
+    }
+
+    prevFiltersRef.current = currentMap;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, amenityData, transportLoaded]);
+
+  function scheduleEvaluation(filter: FilterInstance, postcodes: string[]) {
+    if (!filter.enabled) return;
+    const plugin = getFilterPlugin(filter.typeId);
+    if (!plugin || !plugin.isConfigured(filter.config)) return;
+
+    // Skip evaluation for scoringNoOp filters
+    if (plugin.scoringNoOp) return;
+
+    // Cancel any pending evaluation for this filter
+    cancelEvaluation(filter.id);
+
+    const timer = setTimeout(async () => {
+      debounceTimers.current.delete(filter.id);
+
+      const controller = new AbortController();
+      abortControllers.current.set(filter.id, controller);
+
+      setComputing(true);
+      useFilterResultStore.getState().setEvaluating(filter.id, true);
+
+      try {
         const result = await plugin.evaluate(
           filter.config,
-          allPostcodes,
+          postcodes,
           activeLevel,
           filter.id,
         );
 
-        if (generation !== generationRef.current) return;
+        // Check if this evaluation was cancelled
+        if (controller.signal.aborted) return;
 
-        // Cache this result
-        cache.set(filter.id, {
-          configJson,
-          postcodeCount: allPostcodes.length,
+        // Cache the result
+        cacheRef.current.set(filter.id, {
+          configJson: JSON.stringify(filter.config),
+          postcodeCount: postcodes.length,
           result,
         });
 
-        filterResults.set(filter.id, result);
+        useFilterResultStore.getState().setFilterResult(filter.id, result);
+      } catch {
+        // Evaluation failed or was aborted - remove from evaluating
+        if (!controller.signal.aborted) {
+          useFilterResultStore.getState().setEvaluating(filter.id, false);
+        }
+      } finally {
+        abortControllers.current.delete(filter.id);
       }
-
-      const combined = combineScores(filterResults, filters, allPostcodes);
-      setScores(combined);
     }, 150);
 
+    debounceTimers.current.set(filter.id, timer);
+  }
+
+  function cancelEvaluation(filterId: string) {
+    const timer = debounceTimers.current.get(filterId);
+    if (timer) {
+      clearTimeout(timer);
+      debounceTimers.current.delete(filterId);
+    }
+
+    const controller = abortControllers.current.get(filterId);
+    if (controller) {
+      controller.abort();
+      abortControllers.current.delete(filterId);
+    }
+  }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    const timers = debounceTimers.current;
+    const controllers = abortControllers.current;
     return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
+      for (const timer of timers.values()) {
+        clearTimeout(timer);
+      }
+      for (const controller of controllers.values()) {
+        controller.abort();
       }
     };
-  }, [filters, districts, sectors, amenityData, transportLoaded, setScores, setComputing]);
+  }, []);
 }

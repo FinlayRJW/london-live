@@ -90,9 +90,10 @@ function getStyleForPostcode(postcodeId: string): L.PathOptions {
 
 interface Props {
   data: PostcodeCollection;
+  renderer?: L.Renderer;
 }
 
-export function DistrictLayer({ data }: Props) {
+export function DistrictLayer({ data, renderer }: Props) {
   const map = useMap();
   const scores = useScoreStore((s) => s.scores);
   const postcodesWithProperties = usePropertyStore(
@@ -191,7 +192,7 @@ export function DistrictLayer({ data }: Props) {
       data={data}
       style={(feature) => {
         const id = (feature?.properties as { id: string })?.id ?? "";
-        return getStyleForPostcode(id);
+        return { ...getStyleForPostcode(id), ...(renderer ? { renderer } : {}) };
       }}
       onEachFeature={onEachFeature}
     />

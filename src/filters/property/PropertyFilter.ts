@@ -6,6 +6,7 @@ export const propertyFilter: FilterPlugin<PropertyConfigData> = {
   typeId: "property",
   displayName: "Sold Properties",
   description: "Show sold property prices on the map",
+  scoringNoOp: true,
 
   defaultConfig(): PropertyConfigData {
     return {

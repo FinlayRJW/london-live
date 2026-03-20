@@ -9,6 +9,7 @@ import { useTransportStore } from "../../stores/transportStore.ts";
 import { usePropertyStore } from "../../stores/propertyStore.ts";
 import type { AmenitiesConfigData } from "../../filters/amenities/AmenitiesConfig.tsx";
 import { WALKING_SPEED, CYCLING_SPEED, WALKING_DETOUR } from "../../transport/constants.ts";
+import { haversineM } from "../../utils/geo.ts";
 
 const AMENITY_COLORS: Record<AmenityType, string> = {
   supermarket: "#22c55e", // green
@@ -31,18 +32,6 @@ function makeAmenityIcon(type: AmenityType): L.DivIcon {
     iconAnchor: [10, 10],
     html: `<div style="width:20px;height:20px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;font-family:system-ui;">${label}</div>`,
   });
-}
-
-function haversineM(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 6371000;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 export function AmenityLayer() {

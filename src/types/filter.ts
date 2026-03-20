@@ -13,6 +13,8 @@ export interface FilterPlugin<TConfig = unknown> {
   typeId: string;
   displayName: string;
   description: string;
+  /** If true, this filter is excluded from scoring (always pass=true, score=1). */
+  scoringNoOp?: boolean;
   defaultConfig(): TConfig;
   /** Returns true if the filter has enough config to produce meaningful results. */
   isConfigured(config: TConfig): boolean;

@@ -13,6 +13,13 @@ import { CommuteMarkers } from "./CommuteMarkers.tsx";
 import { usePostcodeBoundaries } from "../../hooks/usePostcodeBoundaries.ts";
 import "leaflet/dist/leaflet.css";
 
+/**
+ * Canvas renderer with generous padding so boundary polygons don't clip
+ * during drag/zoom animations. padding=1 means 1× the viewport size is
+ * pre-rendered beyond each edge.
+ */
+const boundaryRenderer = L.canvas({ padding: 1 });
+
 /** Imperatively toggle a Leaflet pane's visibility + pointer-events. */
 function PaneVisibility({ name, visible }: { name: string; visible: boolean }) {
   const map = useMap();
@@ -62,10 +69,10 @@ export function MapView() {
         <PaneVisibility name="district-boundaries" visible={activeLevel === "district"} />
         <PaneVisibility name="sector-boundaries" visible={activeLevel === "sector"} />
         <Pane name="district-boundaries" style={{ zIndex: 400 }}>
-          {districts && <DistrictLayer data={districts} />}
+          {districts && <DistrictLayer data={districts} renderer={boundaryRenderer} />}
         </Pane>
         <Pane name="sector-boundaries" style={{ zIndex: 400 }}>
-          {sectors && <DistrictLayer data={sectors} />}
+          {sectors && <DistrictLayer data={sectors} renderer={boundaryRenderer} />}
         </Pane>
         <RouteOverlay />
         <CommuteMarkers />
