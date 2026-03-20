@@ -30,10 +30,10 @@ interface DijkstraState {
 const MAX_TRACKED_CHANGES = 10;
 
 // Maximum bus rides we track in state
-const MAX_TRACKED_BUS_RIDES = 10;
+const MAX_TRACKED_BUS_RIDES = 5;
 
 // Bus time bucket granularity in seconds (limits state space)
-const BUS_TIME_BUCKET = 60;
+const BUS_TIME_BUCKET = 120;
 
 function stateKey(
   s: DijkstraState,
@@ -46,8 +46,9 @@ function stateKey(
     key += `|c${Math.min(s.changesUsed, MAX_TRACKED_CHANGES)}`;
   }
   if (trackBusRides) {
+    // Track ride count but NOT the specific bus line — the boarding penalty
+    // already discourages unnecessary transfers without needing per-line states.
     key += `|b${Math.min(s.busRidesUsed, MAX_TRACKED_BUS_RIDES)}`;
-    key += `|bl${s.currentBusLine ?? ""}`;
   }
   if (trackBusTime) {
     key += `|bt${Math.floor(s.busTimeUsed / BUS_TIME_BUCKET)}`;
@@ -174,6 +175,12 @@ export function dijkstraOneToAll(
     const sk = stateKey(state, trackChanges, trackBusRides, trackBusTime);
     const known = dist.get(sk);
     if (known !== undefined && cost > known) continue;
+
+    // Prune: if this node already has a much better time via another path,
+    // don't bother exploring further from this state. The 1.3x factor allows
+    // states that might find a better route with fewer bus rides/changes.
+    const bestForNode = bestPerNode.get(state.nodeId);
+    if (bestForNode !== undefined && cost > bestForNode * 1.3) continue;
 
     for (const edge of graph.getEdges(state.nodeId)) {
       // Check mode constraint

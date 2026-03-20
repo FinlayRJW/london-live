@@ -11,17 +11,74 @@ import {
 import { AmenitiesConfig, type AmenitiesConfigData } from "./AmenitiesConfig.tsx";
 import { haversineM } from "../../utils/geo.ts";
 
+// --- Spatial grid for fast nearest-amenity lookup ---
+
+const GRID_SIZE_DEG = 0.02; // ~2.2 km cells — covers typical max walk radius
+
+interface SpatialGrid {
+  cells: Map<string, AmenityLocation[]>;
+}
+
+function gridKey(lat: number, lng: number): string {
+  return `${Math.floor(lat / GRID_SIZE_DEG)},${Math.floor(lng / GRID_SIZE_DEG)}`;
+}
+
+function buildGrid(amenities: AmenityLocation[]): SpatialGrid {
+  const cells = new Map<string, AmenityLocation[]>();
+  for (const a of amenities) {
+    const key = gridKey(a.lat, a.lng);
+    let cell = cells.get(key);
+    if (!cell) {
+      cell = [];
+      cells.set(key, cell);
+    }
+    cell.push(a);
+  }
+  return { cells };
+}
+
+// Cache grids per amenity type so we only build once
+const gridCache = new Map<AmenityType, SpatialGrid>();
+
+function getGrid(type: AmenityType, amenities: AmenityLocation[]): SpatialGrid {
+  let grid = gridCache.get(type);
+  if (!grid) {
+    grid = buildGrid(amenities);
+    gridCache.set(type, grid);
+  }
+  return grid;
+}
+
 function findNearestTime(
   lat: number,
   lng: number,
   amenities: AmenityLocation[],
   speed: number,
+  maxTimeSec: number,
+  type: AmenityType,
 ): number | null {
+  const grid = getGrid(type, amenities);
+
+  // Search radius in degrees (overestimate for grid cell lookup)
+  const maxDistM = maxTimeSec * speed / WALKING_DETOUR;
+  const radiusDeg = maxDistM / 111_000 + GRID_SIZE_DEG; // ~111km per degree
+  const cellRadius = Math.ceil(radiusDeg / GRID_SIZE_DEG);
+
+  const centerCellLat = Math.floor(lat / GRID_SIZE_DEG);
+  const centerCellLng = Math.floor(lng / GRID_SIZE_DEG);
+
   let minTime = Infinity;
-  for (const a of amenities) {
-    const dist = haversineM(lat, lng, a.lat, a.lng);
-    const time = (dist * WALKING_DETOUR) / speed;
-    if (time < minTime) minTime = time;
+  for (let dlat = -cellRadius; dlat <= cellRadius; dlat++) {
+    for (let dlng = -cellRadius; dlng <= cellRadius; dlng++) {
+      const key = `${centerCellLat + dlat},${centerCellLng + dlng}`;
+      const cell = grid.cells.get(key);
+      if (!cell) continue;
+      for (const a of cell) {
+        const dist = haversineM(lat, lng, a.lat, a.lng);
+        const time = (dist * WALKING_DETOUR) / speed;
+        if (time < minTime) minTime = time;
+      }
+    }
   }
   return minTime === Infinity ? null : minTime;
 }
@@ -32,6 +89,11 @@ export const amenitiesFilter: FilterPlugin<AmenitiesConfigData> = {
   typeId: "amenities",
   displayName: "Nearby Amenities",
   description: "Filter by proximity to supermarkets, cinemas, and gyms",
+
+  configForScoring(config: AmenitiesConfigData): unknown {
+    const { showMarkers: _, ...scoring } = config;
+    return scoring;
+  },
 
   isConfigured(config: AmenitiesConfigData): boolean {
     return AMENITY_TYPES.some((t) => config[t].enabled);
@@ -92,7 +154,7 @@ export const amenitiesFilter: FilterPlugin<AmenitiesConfigData> = {
         const maxTimeSec = typeConfig.maxTimeMinutes * 60;
         const amenities = amenityData[type];
 
-        const nearestTime = findNearestTime(node.lat, node.lng, amenities, speed);
+        const nearestTime = findNearestTime(node.lat, node.lng, amenities, speed, maxTimeSec, type);
 
         if (nearestTime === null || nearestTime > maxTimeSec) {
           allPass = false;

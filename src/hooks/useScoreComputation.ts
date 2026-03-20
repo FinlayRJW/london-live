@@ -26,7 +26,7 @@ interface PrevFilterSnapshot {
 export function useScoreComputation() {
   const filters = useFilterStore((s) => s.filters);
   const activeLevel = useMapStore((s) => s.activeLevel);
-  const { districts, sectors } = usePostcodeBoundaries();
+  const { sectors } = usePostcodeBoundaries();
   const { setComputing } = useScoreStore();
   const amenityData = useAmenityStore((s) => s.data);
   const transportLoaded = useTransportStore((s) => s.isLoaded);
@@ -39,9 +39,7 @@ export function useScoreComputation() {
 
   // Effect 1: When postcodes change, update the combiner and re-evaluate all filters
   useEffect(() => {
-    const districtPcs = districts?.features.map((f) => f.properties.id) ?? [];
-    const sectorPcs = sectors?.features.map((f) => f.properties.id) ?? [];
-    const allPostcodes = [...districtPcs, ...sectorPcs];
+    const allPostcodes = sectors?.features.map((f) => f.properties.id) ?? [];
 
     const postcodesChanged =
       allPostcodes.length !== prevPostcodesRef.current.length ||
@@ -51,15 +49,17 @@ export function useScoreComputation() {
     setPostcodesForCombination(allPostcodes);
 
     if (postcodesChanged && allPostcodes.length > 0) {
-      // Invalidate all caches (postcode set changed) and re-evaluate all
+      // Invalidate caches (postcode set changed) and re-evaluate all filters.
+      // Keep old results in filterResultStore as approximations so the map
+      // doesn't flash blank — the combiner uses whatever's available for
+      // current postcodes while new evaluations complete progressively.
       cacheRef.current.clear();
-      useFilterResultStore.getState().clearAll();
       for (const filter of filters) {
         scheduleEvaluation(filter, allPostcodes);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [districts, sectors]);
+  }, [sectors]);
 
   // Effect 2: Diff filters to detect what changed
   useEffect(() => {
@@ -71,7 +71,13 @@ export function useScoreComputation() {
     const { removeFilterResult } = useFilterResultStore.getState();
 
     for (const filter of filters) {
-      const configJson = JSON.stringify(filter.config);
+      // Use configForScoring to exclude display-only fields (showRoute, showMarkers)
+      // so toggling them doesn't trigger re-evaluation
+      const plugin = getFilterPlugin(filter.typeId);
+      const scoringConfig = plugin?.configForScoring
+        ? plugin.configForScoring(filter.config)
+        : filter.config;
+      const configJson = JSON.stringify(scoringConfig);
       currentMap.set(filter.id, {
         configJson,
         enabled: filter.enabled,
@@ -162,9 +168,13 @@ export function useScoreComputation() {
         // Check if this evaluation was cancelled
         if (controller.signal.aborted) return;
 
-        // Cache the result
+        // Cache the result using scoring-only config for the key
+        const cachePlugin = getFilterPlugin(filter.typeId);
+        const cacheScoringConfig = cachePlugin?.configForScoring
+          ? cachePlugin.configForScoring(filter.config)
+          : filter.config;
         cacheRef.current.set(filter.id, {
-          configJson: JSON.stringify(filter.config),
+          configJson: JSON.stringify(cacheScoringConfig),
           postcodeCount: postcodes.length,
           result,
         });

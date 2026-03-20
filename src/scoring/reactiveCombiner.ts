@@ -48,7 +48,11 @@ function recombine(): void {
     return;
   }
 
-  const combined = combineScores(availableResults, filters, currentPostcodes);
+  // Only pass filters that have results to the combiner — filters still
+  // evaluating should not participate (otherwise they implicitly pass all
+  // postcodes, showing everything green before results arrive).
+  const filtersWithResults = filters.filter((f) => availableResults.has(f.id));
+  const combined = combineScores(availableResults, filtersWithResults, currentPostcodes);
   setScores(combined);
   setComputing(evaluating.size > 0);
 }

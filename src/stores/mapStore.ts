@@ -32,9 +32,6 @@ interface MapState {
   setBottomSheetOpen: (open: boolean) => void;
 }
 
-const DISTRICT_TO_SECTOR_ZOOM = 13;
-const SECTOR_TO_DISTRICT_ZOOM = 12;
-
 function loadTheme(): Theme {
   const stored = localStorage.getItem("theme");
   if (stored === "light" || stored === "dark" || stored === "system") return stored;
@@ -57,21 +54,12 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () 
 export const useMapStore = create<MapState>((set) => ({
   center: [51.505, -0.09],
   zoom: 11,
-  activeLevel: "district",
+  activeLevel: "sector" as PostcodeLevel,
   theme: initialTheme,
   sidebarCollapsed: loadSidebarCollapsed(),
   bottomSheetOpen: false,
   setCenter: (center) => set({ center }),
-  setZoom: (zoom) =>
-    set((state) => {
-      let activeLevel = state.activeLevel;
-      if (zoom >= DISTRICT_TO_SECTOR_ZOOM && state.activeLevel === "district") {
-        activeLevel = "sector";
-      } else if (zoom <= SECTOR_TO_DISTRICT_ZOOM && state.activeLevel === "sector") {
-        activeLevel = "district";
-      }
-      return { zoom, activeLevel };
-    }),
+  setZoom: (zoom) => set({ zoom }),
   setActiveLevel: (activeLevel) => set({ activeLevel }),
   setTheme: (theme) => {
     localStorage.setItem("theme", theme);

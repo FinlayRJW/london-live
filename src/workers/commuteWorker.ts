@@ -59,19 +59,77 @@ interface WorkerResult {
   };
 }
 
+// --- Spatial grid for fast node lookup ---
+
+const GRID_DEG = 0.01; // ~1.1 km cells
+
+interface NodeGrid {
+  stations: Map<string, { nodeId: string; node: GraphNode }[]>;
+  busStops: Map<string, { nodeId: string; node: GraphNode }[]>;
+}
+
+function nodeGridKey(lat: number, lng: number): string {
+  return `${Math.floor(lat / GRID_DEG)},${Math.floor(lng / GRID_DEG)}`;
+}
+
+function buildNodeGrid(graph: Graph): NodeGrid {
+  const stations = new Map<string, { nodeId: string; node: GraphNode }[]>();
+  const busStops = new Map<string, { nodeId: string; node: GraphNode }[]>();
+  for (const [nodeId, node] of graph.nodes) {
+    const key = nodeGridKey(node.lat, node.lng);
+    const target = node.type === "bus_stop" ? busStops : node.type === "station" ? stations : null;
+    if (!target) continue;
+    let cell = target.get(key);
+    if (!cell) {
+      cell = [];
+      target.set(key, cell);
+    }
+    cell.push({ nodeId, node });
+  }
+  return { stations, busStops };
+}
+
+function findNearbyNodes(
+  grid: Map<string, { nodeId: string; node: GraphNode }[]>,
+  lat: number,
+  lng: number,
+  radiusM: number,
+): { nodeId: string; dist: number }[] {
+  const radiusDeg = radiusM / 111_000 + GRID_DEG;
+  const cellRadius = Math.ceil(radiusDeg / GRID_DEG);
+  const cLat = Math.floor(lat / GRID_DEG);
+  const cLng = Math.floor(lng / GRID_DEG);
+  const results: { nodeId: string; dist: number }[] = [];
+  for (let dlat = -cellRadius; dlat <= cellRadius; dlat++) {
+    for (let dlng = -cellRadius; dlng <= cellRadius; dlng++) {
+      const cell = grid.get(`${cLat + dlat},${cLng + dlng}`);
+      if (!cell) continue;
+      for (const { nodeId, node } of cell) {
+        const dist = haversineM(lat, lng, node.lat, node.lng);
+        if (dist <= radiusM) {
+          results.push({ nodeId, dist });
+        }
+      }
+    }
+  }
+  return results;
+}
+
 // --- Worker state ---
 
 let cachedGraph: Graph | null = null;
+let cachedNodeGrid: NodeGrid | null = null;
 
 function handleInit(msg: InitMessage) {
   cachedGraph = Graph.fromJSON(msg.graphData);
+  cachedNodeGrid = buildNodeGrid(cachedGraph);
 }
 
 function handleEvaluate(msg: EvaluateMessage): WorkerResult {
   const { requestId, config, postcodes, filterId } = msg;
   const results: [string, ResultEntry][] = [];
 
-  if (!cachedGraph) {
+  if (!cachedGraph || !cachedNodeGrid) {
     for (const pc of postcodes) {
       results.push([pc, { pass: true }]);
     }
@@ -91,57 +149,42 @@ function handleEvaluate(msg: EvaluateMessage): WorkerResult {
     name: "Destination",
   });
 
-  // Connect to nearby stations via walking
-  let connectedStations = 0;
-  for (const [nodeId, node] of graph.nodes) {
-    if (node.type !== "station" || nodeId === destId) continue;
-    const dist = haversineM(
-      config.destinationLat,
-      config.destinationLng,
-      node.lat,
-      node.lng,
-    );
-    if (dist <= MAX_WALK_TO_STATION) {
-      const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
-      graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
-      connectedStations++;
-    }
-  }
+  // Connect to nearby stations via walking (using spatial grid)
+  let nearbyStations = findNearbyNodes(
+    cachedNodeGrid.stations,
+    config.destinationLat,
+    config.destinationLng,
+    MAX_WALK_TO_STATION,
+  );
 
   // Widen radius if no stations found
-  if (connectedStations === 0) {
-    const widerRadius = MAX_WALK_TO_STATION * 2;
-    for (const [nodeId, node] of graph.nodes) {
-      if (node.type !== "station" || nodeId === destId) continue;
-      const dist = haversineM(
-        config.destinationLat,
-        config.destinationLng,
-        node.lat,
-        node.lng,
-      );
-      if (dist <= widerRadius) {
-        const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
-        graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
-      }
-    }
+  if (nearbyStations.length === 0) {
+    nearbyStations = findNearbyNodes(
+      cachedNodeGrid.stations,
+      config.destinationLat,
+      config.destinationLng,
+      MAX_WALK_TO_STATION * 2,
+    );
+  }
+
+  for (const { nodeId, dist } of nearbyStations) {
+    const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
+    graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
   }
 
   const maxBusRides = config.maxBusRides ?? 0;
 
   // Connect destination to nearby bus stops when buses are enabled
   if (maxBusRides > 0) {
-    for (const [nodeId, node] of graph.nodes) {
-      if (node.type !== "bus_stop" || nodeId === destId) continue;
-      const dist = haversineM(
-        config.destinationLat,
-        config.destinationLng,
-        node.lat,
-        node.lng,
-      );
-      if (dist <= MAX_WALK_TO_BUS_STOP) {
-        const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
-        graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
-      }
+    const nearbyBusStops = findNearbyNodes(
+      cachedNodeGrid.busStops,
+      config.destinationLat,
+      config.destinationLng,
+      MAX_WALK_TO_BUS_STOP,
+    );
+    for (const { nodeId, dist } of nearbyBusStops) {
+      const walkTime = Math.round((dist * WALKING_DETOUR) / WALKING_SPEED);
+      graph.addBidirectionalEdge(destId, nodeId, walkTime, "walking");
     }
   }
 
@@ -153,7 +196,7 @@ function handleEvaluate(msg: EvaluateMessage): WorkerResult {
     allowedModes.add("bus");
   }
 
-  const exploreTimeSec = Math.round(maxTimeSec * 1.15);
+  const exploreTimeSec = Math.round(maxTimeSec * 1.3);
 
   const constraints: DijkstraConstraints = {
     maxChanges: config.maxChanges >= 99 ? Infinity : config.maxChanges,

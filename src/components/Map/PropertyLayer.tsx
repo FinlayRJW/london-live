@@ -8,7 +8,6 @@ import { usePropertyStore } from "../../stores/propertyStore.ts";
 import { usePropertyData } from "../../hooks/usePropertyData.ts";
 import { usePropertyFilters } from "../../hooks/usePropertyFilters.ts";
 import { useScoreStore } from "../../stores/scoreStore.ts";
-import { useMapStore } from "../../stores/mapStore.ts";
 import type { PropertyRecord, PropertyType } from "../../types/property.ts";
 import { PROPERTY_TYPE_LABELS } from "../../types/property.ts";
 
@@ -90,13 +89,9 @@ function buildPopupHtml(postcode: string, sale: PropertyRecord): string {
 }
 
 /**
- * Extract the district or sector prefix from a full postcode.
- * Full postcode "E1 6AB" -> district "E1", sector "E1 6"
+ * Extract the sector prefix from a full postcode.
+ * Full postcode "E1 6AB" -> sector "E1 6"
  */
-function postcodeToDistrict(postcode: string): string {
-  return postcode.split(" ")[0];
-}
-
 function postcodeToSector(postcode: string): string {
   const parts = postcode.split(" ");
   if (parts.length < 2 || parts[1].length === 0) return parts[0];
@@ -116,12 +111,11 @@ function getFilteredSales(
     dateRange: 6 | 12 | 24;
   },
   reachablePostcodes: Set<string>,
-  level: "district" | "sector",
 ): Array<{ postcode: string; lat: number; lng: number; sale: PropertyRecord }> {
   const cutoffDate = new Date();
   cutoffDate.setMonth(cutoffDate.getMonth() - filters.dateRange);
   const cutoff = cutoffDate.toISOString().slice(0, 7); // YYYY-MM
-  const toPrefix = level === "sector" ? postcodeToSector : postcodeToDistrict;
+  const toPrefix = postcodeToSector;
 
   const results: Array<{
     postcode: string;
@@ -158,7 +152,6 @@ export function PropertyLayer() {
   const { data, enabled } = usePropertyData();
   const filters = usePropertyFilters();
   const scores = useScoreStore((s) => s.scores);
-  const activeLevel = useMapStore((s) => s.activeLevel);
 
   // Collect reachable postcode IDs from scores (district or sector level).
   // Also include "approximate" sectors whose parent district passes — these
@@ -187,8 +180,8 @@ export function PropertyLayer() {
 
   const filteredSales = useMemo(() => {
     if (!data || !enabled || !filters) return [];
-    return getFilteredSales(data, filters, reachablePostcodes, activeLevel);
-  }, [data, enabled, filters, reachablePostcodes, activeLevel]);
+    return getFilteredSales(data, filters, reachablePostcodes);
+  }, [data, enabled, filters, reachablePostcodes]);
 
   // Compute which postcode prefixes have matching properties and store it
   // so DistrictLayer can grey out areas with no properties
@@ -197,22 +190,12 @@ export function PropertyLayer() {
       setPostcodesWithProperties(new Set());
       return;
     }
-    const toPrefix =
-      activeLevel === "sector"
-        ? (pc: string) => {
-            const parts = pc.split(" ");
-            return parts.length >= 2 && parts[1].length > 0
-              ? `${parts[0]} ${parts[1][0]}`
-              : parts[0];
-          }
-        : (pc: string) => pc.split(" ")[0];
-
     const prefixes = new Set<string>();
     for (const { postcode } of filteredSales) {
-      prefixes.add(toPrefix(postcode));
+      prefixes.add(postcodeToSector(postcode));
     }
     setPostcodesWithProperties(prefixes);
-  }, [filteredSales, enabled, activeLevel, setPostcodesWithProperties]);
+  }, [filteredSales, enabled, setPostcodesWithProperties]);
 
   const showMarkers = filters?.showMarkers ?? true;
 

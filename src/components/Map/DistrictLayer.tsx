@@ -81,7 +81,7 @@ function getStyleForPostcode(postcodeId: string): L.PathOptions {
 
   return {
     fillColor: pass ? (approximate ? APPROXIMATE_COLOR : REACHABLE_COLOR) : GREYED_COLOR,
-    fillOpacity: pass ? 0.4 : 0.5,
+    fillOpacity: pass ? 0.25 : 0.3,
     color: BORDER_COLOR,
     weight: 1,
     opacity: 0.7,

@@ -18,6 +18,10 @@ export interface FilterPlugin<TConfig = unknown> {
   defaultConfig(): TConfig;
   /** Returns true if the filter has enough config to produce meaningful results. */
   isConfigured(config: TConfig): boolean;
+  /** Returns the config subset that affects scoring. Display-only fields
+   *  (e.g. showRoute, showMarkers) should be stripped so toggling them
+   *  doesn't trigger re-evaluation. Defaults to the full config. */
+  configForScoring?(config: TConfig): unknown;
   evaluate(
     config: TConfig,
     postcodes: string[],

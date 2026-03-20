@@ -80,7 +80,7 @@ async function evaluatePublicTransport(
       allowedModes: config.allowedModes,
       maxBusRides: config.maxBusRides,
       maxBusTimeMinutes: config.maxBusTimeMinutes,
-      showRoute: config.showRoute,
+      showRoute: true, // always fetch route data so toggling showRoute is instant
     },
     postcodes,
     filterId,
@@ -88,8 +88,6 @@ async function evaluatePublicTransport(
 
   if (routeData && filterId) {
     useRouteStore.getState().setRouteData(filterId, routeData);
-  } else if (filterId) {
-    useRouteStore.getState().clearRouteData(filterId);
   }
 
   return results;
@@ -99,6 +97,11 @@ export const commuteFilter: FilterPlugin<CommuteConfigData> = {
   typeId: "commute",
   displayName: "Commute Time",
   description: "Filter by travel time to a destination address",
+
+  configForScoring(config: CommuteConfigData): unknown {
+    const { showRoute: _, ...scoring } = config;
+    return scoring;
+  },
 
   isConfigured(config: CommuteConfigData): boolean {
     return config.destinationLat !== null && config.destinationLng !== null;
